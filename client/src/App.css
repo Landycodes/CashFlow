@@ -1,0 +1,8 @@
+.backgroundImage {
+  background-image: url("../public/moneyBackground.jpg");
+  background-size: contain;
+}
+
+.bg-gradient {
+    background-image: var(--bs-gradient);
+}
