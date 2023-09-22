@@ -1,10 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createUser, loginUser } from "../../utils/API";
+import Auth from "../../utils/auth";
 
 export default function Login({ changePage }) {
+  //fix signup bug
+  //add firebase signin with google
   const [login, setlogin] = useState(true);
 
-  const handleSubmit = (e) => {
+  const [form, setForm] = useState({});
+
+  //reset states when form changes between log in and sign up
+  useEffect(() => {
+    setForm({});
+    document.querySelectorAll("input").forEach((i) => (i.value = ""));
+  }, [login]);
+
+  //set state to input value
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const btnDisable = (Boolean) => {
+      document.querySelectorAll("button").forEach((btn) => {
+        btn.disabled = Boolean;
+      });
+    };
+
+    if (login) {
+      try {
+        btnDisable(true);
+        await loginUser(form).then((data) => {
+          if (data.ok) {
+            data.json().then((user) => {
+              Auth.login(user.token);
+              changePage("home");
+            });
+          } else {
+            btnDisable(false);
+            console.log(data);
+          }
+        });
+      } catch (error) {
+        btnDisable(false);
+        console.error(error);
+      }
+    } else {
+      try {
+        btnDisable(true);
+        await createUser(form).then((user) => {
+          console.log(user);
+          if (user.ok) {
+            Auth.login(user.token);
+            changePage("home");
+          } else {
+            console.log(user);
+            btnDisable(false);
+          }
+        });
+      } catch (err) {
+        console.log(err);
+        btnDisable(false);
+      }
+    }
   };
   return (
     <div className="d-flex flex-column align-items-center">
@@ -24,34 +84,44 @@ export default function Login({ changePage }) {
             className="form-control w-50 m-1 border border-primary"
             type="text"
             placeholder="username"
+            onChange={handleInputChange}
+            name="username"
+            defaultValue={form.username}
           />
         )}
         <input
           className="form-control w-50 m-1 border border-primary"
           type="text"
           placeholder="Email"
+          name="email"
+          onChange={handleInputChange}
+          defaultValue={form.email}
         />
         <input
           className="form-control w-50 m-1 border border-primary"
           type="password"
           placeholder="Password"
+          onChange={handleInputChange}
+          name="password"
+          defaultValue={form.password}
         />
         <div className="d-flex flex-column justify-content-center align-items-center mt-2">
-          <button
-            className="btn btn-success w-50 m-1"
-            onClick={() => changePage("home")}
-          >
+          <button className="btn btn-success w-50 m-1" type="submit">
             Submit
           </button>
           <button
             className="btn btn-primary m-1"
+            type="button"
             onClick={() => setlogin(!login)}
           >
             {login ? "Create Account" : "Log in instead"}
           </button>
 
           <h3 className="bg-light rounded w-25 text-center">-Or-</h3>
-          <button className="btn btn-light m-1 bg-light bg-gradient border border-primary">
+          <button
+            className="btn btn-light m-1 bg-light bg-gradient border border-primary"
+            type="button"
+          >
             <img
               src="/google-logo.png"
               alt=""
