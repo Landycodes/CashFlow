@@ -3,6 +3,8 @@ import Auth from "../utils/auth";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Breakdown from "./pages/Breakdown";
+import Expenses from "./pages/Expenses";
+import Settings from "./pages/Settings";
 import Navbar from "./Navbar";
 
 export default function Content() {
@@ -10,10 +12,10 @@ export default function Content() {
 
   useEffect(() => {
     if (!Auth.loggedIn()) {
-      console.log("not logged in");
+      // console.log("not logged in");
       setPage("login");
     } else {
-      console.log("logged in");
+      // console.log("logged in");
       setPage("home");
     }
   }, []);
@@ -30,8 +32,13 @@ export default function Content() {
       case "breakdown":
         page = <Breakdown />;
         break;
+      case "add":
+        page = <Expenses />;
+        break;
+      case "settings":
+        page = <Settings />;
+        break;
       default:
-      // page = <Home />;
     }
     return page;
   };

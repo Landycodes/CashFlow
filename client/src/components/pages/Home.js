@@ -61,7 +61,7 @@ export default function Home() {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center">
+    <div className="d-flex align-items-center justify-content-center mt-5">
       <div className="bg-light bg-gradient p-3 rounded border border-primary">
         <div>
           <select

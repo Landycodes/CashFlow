@@ -22,6 +22,7 @@ const userSchema = new Schema(
       type: String,
       sparse: true,
     },
+    categories: [],
     income: [incomeSchema],
     expense: [expenseSchema],
   },

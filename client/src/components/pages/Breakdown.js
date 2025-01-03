@@ -34,7 +34,7 @@ export default function Breakdown() {
   }, []);
 
   return (
-    <div className="d-flex flex-column align-items-center">
+    <div className="d-flex flex-column align-items-center container table-responsive">
       <input
         type="checkbox"
         checked={checked}
@@ -42,12 +42,13 @@ export default function Breakdown() {
           setCheck(!checked);
         }}
       />
-      <table className="table w-75">
+      <table className="table table-sm align-middle table-striped table-bordered border-dark">
         <thead>
           <tr>
             <th>Date</th>
             <th>Amount</th>
             <th>Category</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -56,8 +57,18 @@ export default function Breakdown() {
                 return (
                   <tr key={row._id}>
                     <td>{row.date}</td>
-                    <td>{row.amount}</td>
+                    <td>${row.amount}</td>
                     <td>{row.category}</td>
+                    <td className="w-25">
+                      <div className="d-flex justify-content-around">
+                        <button className="btn btn-sm btn-secondary">
+                          Edit
+                        </button>
+                        <button className="btn btn-sm btn-danger">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })
@@ -65,8 +76,18 @@ export default function Breakdown() {
                 return (
                   <tr key={row._id}>
                     <td>{row.date}</td>
-                    <td>{row.amount}</td>
+                    <td>-${row.amount}</td>
                     <td>{row.category}</td>
+                    <td className="w-25">
+                      <div className="d-flex justify-content-around">
+                        <button className="btn btn-sm btn-secondary">
+                          Edit
+                        </button>
+                        <button className="btn btn-sm btn-danger">
+                          Delete
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}

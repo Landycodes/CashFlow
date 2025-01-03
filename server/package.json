@@ -16,7 +16,7 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.5.1",
-    "plaid": "^15.5.0"
+    "plaid": "^30.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
