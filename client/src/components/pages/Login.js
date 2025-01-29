@@ -26,8 +26,9 @@ export default function Login({ changePage }) {
   const getLogIndata = async () => {
     await loginUser(form).then((data) => {
       if (data) {
+        const success = data.ok;
         data.json().then((user) => {
-          if (user.ok) {
+          if (success) {
             Auth.login(user.token);
             changePage("home");
           } else {
@@ -96,14 +97,14 @@ export default function Login({ changePage }) {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center">
+    <div className="d-flex flex-column align-items-center bg-gray">
       <header className="bg-light bg-gradient w-50 rounded-bottom d-flex flex-column align-items-center border border-dark border-top-0">
         <h2 className="m-0">CashFlow</h2>
         <h5>Track your spending</h5>
       </header>
 
       <form
-        className="v-align form d-flex flex-column justify-content-center align-items-center w-50 m-auto mt-5 p-3 pt-4 rounded border border-secondary"
+        className="v-align form d-flex flex-column justify-content-center align-items-center w-50 m-auto mt-5 p-3 pt-4 rounded border border-secondary bg-secondary"
         onSubmit={handleSubmit}
       >
         {login ? (
@@ -152,9 +153,7 @@ export default function Login({ changePage }) {
             {login ? "Create Account" : "Log in instead"}
           </button>
 
-          <h3 className="bg-light rounded w-25 text-center text-nowrap">
-            -Or-
-          </h3>
+          <h3 className="rounded w-25 text-center text-nowrap">-Or-</h3>
           <button
             className="btn btn-light dynamic-text m-1 bg-light bg-gradient border border-primary"
             type="button"

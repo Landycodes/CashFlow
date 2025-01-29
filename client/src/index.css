@@ -10,8 +10,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  background-image: url("../public/moneyBackground.jpg");
-  background-size: contain;
+  background-image: url("../public/tucsonCity.jpg");
+  background-repeat: no-repeat; /*comment out for moneyBackground*/
+  background-size: cover; /*change to contain for moneyBackground and cover for tucsonCity*/
+  background-position: center;
+  background-attachment: fixed;
 }
 
 code {
