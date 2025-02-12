@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { createUser, loginUser } from "../../utils/API";
 import Auth from "../../utils/auth";
+import anime from "animejs";
 
 export default function Login({ changePage }) {
   //fix signup bug
@@ -8,6 +9,15 @@ export default function Login({ changePage }) {
   const [login, setlogin] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState({});
+
+  useEffect(() => {
+    anime({
+      targets: "#loginForm",
+      translateY: [-200, -25], // Move up past center
+      easing: "spring(2, 45, 12, 0)",
+      duration: 500,
+    });
+  }, []);
 
   //reset states when form changes between log in and sign up
   useEffect(() => {
@@ -97,16 +107,25 @@ export default function Login({ changePage }) {
   };
 
   return (
-    <div className="d-flex flex-column align-items-center bg-gray">
-      <header className="bg-light bg-gradient w-50 rounded-bottom d-flex flex-column align-items-center border border-dark border-top-0">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+      {/* <header className="bg-light bg-gradient w-100 d-flex flex-column align-items-center border border-dark border-top-0">
         <h2 className="m-0">CashFlow</h2>
         <h5>Track your spending</h5>
-      </header>
+      </header> */}
 
       <form
-        className="v-align form d-flex flex-column justify-content-center align-items-center w-50 m-auto mt-5 p-3 pt-4 rounded border border-secondary bg-secondary"
+        className="form d-flex flex-column justify-content-center align-items-center p-3 pt-4 rounded border bg-light"
+        id="loginForm"
+        style={{ transform: "translateY(-25%)" }}
         onSubmit={handleSubmit}
       >
+        <header className="bg-light bg-gradient w-100 d-flex flex-column align-items-center">
+          <h2 className="m-0">CashFlow</h2>
+          <h5>Track your spending</h5>
+        </header>
+
+        <br></br>
+
         {login ? (
           ""
         ) : (

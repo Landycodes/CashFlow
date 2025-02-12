@@ -10,7 +10,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  background-image: url("../public/tucsonCity.jpg");
+  background-image:
+    linear-gradient(rgba(48, 25, 52, .5), rgba(48, 25, 52, .5)),
+    url("../public/tucsonCity.jpg");
   background-repeat: no-repeat; /*comment out for moneyBackground*/
   background-size: cover; /*change to contain for moneyBackground and cover for tucsonCity*/
   background-position: center;
