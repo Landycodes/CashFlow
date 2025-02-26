@@ -15,7 +15,7 @@ export const createUser = (userData) => {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(userData),
-  }).then((response) => response.json());
+  });
 };
 
 export const loginUser = (userData) => {
@@ -26,6 +26,23 @@ export const loginUser = (userData) => {
     },
     body: JSON.stringify(userData),
   });
+};
+
+export const googleLogin = (results) => {
+  return fetch("/api/firebase/googlesignin", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(results),
+  });
+  // .then((response) => {
+  //   if (response.status === 400) {
+  //     return response.json();
+  //   } else {
+  //     return response;
+  //   }
+  // });
 };
 
 export const addIncome = (token, income) => {

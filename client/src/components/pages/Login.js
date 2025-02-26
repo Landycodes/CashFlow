@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { createUser, loginUser } from "../../utils/API";
+import { createUser, loginUser, googleLogin } from "../../utils/API";
 import Auth from "../../utils/auth";
+import {
+  fireAuth,
+  provider,
+  signInWithRedirect,
+  getRedirectResult,
+  signInWithPopup,
+} from "../../utils/firebaseConfig";
 import anime from "animejs";
 
 export default function Login({ changePage }) {
-  //fix signup bug
   //add firebase signin with google
   const [login, setlogin] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState({});
 
   useEffect(() => {
+    handleRedirect();
+
     anime({
       targets: "#loginForm",
       translateY: [-200, -25], // Move up past center
@@ -33,10 +41,27 @@ export default function Login({ changePage }) {
     setForm({ ...form, [name]: value });
   };
 
-  const getLogIndata = async () => {
-    await loginUser(form).then((data) => {
-      if (data) {
-        const success = data.ok;
+  const authenticate = async (type) => {
+    let data = null;
+    if (type === "login") {
+      form.email && form.password
+        ? (data = await loginUser(form))
+        : setError("Email and Password are required");
+    } else if (type === "signup") {
+      form.username && form.email && form.password
+        ? (data = await createUser(form))
+        : setError("One or more fields are missing a value");
+    } else {
+      throw new Error("Invalid authentication type");
+    }
+
+    handleAuthRequest(data);
+  };
+
+  const handleAuthRequest = (data) => {
+    if (data) {
+      const success = data.ok;
+      if (data.status !== 500) {
         data.json().then((user) => {
           if (success) {
             Auth.login(user.token);
@@ -48,25 +73,10 @@ export default function Login({ changePage }) {
             });
           }
         });
+      } else {
+        setError(`${data.statusText}, Please try again later`);
       }
-    });
-  };
-
-  const getSignUpData = async () => {
-    await createUser(form).then((user) => {
-      console.log(user);
-      if (user) {
-        if (user.ok) {
-          Auth.login(user.token);
-          changePage("home");
-        } else {
-          setError(user.message);
-          document.querySelectorAll("input").forEach((input) => {
-            input.value = "";
-          });
-        }
-      }
-    });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -77,25 +87,46 @@ export default function Login({ changePage }) {
       });
     };
 
-    if (login) {
-      try {
-        btnDisable(true);
-        getLogIndata();
-      } catch (error) {
-        console.error(error);
-      } finally {
-        btnDisable(false);
+    try {
+      btnDisable(true);
+      if (login) {
+        authenticate("login");
+      } else {
+        authenticate("signup");
       }
-    } else {
-      try {
-        btnDisable(true);
-        getSignUpData();
-      } catch (err) {
-        console.log(err);
-      } finally {
-        btnDisable(false);
-      }
+    } catch (error) {
+      throw new Error("Authentication error has occured");
+    } finally {
+      btnDisable(false);
     }
+  };
+
+  const handleGoogle = async () => {
+    if (false) {
+      fireAuth.useDeviceLanguage();
+      console.log("Signing in with redirect");
+      await signInWithRedirect(fireAuth, provider);
+    } else {
+      console.log("Signing in with popup");
+      signInWithPopup(fireAuth, provider).then(async (user) => {
+        // console.log("user: ", user);
+        const { accessToken, displayName, email, uid } = user.user;
+        const googleSignin = await googleLogin({
+          idToken: accessToken,
+          username: displayName,
+          email: email,
+          uid: uid,
+        });
+
+        handleAuthRequest(googleSignin);
+      });
+    }
+  };
+
+  const handleRedirect = async () => {
+    console.log("Checking Credential");
+    const data = await getRedirectResult(fireAuth);
+    console.log("Credential: ", data);
   };
 
   const throwError = (error) => {
@@ -108,11 +139,6 @@ export default function Login({ changePage }) {
 
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100">
-      {/* <header className="bg-light bg-gradient w-100 d-flex flex-column align-items-center border border-dark border-top-0">
-        <h2 className="m-0">CashFlow</h2>
-        <h5>Track your spending</h5>
-      </header> */}
-
       <form
         className="form d-flex flex-column justify-content-center align-items-center p-3 pt-4 rounded border bg-light"
         id="loginForm"
@@ -176,6 +202,7 @@ export default function Login({ changePage }) {
           <button
             className="btn btn-light dynamic-text m-1 bg-light bg-gradient border border-primary"
             type="button"
+            onClick={handleGoogle}
           >
             <img
               src="/google-logo.png"
