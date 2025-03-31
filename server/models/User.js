@@ -22,6 +22,9 @@ const userSchema = new Schema(
       type: String,
       sparse: true,
     },
+    plaidAccessToken: {
+      type: String,
+    },
     categories: [],
     income: [incomeSchema],
     expense: [expenseSchema],

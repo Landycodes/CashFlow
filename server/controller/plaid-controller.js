@@ -1,21 +1,33 @@
 const User = require("../models/User");
+require("dotenv").config();
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
+
+const client = new PlaidApi({
+  basePath: PlaidEnvironments.sandbox,
+  baseOptions: {
+    headers: {
+      "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
+      "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
+      "Plaid-Version": "2020-09-14",
+    },
+  },
+});
 
 module.exports = {
   async create_link_token({ body }, res) {
     try {
-      const config = new Configuration({
-        basePath: PlaidEnvironments.sandbox,
-        baseOptions: {
-          headers: {
-            "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-            "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
-            "Plaid-Version": "2020-09-14",
-          },
-        },
-      });
+      // const config = new Configuration({
+      //   basePath: PlaidEnvironments.sandbox,
+      //   baseOptions: {
+      //     headers: {
+      //       "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
+      //       "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
+      //       "Plaid-Version": "2020-09-14",
+      //     },
+      //   },
+      // });
 
-      const client = new PlaidApi(config);
+      // const client = new PlaidApi(config);
 
       // Get the client_user_id by searching for the current user
       const user = await User.findOne({ _id: body._id });
@@ -51,8 +63,9 @@ module.exports = {
       const { public_token } = req.body;
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
-      const itemId = response.date.item_id;
+      const itemId = response.data.item_id;
 
+      // console.log(accessToken);
       res.json({ accessToken, itemId });
     } catch (error) {
       console.error(error);
@@ -64,7 +77,7 @@ module.exports = {
   async getAccountBalance(req, res) {
     try {
       const { accessToken } = req.body;
-      const response = await plaidClient.accountsBalanceGet({
+      const response = await client.accountsBalanceGet({
         access_token: accessToken,
       });
       res.json(response.data.accounts);
@@ -76,7 +89,7 @@ module.exports = {
   async getTransactionHistory(req, res) {
     try {
       const { accessToken } = req.body;
-      const response = await plaidClient.transactionsGet({
+      const response = await client.transactionsGet({
         access_token: accessToken,
         start_date: "2024-01-01", // Adjust date range
         end_date: new Date().toISOString().split("T")[0],

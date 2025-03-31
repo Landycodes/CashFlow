@@ -9,13 +9,19 @@ module.exports = {
   async login({ body }, res) {
     const user = await User.findOne({ email: body.email });
     if (!user) {
-      return res.status(400).json({ message: "Can't find this user" });
+      return res.status(401).json({ message: "Can't find this user" });
+    }
+
+    if (!user.password) {
+      return res
+        .status(403)
+        .json({ message: "Email exists with anothe sign in method" });
     }
 
     const correctPw = await user.isCorrectPassword(body.password);
 
     if (!correctPw) {
-      return res.status(400).json({ message: "Wrong password!" });
+      return res.status(401).json({ message: "Wrong password!" });
     }
     const token = signToken(user);
     res.json({ token, user });
@@ -55,6 +61,26 @@ module.exports = {
         res.status(403).json({ message: "Username and Email are required" });
         console.error(error);
       }
+    }
+  },
+
+  async updateUser({ body, params }, res) {
+    try {
+      const id = params.id;
+      console.log(body);
+      const updatedUser = await User.findByIdAndUpdate(id, body, {
+        new: true,
+        runValidators: true,
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Unable to find user" });
+      }
+
+      res.json(updatedUser);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something went wrong" });
     }
   },
 };

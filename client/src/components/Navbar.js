@@ -3,7 +3,7 @@ import Auth from "../utils/auth";
 import { getMe } from "../utils/API";
 
 export default function Navbar({ currentPage, changePage }) {
-  const [menu, setMenu] = useState(false);
+  // const [menu, setMenu] = useState(false);
 
   const [name, setName] = useState("Name");
   const [time, setTime] = useState("Time");

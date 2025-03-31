@@ -5,7 +5,7 @@ export const getMe = (token) => {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-  });
+  }).then((data) => data.json());
 };
 
 export const createUser = (userData) => {
@@ -36,13 +36,40 @@ export const googleLogin = (results) => {
     },
     body: JSON.stringify(results),
   });
-  // .then((response) => {
-  //   if (response.status === 400) {
-  //     return response.json();
-  //   } else {
-  //     return response;
-  //   }
-  // });
+};
+
+export const createPlaidLinkToken = (id) => {
+  return fetch("/api/plaid/create_link_token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ _id: id }),
+  }).then((response) => response.json());
+};
+
+export const exchangeAndSavePlaidToken = async (public_token, user_id) => {
+  try {
+    const exchangedToken = await fetch("/api/plaid/exchange_PublicToken", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ public_token }),
+    }).then((res) => res.json());
+
+    return await fetch(`/api/update/${user_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plaidAccessToken: exchangedToken.accessToken }),
+    });
+  } catch (error) {
+    return error;
+  }
+};
+
+export const getAccountBalance = (accessToken) => {
+  return fetch("/api/plaid/getAccountBalance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ accessToken: accessToken }),
+  }).then((response) => response.json());
 };
 
 export const addIncome = (token, income) => {

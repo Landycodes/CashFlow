@@ -17,7 +17,7 @@ export default function Login({ changePage }) {
   const [form, setForm] = useState({});
 
   useEffect(() => {
-    handleRedirect();
+    // handleRedirect();
 
     anime({
       targets: "#loginForm",

@@ -6,28 +6,48 @@ import Breakdown from "./pages/Breakdown";
 import Expenses from "./pages/Expenses";
 import Settings from "./pages/Settings";
 import Navbar from "./Navbar";
+import { getMe } from "../utils/API";
 
 export default function Content() {
   const [currentPage, setPage] = useState("login");
+  const [user, setUser] = useState({});
+  const userProfileLoaded = Object.keys(user).length !== 0;
 
   useEffect(() => {
     if (!Auth.loggedIn()) {
-      // console.log("not logged in");
+      setUser({});
       setPage("login");
-    } else {
-      // console.log("logged in");
-      setPage("home");
+      return;
     }
-  }, []);
+    if (currentPage === "login") {
+      setPage("home");
+    } else if (!userProfileLoaded) {
+      getUserInfo();
+    }
+  }, [currentPage]);
 
-  const renderPage = () => {
+  const getUserInfo = () => {
+    try {
+      if (Object.keys(user).length === 0) {
+        const token = Auth.getToken();
+        getMe(token).then((userData) => {
+          // console.log(userData);
+          setUser({ ...userData });
+        });
+      }
+    } catch (error) {
+      console.error("Error creating user props", error);
+    }
+  };
+
+  const renderPage = (user) => {
     let page;
     switch (currentPage) {
       case "login":
         page = <Login />;
         break;
       case "home":
-        page = <Home />;
+        page = <Home user={user} />;
         break;
       case "breakdown":
         page = <Breakdown />;
@@ -36,7 +56,7 @@ export default function Content() {
         page = <Expenses />;
         break;
       case "settings":
-        page = <Settings />;
+        page = <Settings user={user} />;
         break;
       default:
     }
@@ -50,7 +70,7 @@ export default function Content() {
   ) : (
     <div>
       <Navbar currentPage={currentPage} changePage={changePage} />
-      {renderPage()}
+      {userProfileLoaded ? renderPage(user) : <h1>Loading...</h1>}
     </div>
   );
 }
