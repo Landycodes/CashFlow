@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { getTransactionHistory } from "../../utils/API";
 
-export default function Expenses() {
+export default function Expenses({ user }) {
   const [newCat, setCat] = useState(false);
   const [categories, setCategories] = useState(["1", "2", "3"]);
   const [form, setForm] = useState({
@@ -8,6 +9,15 @@ export default function Expenses() {
     amount: "",
     category: "",
   });
+
+  useEffect(() => {
+    console.log(user);
+    if (user) {
+      getTransactionHistory(user.plaidAccessToken).then((data) => {
+        console.log(data);
+      });
+    }
+  }, []);
 
   const handleInput = (event) => {
     const value = event.target.value;

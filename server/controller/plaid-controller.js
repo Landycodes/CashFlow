@@ -16,19 +16,6 @@ const client = new PlaidApi({
 module.exports = {
   async create_link_token({ body }, res) {
     try {
-      // const config = new Configuration({
-      //   basePath: PlaidEnvironments.sandbox,
-      //   baseOptions: {
-      //     headers: {
-      //       "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-      //       "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
-      //       "Plaid-Version": "2020-09-14",
-      //     },
-      //   },
-      // });
-
-      // const client = new PlaidApi(config);
-
       // Get the client_user_id by searching for the current user
       const user = await User.findOne({ _id: body._id });
       if (!user) {

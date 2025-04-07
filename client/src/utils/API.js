@@ -72,6 +72,14 @@ export const getAccountBalance = (accessToken) => {
   }).then((response) => response.json());
 };
 
+export const getTransactionHistory = (accessToken) => {
+  return fetch("/api/plaid/getTransactionHistory", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ accessToken: accessToken }),
+  }).then((response) => response.json());
+};
+
 export const addIncome = (token, income) => {
   return fetch("/api/addincome", {
     method: "PUT",

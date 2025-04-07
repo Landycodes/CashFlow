@@ -50,10 +50,11 @@ export default function Content() {
         page = <Home user={user} />;
         break;
       case "breakdown":
-        page = <Breakdown />;
+        page = <Breakdown user={user} />;
         break;
+
       case "add":
-        page = <Expenses />;
+        page = <Expenses user={user} />;
         break;
       case "settings":
         page = <Settings user={user} />;

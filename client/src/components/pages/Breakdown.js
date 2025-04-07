@@ -1,36 +1,47 @@
 import React, { useEffect, useState } from "react";
 import { getMe } from "../../utils/API";
 import Auth from "../../utils/auth";
+import { getTransactionHistory } from "../../utils/API";
 
-export default function Breakdown() {
+export default function Breakdown({ user }) {
   //create function to iterate through expenses and income and add a row
   //ability to edit each row and relay that to database
   const [checked, setCheck] = useState(true);
   const [inArray, setInArray] = useState([]);
   const [exArray, setExArray] = useState([]);
 
-  const getUser = async () => {
-    if (Auth.loggedIn()) {
-      const Token = Auth.getToken();
-      try {
-        await getMe(Token).then(async (data) => {
-          if (data.ok) {
-            const user = await data.json();
-            setInArray(user.income);
-            setExArray(user.expense);
-            console.log(user.income);
-          }
-        });
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      Auth.logout();
-    }
-  };
-
   useEffect(() => {
-    getUser();
+    if (!user) {
+      return;
+    }
+
+    getTransactionHistory(user.plaidAccessToken).then((transaction) => {
+      const updatedInputArr = [...inArray];
+      const updatedExpenseArr = [...exArray];
+
+      transaction.forEach((t) => {
+        const exists =
+          updatedInputArr.some((obj) => obj.id === t.transaction_id) &&
+          updatedExpenseArr.some((obj) => obj.id === t.transaction_id);
+
+        if (!exists) {
+          const newTransaction = {
+            id: t.transaction_id,
+            date: t.date,
+            amount: t.amount,
+            category: t.category.toString().split(",").join(", "),
+          };
+
+          if (t.amount < 0) {
+            updatedInputArr.push(newTransaction);
+          } else {
+            updatedExpenseArr.push(newTransaction);
+          }
+        }
+        setInArray(updatedInputArr);
+        setExArray(updatedExpenseArr);
+      });
+    });
   }, []);
 
   return (
@@ -55,9 +66,9 @@ export default function Breakdown() {
           {checked
             ? inArray.map((row) => {
                 return (
-                  <tr key={row._id}>
+                  <tr key={row.id}>
                     <td>{row.date}</td>
-                    <td>${row.amount}</td>
+                    <td>${Math.abs(row.amount)}</td>
                     <td>{row.category}</td>
                     <td className="w-25">
                       <div className="d-flex justify-content-around">
@@ -74,9 +85,9 @@ export default function Breakdown() {
               })
             : exArray.map((row) => {
                 return (
-                  <tr key={row._id}>
+                  <tr key={row.id}>
                     <td>{row.date}</td>
-                    <td>-${row.amount}</td>
+                    <td>${row.amount}</td>
                     <td>{row.category}</td>
                     <td className="w-25">
                       <div className="d-flex justify-content-around">
