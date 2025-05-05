@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getTransactionHistory } from "../../utils/API";
+import { userContext } from "../Content";
 
-export default function Expenses({ user }) {
+export default function Expenses() {
   const [newCat, setCat] = useState(false);
   const [categories, setCategories] = useState(["1", "2", "3"]);
+  const user = useContext(userContext);
+
   const [form, setForm] = useState({
     date: "",
     amount: "",

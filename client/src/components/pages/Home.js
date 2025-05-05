@@ -1,19 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Auth from "../../utils/auth";
-import { getMe, getAccountBalance } from "../../utils/API";
+import { getAccountBalance, getTransactionHistory } from "../../utils/API";
+import { userContext } from "../Content";
 
-export default function Home({ user }) {
+export default function Home() {
   //add a graph to show expense categories
-  const [income, setIncome] = useState(null);
-  const [expense, setexpense] = useState(null);
   const [range, setRange] = useState("total");
+  const [bankDetails, setBankDetails] = useState({
+    balance: null,
+    income: null,
+    expense: null,
+  });
+  const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
+  const user = useContext(userContext);
 
   useEffect(() => {
     // console.log(user);
-    if (user) {
+    if (user && user.plaidAccessToken) {
       getAccountBalance(user.plaidAccessToken).then((data) => {
-        // console.log(data);
-        setIncome(data[0].balances.available);
+        setBankDetails((bd) => ({
+          ...bd,
+          balance: data[0].balances.available,
+        }));
+      });
+      getTransactionHistory(user.plaidAccessToken).then((data) => {
+        setBankDetails((bd) => ({
+          ...bd,
+          income: data
+            .filter((t) => t.amount < 0)
+            .reduce((sum, t) => sum + Math.abs(t.amount), 0),
+          expense: data
+            .filter((t) => t.amount > 0)
+            .reduce((sum, t) => sum + t.amount, 0),
+        }));
       });
     }
   }, []);
@@ -91,36 +110,69 @@ export default function Home({ user }) {
 
   return (
     <div className="d-flex align-items-center justify-content-center mt-5">
-      <div className="bg-light bg-gradient p-3 rounded border border-primary">
-        <div>
-          <select
-            className="w-100 mt-0 mb-2 btn btn-sm border border-2 border-primary rounded"
-            onChange={handleChange}
-          >
-            <option value={"total"}>Total</option>
-            <option value={"oneWeek"}>1 week</option>
-            <option value={"twoWeek"}>2 week</option>
-            <option value={"oneMonth"}>1 month</option>
-            <option value={"threeMonth"}>3 months</option>
-            <option value={"sixMonth"}>6 months</option>
-            <option value={"oneYear"}>1 year</option>
-          </select>
+      {user.plaidAccessToken ? (
+        haveBankDetails ? (
+          <div className="bg-light bg-gradient p-3 rounded border border-primary">
+            <div>
+              <select
+                className="w-100 mt-0 mb-2 btn btn-sm border border-2 border-primary rounded"
+                onChange={handleChange}
+              >
+                <option value={"total"}>Total</option>
+                <option value={"oneWeek"}>1 week</option>
+                <option value={"twoWeek"}>2 week</option>
+                <option value={"oneMonth"}>1 month</option>
+                <option value={"threeMonth"}>3 months</option>
+                <option value={"sixMonth"}>6 months</option>
+                <option value={"oneYear"}>1 year</option>
+              </select>
+            </div>
+            <h1>
+              Current Balance:{" "}
+              <span className="text-success">${bankDetails.balance}</span>
+            </h1>
+            <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
+
+            <h1>
+              Earned:{" "}
+              <span className="text-success">${bankDetails.income}</span>
+            </h1>
+            <h4 className="text-center">-</h4>
+            <h1>
+              Expenses:{" "}
+              <span className="text-danger">${bankDetails.expense}</span>
+            </h1>
+            <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
+            <h1 className="text-center">
+              Total:&nbsp;
+              <span
+                className={
+                  bankDetails.income >= bankDetails.expense
+                    ? "text-success"
+                    : "text-danger"
+                }
+              >
+                {bankDetails.income >= bankDetails.expense ? "" : "-"}$
+                {Math.abs(bankDetails.income - bankDetails.expense)}
+              </span>
+            </h1>
+          </div>
+        ) : (
+          <div className="bg-light bg-gradient p-3 rounded border border-primary">
+            <h4>Getting Bank Details...</h4>
+          </div>
+        )
+      ) : (
+        <div className="bg-light bg-gradient p-3 rounded border border-primary">
+          <h4 className="text-center">
+            <b>Welcome to CashFlow</b>
+          </h4>
+          <p>
+            To get started, head over to the <strong>Settings</strong> tab and
+            securely link your bank account using Plaid.
+          </p>
         </div>
-        <h1>
-          Current Balance: <span className="text-success">${income}</span>
-        </h1>
-        <h4 className="text-center">-</h4>
-        <h1>
-          Expenses: <span className="text-danger">${expense}</span>
-        </h1>
-        <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
-        <h1 className="text-center">
-          Total:&nbsp;
-          <span className={income >= expense ? "text-success" : "text-danger"}>
-            {income >= expense ? "" : "-"}${Math.abs(income - expense)}
-          </span>
-        </h1>
-      </div>
+      )}
     </div>
   );
 }

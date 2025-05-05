@@ -67,7 +67,7 @@ module.exports = {
   async updateUser({ body, params }, res) {
     try {
       const id = params.id;
-      console.log(body);
+      // console.log(body);
       const updatedUser = await User.findByIdAndUpdate(id, body, {
         new: true,
         runValidators: true,

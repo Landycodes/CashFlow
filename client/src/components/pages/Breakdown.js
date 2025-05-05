@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { getMe } from "../../utils/API";
+import React, { useContext, useEffect, useState } from "react";
 import Auth from "../../utils/auth";
 import { getTransactionHistory } from "../../utils/API";
+import { userContext } from "../Content";
 
-export default function Breakdown({ user }) {
+export default function Breakdown() {
   //create function to iterate through expenses and income and add a row
   //ability to edit each row and relay that to database
   const [checked, setCheck] = useState(true);
   const [inArray, setInArray] = useState([]);
   const [exArray, setExArray] = useState([]);
+  const user = useContext(userContext);
 
   useEffect(() => {
     if (!user) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import Auth from "../utils/auth";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
@@ -8,56 +8,56 @@ import Settings from "./pages/Settings";
 import Navbar from "./Navbar";
 import { getMe } from "../utils/API";
 
+export const userContext = createContext(null);
+
 export default function Content() {
   const [currentPage, setPage] = useState("login");
-  const [user, setUser] = useState({});
-  const userProfileLoaded = Object.keys(user).length !== 0;
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     if (!Auth.loggedIn()) {
-      setUser({});
+      setUser(null);
       setPage("login");
       return;
     }
     if (currentPage === "login") {
       setPage("home");
-    } else if (!userProfileLoaded) {
+    } else if (!user) {
       getUserInfo();
     }
   }, [currentPage]);
 
   const getUserInfo = () => {
     try {
-      if (Object.keys(user).length === 0) {
+      if (!user) {
         const token = Auth.getToken();
-        getMe(token).then((userData) => {
-          // console.log(userData);
-          setUser({ ...userData });
-        });
+        getMe(token).then((userData) =>
+          userData ? setUser(userData) : Auth.logout()
+        );
       }
     } catch (error) {
       console.error("Error creating user props", error);
     }
   };
 
-  const renderPage = (user) => {
+  const renderPage = () => {
     let page;
     switch (currentPage) {
       case "login":
         page = <Login />;
         break;
       case "home":
-        page = <Home user={user} />;
+        page = <Home />;
         break;
       case "breakdown":
-        page = <Breakdown user={user} />;
+        page = <Breakdown />;
         break;
 
       case "add":
-        page = <Expenses user={user} />;
+        page = <Expenses />;
         break;
       case "settings":
-        page = <Settings user={user} />;
+        page = <Settings />;
         break;
       default:
     }
@@ -68,10 +68,12 @@ export default function Content() {
 
   return currentPage === "login" ? (
     <Login changePage={changePage} />
-  ) : (
-    <div>
+  ) : user ? (
+    <userContext.Provider value={user}>
       <Navbar currentPage={currentPage} changePage={changePage} />
-      {userProfileLoaded ? renderPage(user) : <h1>Loading...</h1>}
-    </div>
+      {renderPage()}
+    </userContext.Provider>
+  ) : (
+    <h1>Loading...</h1>
   );
 }

@@ -70,7 +70,11 @@ module.exports = {
       res.json(response.data.accounts);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Failed to fetch account balance" });
+      if (error && typeof error.status === "number") {
+        res.status(error.status).json({ error });
+      } else {
+        res.status(500).json({ error: "Failed to connect to plaid server" });
+      }
     }
   },
   async getTransactionHistory(req, res) {

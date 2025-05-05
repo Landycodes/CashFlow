@@ -5,7 +5,11 @@ export const getMe = (token) => {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-  }).then((data) => data.json());
+  }).then((data) => {
+    if (data.status === 200) {
+      return data.json();
+    }
+  });
 };
 
 export const createUser = (userData) => {

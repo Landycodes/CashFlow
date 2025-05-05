@@ -1,32 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import Auth from "../../utils/auth";
 import {
   createPlaidLinkToken,
   exchangeAndSavePlaidToken,
-  getMe,
 } from "../../utils/API";
+import { userContext } from "../Content";
 
-export default function Settings() {
+export default function Settings(/* { user } */) {
   const [linkToken, setLinkToken] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [user_id, setUser_id] = useState("");
+  const user = useContext(userContext);
+  // const [user_id, setUser_id] = useState("");
 
   // Fetch link token from backend
   const createLinkToken = async () => {
-    if (Auth.loggedIn()) {
-      const token = Auth.getToken();
-      try {
-        const data = await getMe(token);
-        if (data.ok) {
-          const user = await data.json();
-          const response = await createPlaidLinkToken(user._id);
-          setUser_id(user._id);
-          setLinkToken(response.link_token);
-        }
-      } catch (error) {
-        console.error("Error creating Plaid link token:", error);
-      }
+    try {
+      const response = await createPlaidLinkToken(user._id);
+      // setUser_id(user._id);
+      setLinkToken(response.link_token);
+    } catch (error) {
+      console.error("Error creating Plaid link token:", error);
     }
   };
 
@@ -34,7 +28,7 @@ export default function Settings() {
   const { open, ready } = usePlaidLink({
     token: linkToken,
     onSuccess: async (public_token) => {
-      await exchangeAndSavePlaidToken(public_token, user_id);
+      await exchangeAndSavePlaidToken(public_token, user._id);
     },
     onExit: () => {
       setLinkToken(null);
@@ -50,10 +44,10 @@ export default function Settings() {
   };
 
   useEffect(() => {
-    if (linkToken && ready && user_id) {
+    if (linkToken && ready && user) {
       open();
     }
-  }, [linkToken, ready, open, user_id]);
+  }, [linkToken, ready, open, user]);
 
   return (
     <div className="d-flex align-items-center justify-content-center mt-5">

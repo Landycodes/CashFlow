@@ -1,32 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Auth from "../utils/auth";
 import { getMe } from "../utils/API";
+import { userContext } from "./Content";
 
 export default function Navbar({ currentPage, changePage }) {
-  // const [menu, setMenu] = useState(false);
-
-  const [name, setName] = useState("Name");
+  const user = useContext(userContext);
+  const [name, setName] = useState(user.username);
   const [time, setTime] = useState("Time");
   const [date, setDate] = useState("Date");
 
   useEffect(() => {
-    getUser();
     clock();
     getDate();
   }, []);
-
-  const getUser = async () => {
-    if (Auth.loggedIn()) {
-      const token = Auth.getToken();
-      await getMe(token).then((data) => {
-        if (data.ok) {
-          data.json().then((res) => {
-            setName(res.username);
-          });
-        }
-      });
-    }
-  };
 
   const clock = () => {
     let time = new Date().toLocaleTimeString([], {
