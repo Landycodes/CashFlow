@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import Auth from "../../utils/auth";
+// import Auth from "../../utils/auth";
 import { getAccountBalance, getTransactionHistory } from "../../utils/API";
 import { userContext } from "../Content";
+import PieChart from "../Piechart";
 
 export default function Home() {
   //add a graph to show expense categories
@@ -112,25 +113,36 @@ export default function Home() {
     <div className="d-flex align-items-center justify-content-center mt-5">
       {user.plaidAccessToken ? (
         haveBankDetails ? (
-          <div className="bg-light bg-gradient p-3 rounded border border-primary">
-            <div>
-              <select
-                className="w-100 mt-0 mb-2 btn btn-sm border border-2 border-primary rounded"
-                onChange={handleChange}
-              >
-                <option value={"total"}>Total</option>
-                <option value={"oneWeek"}>1 week</option>
-                <option value={"twoWeek"}>2 week</option>
-                <option value={"oneMonth"}>1 month</option>
-                <option value={"threeMonth"}>3 months</option>
-                <option value={"sixMonth"}>6 months</option>
-                <option value={"oneYear"}>1 year</option>
-              </select>
-            </div>
+          <div className="d-flex flex-column align-items-center bg-light bg-gradient p-3 rounded border border-primary">
             <h1>
               Current Balance:{" "}
               <span className="text-success">${bankDetails.balance}</span>
             </h1>
+            <div
+              style={{ width: "225px", height: "225px" }}
+              className="mt-2 mb-3"
+            >
+              <PieChart
+                data={{
+                  labels: ["Earned", "Spent"],
+                  values: [bankDetails.income, bankDetails.expense],
+                }}
+              />
+            </div>
+
+            <select
+              className="w-100 mt-0 mb-2 btn btn-sm border border-2 border-primary rounded"
+              onChange={handleChange}
+            >
+              <option value={"total"}>Total</option>
+              <option value={"oneWeek"}>1 week</option>
+              <option value={"twoWeek"}>2 week</option>
+              <option value={"oneMonth"}>1 month</option>
+              <option value={"threeMonth"}>3 months</option>
+              <option value={"sixMonth"}>6 months</option>
+              <option value={"oneYear"}>1 year</option>
+            </select>
+
             <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
 
             <h1>
