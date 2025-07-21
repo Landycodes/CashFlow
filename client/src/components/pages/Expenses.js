@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { getTransactionHistory } from "../../utils/API";
-import { userContext } from "../Content";
+import { userContext } from "../../App";
 
 export default function Expenses() {
   const [newCat, setCat] = useState(false);

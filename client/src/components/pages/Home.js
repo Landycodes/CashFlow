@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 // import Auth from "../../utils/auth";
 import { getAccountBalance, getTransactionHistory } from "../../utils/API";
-import { userContext } from "../Content";
+import { userContext } from "../../App";
 import PieChart from "../Piechart";
+import Loading from "../Loading";
 
 export default function Home() {
   //add a graph to show expense categories
@@ -13,6 +14,7 @@ export default function Home() {
     expense: null,
   });
   const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
+  const isNegativeBalance = bankDetails.expense > bankDetails.income;
   const user = useContext(userContext);
 
   useEffect(() => {
@@ -27,12 +29,18 @@ export default function Home() {
       getTransactionHistory(user.plaidAccessToken).then((data) => {
         setBankDetails((bd) => ({
           ...bd,
-          income: data
-            .filter((t) => t.amount < 0)
-            .reduce((sum, t) => sum + Math.abs(t.amount), 0),
-          expense: data
-            .filter((t) => t.amount > 0)
-            .reduce((sum, t) => sum + t.amount, 0),
+          income: parseFloat(
+            data
+              .filter((t) => t.amount < 0)
+              .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+              .toFixed(2)
+          ),
+          expense: parseFloat(
+            data
+              .filter((t) => t.amount > 0)
+              .reduce((sum, t) => sum + t.amount, 0)
+              .toFixed(2)
+          ),
         }));
       });
     }
@@ -111,7 +119,7 @@ export default function Home() {
 
   return (
     <div className="d-flex align-items-center justify-content-center mt-5">
-      {user.plaidAccessToken ? (
+      {user?.plaidAccessToken ? (
         haveBankDetails ? (
           <div className="d-flex flex-column align-items-center bg-light bg-gradient p-3 rounded border border-primary">
             <h1>
@@ -158,21 +166,18 @@ export default function Home() {
             <h1 className="text-center">
               Total:&nbsp;
               <span
-                className={
-                  bankDetails.income >= bankDetails.expense
-                    ? "text-success"
-                    : "text-danger"
-                }
+                className={isNegativeBalance ? "text-danger" : "text-success"}
               >
-                {bankDetails.income >= bankDetails.expense ? "" : "-"}$
+                {isNegativeBalance ? "-" : ""}$
                 {Math.abs(bankDetails.income - bankDetails.expense)}
               </span>
             </h1>
           </div>
         ) : (
-          <div className="bg-light bg-gradient p-3 rounded border border-primary">
-            <h4>Getting Bank Details...</h4>
-          </div>
+          // <div className="bg-light bg-gradient p-3 rounded border border-primary">
+          //   <h4>Getting Bank Details...</h4>
+          // </div>
+          <Loading message={"Getting Bank Details"} />
         )
       ) : (
         <div className="bg-light bg-gradient p-3 rounded border border-primary">

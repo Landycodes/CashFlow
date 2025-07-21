@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Auth from "../utils/auth";
-import { getMe } from "../utils/API";
-import { userContext } from "./Content";
+import { userContext } from "../App";
+import { useLocation, useNavigate } from "react-router-dom";
 
-export default function Navbar({ currentPage, changePage }) {
-  const user = useContext(userContext);
-  const [name, setName] = useState(user.username);
+export default function Navbar() {
+  const { user, setUser } = useContext(userContext);
+  const name = user?.username;
   const [time, setTime] = useState("Time");
   const [date, setDate] = useState("Date");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     clock();
@@ -47,7 +49,7 @@ export default function Navbar({ currentPage, changePage }) {
             <h6
               className="menu-btn dynamic-text"
               onClick={() => {
-                changePage("add");
+                navigate("/expenses");
               }}
             >
               Add
@@ -56,20 +58,20 @@ export default function Navbar({ currentPage, changePage }) {
             <h6
               className="menu-btn dynamic-text"
               onClick={() => {
-                if (currentPage === "home") {
-                  changePage("breakdown");
+                if (location.pathname === "/") {
+                  navigate("/breakdown");
                 } else {
-                  changePage("home");
+                  navigate("/");
                 }
               }}
             >
-              {currentPage === "home" ? "Breakdown" : "Dashboard"}
+              {location.pathname === "/" ? "Breakdown" : "Dashboard"}
             </h6>
             <span className="text-primary m-1 dynamic-text">/</span>
             <h6
               className="menu-btn dynamic-text"
               onClick={() => {
-                changePage("settings");
+                navigate("/settings");
               }}
             >
               Settings
@@ -78,7 +80,7 @@ export default function Navbar({ currentPage, changePage }) {
             <h6
               className="menu-btn dynamic-text"
               onClick={() => {
-                Auth.logout();
+                Auth.logout() && setUser(null);
               }}
             >
               Logout
@@ -86,70 +88,6 @@ export default function Navbar({ currentPage, changePage }) {
           </div>
         </span>
       </div>
-
-      {/* <p
-          className="btn m-3 mx-4 p-2 border border-primary rounded bg-light bg-gradient"
-          onClick={() => setMenu(!menu)}
-        >
-          menu
-        </p>
-
-      {menu ? (
-        <div className="menu border border-primary rounded-start h-50">
-          <ul className="list-unstyled bg-light bg-gradient rounded-start p-3 m-1 d-flex flex-column align-items-center">
-            <li>
-              <button
-                className="btn btn-success"
-                onClick={() => {
-                  changePage("add");
-                }}
-              >
-                Add Expense/Income
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  if (currentPage === "home") {
-                    changePage("breakdown");
-                  } else {
-                    changePage("home");
-                  }
-                  setMenu(false);
-                }}
-              >
-                {currentPage === "home" ? "Expense Breakdown" : "Dashboard"}
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-light border border-primary"
-                onClick={() => {
-                  changePage("settings");
-                  setMenu(false);
-                }}
-              >
-                Settings
-              </button>
-            </li>
-            <li>
-              <button
-                className="btn btn-danger"
-                onClick={() => {
-                  Auth.logout();
-                  setMenu(false);
-                  // changePage("login")
-                }}
-              >
-                Log Out
-              </button>
-            </li>
-          </ul>
-        </div>
-      ) : (
-        ""
-      )}*/}
     </nav>
   );
 }

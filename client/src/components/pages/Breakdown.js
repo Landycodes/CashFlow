@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import Auth from "../../utils/auth";
 import { getTransactionHistory } from "../../utils/API";
-import { userContext } from "../Content";
+import { userContext } from "../../App";
 
 export default function Breakdown() {
   //create function to iterate through expenses and income and add a row
@@ -26,11 +25,13 @@ export default function Breakdown() {
           updatedExpenseArr.some((obj) => obj.id === t.transaction_id);
 
         if (!exists) {
+          console.log(t);
           const newTransaction = {
             id: t.transaction_id,
             date: t.date,
             amount: t.amount,
-            category: t.category.toString().split(",").join(", "),
+            name: t.merchant_name ?? t.name,
+            category: t.category?.toString().split(",").join(", "),
           };
 
           if (t.amount < 0) {
@@ -47,20 +48,36 @@ export default function Breakdown() {
 
   return (
     <div className="d-flex flex-column align-items-center container table-responsive">
-      <input
+      {/* <input
         type="checkbox"
         checked={checked}
         onChange={() => {
           setCheck(!checked);
         }}
-      />
+      /> */}
+      <div>
+        <button
+          className={`btn rounded-0 ${checked ? "btn-light" : "btn-secondary"}`}
+          onClick={() => setCheck(true)}
+        >
+          Income
+        </button>
+        <button
+          className={`btn rounded-0 ${checked ? "btn-secondary" : "btn-light"}`}
+          onClick={() => setCheck(false)}
+        >
+          Expenses
+        </button>
+      </div>
+
       <table className="table table-sm align-middle table-striped table-bordered border-dark">
         <thead>
           <tr>
             <th>Date</th>
             <th>Amount</th>
+            <th>Name</th>
             <th>Category</th>
-            <th></th>
+            <th style={{ width: "150px" }}></th>
           </tr>
         </thead>
         <tbody>
@@ -70,8 +87,9 @@ export default function Breakdown() {
                   <tr key={row.id}>
                     <td>{row.date}</td>
                     <td>${Math.abs(row.amount)}</td>
+                    <td>{row.name}</td>
                     <td>{row.category}</td>
-                    <td className="w-25">
+                    <td style={{ width: "150px" }}>
                       <div className="d-flex justify-content-around">
                         <button className="btn btn-sm btn-secondary">
                           Edit
@@ -89,8 +107,9 @@ export default function Breakdown() {
                   <tr key={row.id}>
                     <td>{row.date}</td>
                     <td>${row.amount}</td>
+                    <td>{row.name}</td>
                     <td>{row.category}</td>
-                    <td className="w-25">
+                    <td style={{ width: "150px" }}>
                       <div className="d-flex justify-content-around">
                         <button className="btn btn-sm btn-secondary">
                           Edit

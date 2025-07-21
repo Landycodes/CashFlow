@@ -1,17 +1,15 @@
 import React, { useEffect, useState, useContext } from "react";
 import { usePlaidLink } from "react-plaid-link";
-import Auth from "../../utils/auth";
 import {
   createPlaidLinkToken,
   exchangeAndSavePlaidToken,
 } from "../../utils/API";
-import { userContext } from "../Content";
+import { userContext } from "../../App";
 
-export default function Settings(/* { user } */) {
+export default function Settings() {
   const [linkToken, setLinkToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const user = useContext(userContext);
-  // const [user_id, setUser_id] = useState("");
 
   // Fetch link token from backend
   const createLinkToken = async () => {
@@ -29,6 +27,7 @@ export default function Settings(/* { user } */) {
     token: linkToken,
     onSuccess: async (public_token) => {
       await exchangeAndSavePlaidToken(public_token, user._id);
+      window.location.reload();
     },
     onExit: () => {
       setLinkToken(null);

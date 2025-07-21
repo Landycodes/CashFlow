@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { createUser, loginUser, googleLogin } from "../../utils/API";
 import Auth from "../../utils/auth";
+import anime from "animejs";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { userContext } from "../../App";
+import { createUser, loginUser, googleLogin } from "../../utils/API";
 import {
   fireAuth,
   provider,
@@ -8,13 +12,15 @@ import {
   getRedirectResult,
   signInWithPopup,
 } from "../../utils/firebaseConfig";
-import anime from "animejs";
+import auth from "../../utils/auth";
 
-export default function Login({ changePage }) {
+export default function Login() {
   //add firebase signin with google
   const [login, setlogin] = useState(true);
   const [error, setError] = useState("");
   const [form, setForm] = useState({});
+  const navigate = useNavigate();
+  const { setUser } = useContext(userContext);
 
   useEffect(() => {
     // handleRedirect();
@@ -64,8 +70,12 @@ export default function Login({ changePage }) {
       if (data.status !== 500) {
         data.json().then((user) => {
           if (success) {
+            // console.log("logging in");
             Auth.login(user.token);
-            changePage("home");
+            setUser(user.user);
+            navigate("/", {
+              replace: true,
+            });
           } else {
             setError(user.message);
             document.querySelectorAll("input").forEach((input) => {
