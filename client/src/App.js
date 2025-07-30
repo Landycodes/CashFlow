@@ -11,11 +11,12 @@ import {
 import auth from "./utils/auth";
 import Login from "./components/pages/Login";
 import Navbar from "./components/Navbar";
-import Home from "./components/pages/Home";
 import Settings from "./components/pages/Settings";
 import Loading from "./components/Loading";
 import Expenses from "./components/pages/Expenses";
 import Breakdown from "./components/pages/Breakdown";
+import Footer from "./components/Footer";
+import Dashboard from "./components/pages/Dashboard";
 
 export const userContext = createContext(null);
 
@@ -40,47 +41,50 @@ function AppRouter({
   };
 
   return (
-    <div className="backgroundImage">
+    <div className="backgroundImage d-flex flex-column min-vh-100">
       {loggedIn && <Navbar />}
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedRoutes loggedIn={loggedIn}>
-              <Home />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/login"
-          element={loggedIn ? <Navigate to="/" replace /> : <Login />}
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoutes loggedIn={loggedIn}>
-              <Settings />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/expenses"
-          element={
-            <ProtectedRoutes loggedIn={loggedIn}>
-              <Expenses />
-            </ProtectedRoutes>
-          }
-        />
-        <Route
-          path="/breakdown"
-          element={
-            <ProtectedRoutes loggedIn={loggedIn}>
-              <Breakdown />
-            </ProtectedRoutes>
-          }
-        />
-        <Route path="*" element={<h1> Oopsie, We're Lost ;) </h1>} />
-      </Routes>
+      <main className="flex-grow-1">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <ProtectedRoutes loggedIn={loggedIn}>
+                <Dashboard />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/login"
+            element={loggedIn ? <Navigate to="/" replace /> : <Login />}
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoutes loggedIn={loggedIn}>
+                <Settings />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/expenses"
+            element={
+              <ProtectedRoutes loggedIn={loggedIn}>
+                <Expenses />
+              </ProtectedRoutes>
+            }
+          />
+          <Route
+            path="/breakdown"
+            element={
+              <ProtectedRoutes loggedIn={loggedIn}>
+                <Breakdown />
+              </ProtectedRoutes>
+            }
+          />
+          <Route path="*" element={<h1> Oopsie, We're Lost ;) </h1>} />
+        </Routes>
+      </main>
+      {loggedIn && <Footer />}
     </div>
   );
 }

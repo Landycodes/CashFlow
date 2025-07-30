@@ -32,6 +32,9 @@
   margin: 0;
   cursor: pointer;
 }
+.menu-btn:hover {
+  background-color: gainsboro;
+}
 
 .dynamic-text {
   text-wrap: nowrap;

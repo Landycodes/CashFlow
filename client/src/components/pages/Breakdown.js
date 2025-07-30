@@ -8,7 +8,8 @@ export default function Breakdown() {
   const [checked, setCheck] = useState(true);
   const [inArray, setInArray] = useState([]);
   const [exArray, setExArray] = useState([]);
-  const user = useContext(userContext);
+  const userObject = useContext(userContext);
+  const user = userObject.user;
 
   useEffect(() => {
     if (!user) {

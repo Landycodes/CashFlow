@@ -36,56 +36,57 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-100 d-flex justify-content-end">
+    <nav className="w-100 d-flex justify-content-end bg-light">
       <div className="d-flex justify-content-between w-100">
-        <span className="m-2">
-          <h6 className="dynamic-text bg-light border border-primary border-2 rounded p-1">
+        <span className="mx-2 d-flex flex-row border border-top-0 border-bottom-0 border-2 border-secondary">
+          <h6 className="bg-light p-2 pt-3 mx-1">{name}</h6>
+          <h6 className="bg-light p-2 pt-3 mx-1">{time}</h6>
+          <h6 className="bg-light p-2 pt-3 mx-1">{date}</h6>
+          {/* <h6 className="dynamic-text bg-secondary p-1">
             {name} <span className="text-primary">|</span> {time}{" "}
             <span className="text-primary">|</span> {date}
-          </h6>
+          </h6> */}
         </span>
-        <span className="m-2">
-          <div className="dynamic-text menu-container d-flex  bg-light border border-primary border-2 rounded p-1 ps-1 pe-1">
-            <h6
-              className="menu-btn dynamic-text"
-              onClick={() => {
-                navigate("/expenses");
-              }}
-            >
-              Add
-            </h6>
-            <span className="text-primary m-1 dynamic-text">/</span>
-            <h6
-              className="menu-btn dynamic-text"
-              onClick={() => {
-                if (location.pathname === "/") {
-                  navigate("/breakdown");
-                } else {
-                  navigate("/");
-                }
-              }}
-            >
-              {location.pathname === "/" ? "Breakdown" : "Dashboard"}
-            </h6>
-            <span className="text-primary m-1 dynamic-text">/</span>
-            <h6
-              className="menu-btn dynamic-text"
-              onClick={() => {
-                navigate("/settings");
-              }}
-            >
-              Settings
-            </h6>
-            <span className="text-primary m-1 dynamic-text">/</span>
-            <h6
-              className="menu-btn dynamic-text"
-              onClick={() => {
-                Auth.logout() && setUser(null);
-              }}
-            >
-              Logout
-            </h6>
-          </div>
+        <span className="d-flex flex-row mx-2">
+          {/* <div className="dynamic-text menu-container d-flex flex-row mx-2"> */}
+          <h6
+            className="menu-btn p-3 pt-3 border-start border-secondary"
+            onClick={() => navigate("/expenses")}
+          >
+            Expenses
+          </h6>
+          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
+          <h6
+            className="menu-btn p-3 pt-3 border-start border-secondary"
+            onClick={() => {
+              if (location.pathname === "/") {
+                navigate("/breakdown");
+              } else {
+                navigate("/");
+              }
+            }}
+          >
+            {location.pathname === "/" ? "Breakdown" : "Dashboard"}
+          </h6>
+          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
+          <h6
+            className="menu-btn p-3 pt-3 border-start border-secondary"
+            onClick={() => {
+              navigate("/settings");
+            }}
+          >
+            Settings
+          </h6>
+          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
+          <h6
+            className="menu-btn p-3 pt-3 border-start border-end border-secondary"
+            onClick={() => {
+              Auth.logout() && setUser(null);
+            }}
+          >
+            Logout
+          </h6>
+          {/* </div> */}
         </span>
       </div>
     </nav>

@@ -5,7 +5,7 @@ import { userContext } from "../../App";
 import PieChart from "../Piechart";
 import Loading from "../Loading";
 
-export default function Home() {
+export default function Dashboard() {
   //add a graph to show expense categories
   const [range, setRange] = useState("total");
   const [bankDetails, setBankDetails] = useState({
@@ -15,7 +15,8 @@ export default function Home() {
   });
   const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
   const isNegativeBalance = bankDetails.expense > bankDetails.income;
-  const user = useContext(userContext);
+  const userObject = useContext(userContext);
+  const user = userObject.user;
 
   useEffect(() => {
     // console.log(user);
@@ -185,8 +186,13 @@ export default function Home() {
             <b>Welcome to CashFlow</b>
           </h4>
           <p>
-            To get started, head over to the <strong>Settings</strong> tab and
-            securely link your bank account using Plaid.
+            To get started, head over to the{" "}
+            <strong>
+              <a className="text-decoration-none text-dark" href="/settings">
+                Settings
+              </a>
+            </strong>{" "}
+            tab and securely link your bank account using Plaid.
           </p>
         </div>
       )}

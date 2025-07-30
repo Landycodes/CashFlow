@@ -1,15 +1,18 @@
 import React, { useEffect, useState, useContext } from "react";
 import { usePlaidLink } from "react-plaid-link";
+import { useNavigate } from "react-router-dom";
+import { userContext } from "../../App";
 import {
   createPlaidLinkToken,
   exchangeAndSavePlaidToken,
 } from "../../utils/API";
-import { userContext } from "../../App";
 
 export default function Settings() {
   const [linkToken, setLinkToken] = useState(null);
   const [loading, setLoading] = useState(false);
-  const user = useContext(userContext);
+  const userObject = useContext(userContext);
+  const user = userObject.user;
+  const navigate = useNavigate();
 
   // Fetch link token from backend
   const createLinkToken = async () => {
@@ -27,11 +30,12 @@ export default function Settings() {
     token: linkToken,
     onSuccess: async (public_token) => {
       await exchangeAndSavePlaidToken(public_token, user._id);
-      window.location.reload();
+      navigate("/");
     },
     onExit: () => {
       setLinkToken(null);
       setLoading(false);
+      // navigate("/");
     },
   });
 

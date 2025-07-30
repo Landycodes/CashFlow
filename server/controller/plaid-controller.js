@@ -82,9 +82,9 @@ module.exports = {
       const { accessToken } = req.body;
       const response = await client.transactionsGet({
         access_token: accessToken,
-        start_date: "2024-01-01", // Adjust date range
+        start_date: "2025-01-01", // Adjust date range
         end_date: new Date().toISOString().split("T")[0],
-        options: { count: 10, offset: 0 },
+        options: { count: 50, offset: 0 },
       });
       res.json(response.data.transactions);
     } catch (error) {
