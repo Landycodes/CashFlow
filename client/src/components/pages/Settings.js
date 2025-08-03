@@ -1,17 +1,17 @@
-import React, { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
 import {
   createPlaidLinkToken,
   exchangeAndSavePlaidToken,
+  updateUser,
 } from "../../utils/API";
 
 export default function Settings() {
   const [linkToken, setLinkToken] = useState(null);
   const [loading, setLoading] = useState(false);
-  const userObject = useContext(userContext);
-  const user = userObject.user;
+  const { user, setUser } = useContext(userContext);
   const navigate = useNavigate();
 
   // Fetch link token from backend
@@ -35,7 +35,6 @@ export default function Settings() {
     onExit: () => {
       setLinkToken(null);
       setLoading(false);
-      // navigate("/");
     },
   });
 
@@ -59,15 +58,32 @@ export default function Settings() {
           <h2 className="text-center">Settings</h2>
         </div>
         <ul className="list-unstyled list-group mt-3">
-          <li
-            className={`list-group-item list-group-item-action ${
-              loading ? "disabled" : ""
-            }`}
-            style={{ cursor: "pointer" }}
-            onClick={handlePlaidLink}
-          >
-            Link Bank Account
-          </li>
+          {user?.plaidAccessToken ? (
+            <li
+              className={`list-group-item list-group-item-action btn border ${
+                loading ? "disabled" : ""
+              }`}
+              onClick={async () => {
+                const removedTokenUser = await updateUser(
+                  user._id,
+                  "plaidAccessToken",
+                  ""
+                );
+                setUser(removedTokenUser);
+              }}
+            >
+              UnLink Bank Account
+            </li>
+          ) : (
+            <li
+              className={`list-group-item list-group-item-action btn border ${
+                loading ? "disabled" : ""
+              }`}
+              onClick={handlePlaidLink}
+            >
+              Link Bank Account
+            </li>
+          )}
         </ul>
       </div>
     </div>

@@ -62,15 +62,19 @@ module.exports = {
     }
   },
   async getAccountBalance(req, res) {
+    const { accessToken } = req.body;
     try {
-      const { accessToken } = req.body;
       const response = await client.accountsBalanceGet({
         access_token: accessToken,
       });
       res.json(response.data.accounts);
     } catch (error) {
       console.error(error);
-      if (error && typeof error.status === "number") {
+      // if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
+      //   await User.updateOne({ _id: id }, { $unset: { plaidAccessToken: "" } });
+      //   error = error.response.data.error_code;
+      // }
+      if (typeof error?.status === "number") {
         res.status(error.status).json({ error });
       } else {
         res.status(500).json({ error: "Failed to connect to plaid server" });
@@ -78,8 +82,8 @@ module.exports = {
     }
   },
   async getTransactionHistory(req, res) {
+    const { accessToken } = req.body;
     try {
-      const { accessToken } = req.body;
       const response = await client.transactionsGet({
         access_token: accessToken,
         start_date: "2025-01-01", // Adjust date range
@@ -89,7 +93,28 @@ module.exports = {
       res.json(response.data.transactions);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Failed to fetch transactions" });
+      // if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
+      //   await User.updateOne({ _id: id }, { $unset: { plaidAccessToken: "" } });
+      // }
+      if (typeof error?.status === "number") {
+        res.status(error.status).json({ error });
+      } else {
+        res.status(500).json({ error: "Failed to fetch transactions" });
+      }
     }
   },
+  // async removeAccessToken(req, res) {
+  //   try {
+  //     const { id } = req.body;
+  //     const user = await User.updateOne(
+  //       { _id: id },
+  //       { $unset: { plaidAccessToken: "" } }
+  //     );
+  //     console.log(user);
+  //     res.status(200).json(user);
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(400).json({ error: "Unable to remove access token" });
+  //   }
+  // },
 };

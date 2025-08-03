@@ -1,4 +1,3 @@
-// route to get logged in user's info (needs the token)
 export const getMe = (token) => {
   return fetch("/api/me", {
     headers: {
@@ -32,6 +31,14 @@ export const loginUser = (userData) => {
   });
 };
 
+export const updateUser = (user_id, key, value) => {
+  return fetch(`/api/update/${user_id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ [key]: value }),
+  }).then((response) => response.json());
+};
+
 export const googleLogin = (results) => {
   return fetch("/api/firebase/googlesignin", {
     method: "POST",
@@ -58,11 +65,12 @@ export const exchangeAndSavePlaidToken = async (public_token, user_id) => {
       body: JSON.stringify({ public_token }),
     }).then((res) => res.json());
 
-    return await fetch(`/api/update/${user_id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plaidAccessToken: exchangedToken.accessToken }),
-    });
+    return updateUser(user_id, "plaidAccessToken", exchangedToken.accessToken);
+    // return await fetch(`/api/update/${user_id}`, {
+    //   method: "PUT",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ plaidAccessToken: exchangedToken.accessToken }),
+    // });
   } catch (error) {
     return error;
   }

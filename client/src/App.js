@@ -31,7 +31,7 @@ function AppRouter({
 
   useEffect(() => {
     checkProfileState();
-  }, [location]);
+  }, [location.pathname]);
 
   const ProtectedRoutes = ({ loggedIn, children }) => {
     if (!loggedIn) {
@@ -95,7 +95,7 @@ function App() {
 
   const checkProfileState = async () => {
     setLoggedIn(auth.loggedIn());
-    if (loggedIn && !user) {
+    if (loggedIn) {
       try {
         // console.log("getting user");
         const token = auth.getToken();
@@ -105,7 +105,6 @@ function App() {
         console.error("Error creating user props", error);
       }
     }
-
     // console.log(location);
     // console.log(user);
     // console.log(loggedIn);

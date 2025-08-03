@@ -6,113 +6,61 @@ import PieChart from "../Piechart";
 import Loading from "../Loading";
 
 export default function Dashboard() {
-  //add a graph to show expense categories
+  const { user, setUser } = useContext(userContext);
+  // const user = userObject.user;
+
   const [range, setRange] = useState("total");
   const [bankDetails, setBankDetails] = useState({
     balance: null,
     income: null,
     expense: null,
   });
+
   const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
   const isNegativeBalance = bankDetails.expense > bankDetails.income;
-  const userObject = useContext(userContext);
-  const user = userObject.user;
 
   useEffect(() => {
-    // console.log(user);
-    if (user && user.plaidAccessToken) {
-      getAccountBalance(user.plaidAccessToken).then((data) => {
-        setBankDetails((bd) => ({
-          ...bd,
-          balance: data[0].balances.available,
-        }));
-      });
-      getTransactionHistory(user.plaidAccessToken).then((data) => {
-        setBankDetails((bd) => ({
-          ...bd,
-          income: parseFloat(
-            data
-              .filter((t) => t.amount < 0)
-              .reduce((sum, t) => sum + Math.abs(t.amount), 0)
-              .toFixed(2)
-          ),
-          expense: parseFloat(
-            data
-              .filter((t) => t.amount > 0)
-              .reduce((sum, t) => sum + t.amount, 0)
-              .toFixed(2)
-          ),
-        }));
-      });
-    }
+    getBalance();
+    getTransactions();
   }, []);
 
-  // console.log(user.plaidAccessToken);
+  const getBalance = () => {
+    if (user?.plaidAccessToken) {
+      getAccountBalance(user.plaidAccessToken).then((data) => {
+        if (!data.error) {
+          setBankDetails((bd) => ({
+            ...bd,
+            balance: data[0].balances.available,
+          }));
+        }
+      });
+    }
+  };
 
-  // useEffect(() => {
-  //   // console.log(user);
-  //   if (Auth.loggedIn()) {
-  //     const token = Auth.getToken();
-  //     getMe(token).then((data) => {
-  //       if (data.ok) {
-  //         data.json().then((userData) => {
-  //           getAccountBalance(userData.plaidAccessToken).then((res) => {
-  //             setIncome(res[0].balances.available);
-  //             // console.log(res);
-  //           });
-  //         });
-  //       }
-  //     });
-  //   }
-  // }, []);
-
-  // const getUser = async () => {
-  //   if (Auth.loggedIn()) {
-  //     const token = Auth.getToken();
-  //     await getMe(token).then((data) => {
-  //       if (data.ok) {
-  //         data.json().then((res) => {
-  //           switch (range) {
-  //             case "total":
-  //               setIncome(res.Totalincome);
-  //               setexpense(res.Totalexpense);
-  //               break;
-  //             case "oneWeek":
-  //               setIncome(res.oneWeek.income);
-  //               setexpense(res.oneWeek.expense);
-  //               break;
-  //             case "twoWeek":
-  //               setIncome(res.twoWeek.income);
-  //               setexpense(res.twoWeek.expense);
-  //               break;
-  //             case "oneMonth":
-  //               setIncome(res.oneMonth.income);
-  //               setexpense(res.oneMonth.expense);
-  //               break;
-  //             case "threeMonth":
-  //               setIncome(res.threeMonth.income);
-  //               setexpense(res.threeMonth.expense);
-  //               break;
-  //             case "sixMonth":
-  //               setIncome(res.sixMonth.income);
-  //               setexpense(res.sixMonth.expense);
-  //               break;
-  //             case "oneYear":
-  //               setIncome(res.oneYear.income);
-  //               setexpense(res.oneYear.expense);
-  //               break;
-  //             default:
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   getUser();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [range]);
+  const getTransactions = () => {
+    if (user?.plaidAccessToken) {
+      getTransactionHistory(user.plaidAccessToken).then((data) => {
+        console.log(data);
+        if (!data.error) {
+          setBankDetails((bd) => ({
+            ...bd,
+            income: parseFloat(
+              data
+                .filter((t) => t.amount < 0)
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0)
+                .toFixed(2)
+            ),
+            expense: parseFloat(
+              data
+                .filter((t) => t.amount > 0)
+                .reduce((sum, t) => sum + t.amount, 0)
+                .toFixed(2)
+            ),
+          }));
+        }
+      });
+    }
+  };
 
   const handleChange = (event) => {
     setRange(event.target.value);
@@ -175,9 +123,6 @@ export default function Dashboard() {
             </h1>
           </div>
         ) : (
-          // <div className="bg-light bg-gradient p-3 rounded border border-primary">
-          //   <h4>Getting Bank Details...</h4>
-          // </div>
           <Loading message={"Getting Bank Details"} />
         )
       ) : (
