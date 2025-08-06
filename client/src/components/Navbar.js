@@ -42,20 +42,14 @@ export default function Navbar() {
           <h6 className="bg-light p-2 pt-3 mx-1">{name}</h6>
           <h6 className="bg-light p-2 pt-3 mx-1">{time}</h6>
           <h6 className="bg-light p-2 pt-3 mx-1">{date}</h6>
-          {/* <h6 className="dynamic-text bg-secondary p-1">
-            {name} <span className="text-primary">|</span> {time}{" "}
-            <span className="text-primary">|</span> {date}
-          </h6> */}
         </span>
         <span className="d-flex flex-row mx-2">
-          {/* <div className="dynamic-text menu-container d-flex flex-row mx-2"> */}
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
             onClick={() => navigate("/expenses")}
           >
             Expenses
           </h6>
-          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
             onClick={() => {

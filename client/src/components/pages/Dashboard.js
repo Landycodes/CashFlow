@@ -1,12 +1,18 @@
 import React, { useEffect, useState, useContext } from "react";
 // import Auth from "../../utils/auth";
-import { getAccountBalance, getTransactionHistory } from "../../utils/API";
+import {
+  getAccountBalance,
+  getTransactionHistory,
+  updateUser,
+} from "../../utils/API";
 import { userContext } from "../../App";
 import PieChart from "../Piechart";
 import Loading from "../Loading";
+import { PlaidPopUp } from "../../utils/Plaid";
 
 export default function Dashboard() {
   const { user, setUser } = useContext(userContext);
+  const { openPlaidPopUp } = PlaidPopUp(user._id);
   // const user = userObject.user;
 
   const [range, setRange] = useState("total");
@@ -20,6 +26,9 @@ export default function Dashboard() {
   const isNegativeBalance = bankDetails.expense > bankDetails.income;
 
   useEffect(() => {
+    if (!user?.plaidAccessToken) {
+      openPlaidPopUp();
+    }
     getBalance();
     getTransactions();
   }, []);
@@ -32,6 +41,9 @@ export default function Dashboard() {
             ...bd,
             balance: data[0].balances.available,
           }));
+        } else if (data.error.message === "INVALID_ACCESS_TOKEN") {
+          const removeToken = updateUser(user._id, "plaidAccessToken", "");
+          setUser(removeToken);
         }
       });
     }
@@ -57,6 +69,9 @@ export default function Dashboard() {
                 .toFixed(2)
             ),
           }));
+        } else if (data.error.message === "INVALID_ACCESS_TOKEN") {
+          const removeToken = updateUser(user._id, "plaidAccessToken", "");
+          setUser(removeToken);
         }
       });
     }

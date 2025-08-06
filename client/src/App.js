@@ -40,6 +40,13 @@ function AppRouter({
     return children;
   };
 
+  const PlaidProtectedRoute = ({ children }) => {
+    if (!user?.plaidAccessToken) {
+      return <Navigate to="/" replace />;
+    }
+    return children;
+  };
+
   return (
     <div className="backgroundImage d-flex flex-column min-vh-100">
       {loggedIn && <Navbar />}
@@ -69,7 +76,9 @@ function AppRouter({
             path="/expenses"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Expenses />
+                <PlaidProtectedRoute>
+                  <Expenses />
+                </PlaidProtectedRoute>
               </ProtectedRoutes>
             }
           />
@@ -77,7 +86,9 @@ function AppRouter({
             path="/breakdown"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Breakdown />
+                <PlaidProtectedRoute>
+                  <Breakdown />
+                </PlaidProtectedRoute>
               </ProtectedRoutes>
             }
           />

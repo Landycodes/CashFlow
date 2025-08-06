@@ -70,10 +70,9 @@ module.exports = {
       res.json(response.data.accounts);
     } catch (error) {
       console.error(error);
-      // if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
-      //   await User.updateOne({ _id: id }, { $unset: { plaidAccessToken: "" } });
-      //   error = error.response.data.error_code;
-      // }
+      if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
+        error.message = "INVALID_ACCESS_TOKEN";
+      }
       if (typeof error?.status === "number") {
         res.status(error.status).json({ error });
       } else {
@@ -93,9 +92,9 @@ module.exports = {
       res.json(response.data.transactions);
     } catch (error) {
       console.error(error);
-      // if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
-      //   await User.updateOne({ _id: id }, { $unset: { plaidAccessToken: "" } });
-      // }
+      if (error?.response?.data?.error_code === "INVALID_ACCESS_TOKEN") {
+        error.message = "INVALID_ACCESS_TOKEN";
+      }
       if (typeof error?.status === "number") {
         res.status(error.status).json({ error });
       } else {
@@ -103,18 +102,4 @@ module.exports = {
       }
     }
   },
-  // async removeAccessToken(req, res) {
-  //   try {
-  //     const { id } = req.body;
-  //     const user = await User.updateOne(
-  //       { _id: id },
-  //       { $unset: { plaidAccessToken: "" } }
-  //     );
-  //     console.log(user);
-  //     res.status(200).json(user);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(400).json({ error: "Unable to remove access token" });
-  //   }
-  // },
 };

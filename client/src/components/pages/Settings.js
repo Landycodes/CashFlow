@@ -7,49 +7,37 @@ import {
   exchangeAndSavePlaidToken,
   updateUser,
 } from "../../utils/API";
-
+import { PlaidPopUp } from "../../utils/Plaid";
 export default function Settings() {
-  const [linkToken, setLinkToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const { user, setUser } = useContext(userContext);
+  const { openPlaidPopUp } = PlaidPopUp(user._id);
   const navigate = useNavigate();
 
-  // Fetch link token from backend
-  const createLinkToken = async () => {
+  const handlePlaidLink = () => {
     try {
-      const response = await createPlaidLinkToken(user._id);
-      // setUser_id(user._id);
-      setLinkToken(response.link_token);
-    } catch (error) {
-      console.error("Error creating Plaid link token:", error);
-    }
-  };
-
-  // Initialize Plaid Link when the token is available
-  const { open, ready } = usePlaidLink({
-    token: linkToken,
-    onSuccess: async (public_token) => {
-      await exchangeAndSavePlaidToken(public_token, user._id);
-      navigate("/");
-    },
-    onExit: () => {
-      setLinkToken(null);
-      setLoading(false);
-    },
-  });
-
-  const handlePlaidLink = async () => {
-    if (!linkToken) {
       setLoading(true);
-      await createLinkToken();
+      openPlaidPopUp();
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (linkToken && ready && user) {
-      open();
+  const handleRemovePlaidLink = async () => {
+    try {
+      const removedTokenUser = await updateUser(
+        user._id,
+        "plaidAccessToken",
+        ""
+      );
+      setUser(removedTokenUser);
+    } catch (error) {
+      console.log(error);
     }
-  }, [linkToken, ready, open, user]);
+  };
 
   return (
     <div className="d-flex align-items-center justify-content-center mt-5">
@@ -63,14 +51,7 @@ export default function Settings() {
               className={`list-group-item list-group-item-action btn border ${
                 loading ? "disabled" : ""
               }`}
-              onClick={async () => {
-                const removedTokenUser = await updateUser(
-                  user._id,
-                  "plaidAccessToken",
-                  ""
-                );
-                setUser(removedTokenUser);
-              }}
+              onClick={handleRemovePlaidLink}
             >
               UnLink Bank Account
             </li>
