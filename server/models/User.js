@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
+const accountSchema = require("./Account");
 const incomeSchema = require("./Income");
 const expenseSchema = require("./Expense");
 
@@ -25,9 +26,13 @@ const userSchema = new Schema(
     plaidAccessToken: {
       type: String,
     },
+    accounts: [accountSchema],
     categories: [],
     income: [incomeSchema],
     expense: [expenseSchema],
+    lastUpdated: {
+      type: Date,
+    },
   },
   //   set this to use virtual below
   {

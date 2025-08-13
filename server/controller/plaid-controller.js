@@ -67,6 +67,13 @@ module.exports = {
       const response = await client.accountsBalanceGet({
         access_token: accessToken,
       });
+      // console.log(response.data.accounts);
+      // const bankData = response.data.accounts;
+
+      // bankData.forEach((bd) => {
+      //   console.log(bd.name, bd.account_id, bd.balances.available, "|");
+      // });
+
       res.json(response.data.accounts);
     } catch (error) {
       console.error(error);
@@ -100,6 +107,82 @@ module.exports = {
       } else {
         res.status(500).json({ error: "Failed to fetch transactions" });
       }
+    }
+  },
+  // TODO: get balance info create object for account field, get transaction details and create object for income/expense fields, update both to user by id
+  async fetchAccountData(req, res) {
+    const { id, accessToken } = req.body;
+
+    try {
+      const balanceRes = await client.accountsBalanceGet({
+        access_token: accessToken,
+      });
+
+      const balanceData = balanceRes.data.accounts;
+      let accountValues = [];
+
+      balanceData.forEach((bd) => {
+        accountValues.push({
+          name: bd.name,
+          account_id: bd.account_id,
+          available_balance: bd.balances.available,
+        });
+      });
+
+      const transactionRes = await client.transactionsGet({
+        access_token: accessToken,
+        start_date: "2025-01-01", // Adjust date range
+        end_date: new Date().toISOString().split("T")[0],
+        options: { count: 50, offset: 0 },
+      });
+      // console.log(transactionRes.data.transactions);
+      const transactions = transactionRes.data.transactions;
+      let incomeValues = [];
+      let expenseValues = [];
+
+      transactions.forEach((tv) => {
+        // console.log(tv);
+        if (tv.amount < 0) {
+          incomeValues.push({
+            name: tv.name,
+            account_id: tv.account_id,
+            date: tv.date,
+            amount: tv.amount,
+          });
+        } else {
+          expenseValues.push({
+            name: tv.name,
+            account_id: tv.account_id,
+            date: tv.date,
+            amount: tv.amount,
+          });
+        }
+      });
+
+      const updatedAccount = await User.findByIdAndUpdate(
+        id,
+        {
+          accounts: accountValues,
+          income: incomeValues,
+          expense: expenseValues,
+          lastUpdated: new Date().toISOString().split("T")[0],
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!updatedAccount) {
+        return res
+          .status(404)
+          .json({ message: "User not found, Unable to update accounts." });
+      }
+
+      res.json(updatedAccount);
+    } catch (error) {
+      console.error(error);
+      res.status(400);
     }
   },
 };

@@ -18,7 +18,6 @@ export default function Settings() {
     try {
       setLoading(true);
       openPlaidPopUp();
-      navigate("/");
     } catch (error) {
       console.log(error);
     } finally {

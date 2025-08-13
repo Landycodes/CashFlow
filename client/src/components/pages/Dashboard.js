@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 // import Auth from "../../utils/auth";
 import {
+  fetchAccountData,
   getAccountBalance,
   getTransactionHistory,
   updateUser,
@@ -28,14 +29,17 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
+    } else {
+      fetchAccountData(user._id, user.plaidAccessToken);
     }
-    getBalance();
-    getTransactions();
+    // getBalance();
+    // getTransactions();
   }, []);
 
   const getBalance = () => {
     if (user?.plaidAccessToken) {
       getAccountBalance(user.plaidAccessToken).then((data) => {
+        console.log(data);
         if (!data.error) {
           setBankDetails((bd) => ({
             ...bd,

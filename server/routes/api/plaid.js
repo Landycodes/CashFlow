@@ -4,13 +4,13 @@ const {
   exchange_PublicToken,
   getAccountBalance,
   getTransactionHistory,
-  // removeAccessToken,
+  fetchAccountData,
 } = require("../../controller/plaid-controller");
 
 router.route("/create_link_token").post(create_link_token);
 router.route("/exchange_PublicToken").post(exchange_PublicToken);
 router.route("/getAccountBalance").post(getAccountBalance);
 router.route("/getTransactionHistory").post(getTransactionHistory);
-// router.route("/removeaccesstoken").post(removeAccessToken);
+router.route("/fetchAccountData").post(fetchAccountData);
 
 module.exports = router;

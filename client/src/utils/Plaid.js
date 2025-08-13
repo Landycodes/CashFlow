@@ -11,6 +11,7 @@ export function PlaidPopUp(
 ) {
   const [linkToken, setLinkToken] = useState(null);
   const { user, setUser } = useContext(userContext);
+  const navigate = useNavigate();
 
   const createLinkToken = async () => {
     try {
@@ -28,6 +29,7 @@ export function PlaidPopUp(
       try {
         const updatedUser = await exchangeAndSavePlaidToken(public_token, id);
         setUser(updatedUser);
+        navigate("/");
         // onSuccessCallback();
       } catch (error) {
         onErrorCallback(error);
@@ -51,4 +53,8 @@ export function PlaidPopUp(
   }, [linkToken, ready, open]);
 
   return { openPlaidPopUp };
+}
+
+export function fetchPlaidData(access_token) {
+// TODO set up get balance and get transaction here to store the bank details to the user if last updated is null or greater then 6 hours from now
 }

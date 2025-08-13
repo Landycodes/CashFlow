@@ -52,17 +52,16 @@ export default function Navbar() {
           </h6>
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
-            onClick={() => {
-              if (location.pathname === "/") {
-                navigate("/breakdown");
-              } else {
-                navigate("/");
-              }
-            }}
+            onClick={() => navigate("/breakdown")}
           >
-            {location.pathname === "/" ? "Breakdown" : "Dashboard"}
+            Breakdown
           </h6>
-          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
+          <h6
+            className="menu-btn p-3 pt-3 border-start border-secondary"
+            onClick={() => navigate("/")}
+          >
+            Dashboard
+          </h6>
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
             onClick={() => {
@@ -71,7 +70,6 @@ export default function Navbar() {
           >
             Settings
           </h6>
-          {/* <span className="text-primary m-1 dynamic-text">/</span> */}
           <h6
             className="menu-btn p-3 pt-3 border-start border-end border-secondary"
             onClick={() => {

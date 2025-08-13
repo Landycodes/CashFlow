@@ -66,11 +66,6 @@ export const exchangeAndSavePlaidToken = async (public_token, user_id) => {
     }).then((res) => res.json());
 
     return updateUser(user_id, "plaidAccessToken", exchangedToken.accessToken);
-    // return await fetch(`/api/update/${user_id}`, {
-    //   method: "PUT",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ plaidAccessToken: exchangedToken.accessToken }),
-    // });
   } catch (error) {
     return error;
   }
@@ -89,6 +84,14 @@ export const getTransactionHistory = (accessToken) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ accessToken: accessToken }),
+  }).then((response) => response.json());
+};
+
+export const fetchAccountData = (id, accessToken) => {
+  return fetch("/api/plaid/fetchAccountData", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: id, accessToken: accessToken }),
   }).then((response) => response.json());
 };
 
