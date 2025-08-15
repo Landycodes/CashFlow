@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import "./App.css";
-import { getMe } from "./utils/API";
+import { fetchAccountData, getMe } from "./utils/API";
 import {
   BrowserRouter as Router,
   Routes,
@@ -18,7 +18,7 @@ import Breakdown from "./components/pages/Breakdown";
 import Footer from "./components/Footer";
 import Dashboard from "./components/pages/Dashboard";
 
-export const userContext = createContext(null);
+export const userContext = createContext();
 
 function AppRouter({
   user,
@@ -104,6 +104,11 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(auth.loggedIn());
 
+  // set default account to the first one stored in user accounts
+  if (localStorage.getItem("current_Account") === null) {
+    localStorage.setItem("current_Account", "0");
+  }
+
   const checkProfileState = async () => {
     setLoggedIn(auth.loggedIn());
     if (loggedIn) {
@@ -111,6 +116,10 @@ function App() {
         const token = auth.getToken();
         const userData = await getMe(token);
         userData ? setUser(userData) : auth.logout();
+
+        if (user?.plaidAccessToken) {
+          fetchAccountData();
+        }
       } catch (error) {
         console.error("Error creating user props", error);
       }

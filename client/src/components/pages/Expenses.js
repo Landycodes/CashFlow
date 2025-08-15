@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getTransactionHistory } from "../../utils/API";
+// import { getTransactionHistory } from "../../utils/API";
 import { userContext } from "../../App";
 
 export default function Expenses() {
@@ -13,14 +13,14 @@ export default function Expenses() {
     category: "",
   });
 
-  useEffect(() => {
-    console.log(user);
-    if (user) {
-      getTransactionHistory(user.plaidAccessToken).then((data) => {
-        console.log(data);
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log(user);
+  //   if (user) {
+  //     getTransactionHistory(user.plaidAccessToken).then((data) => {
+  //       console.log(data);
+  //     });
+  //   }
+  // }, []);
 
   const handleInput = (event) => {
     const value = event.target.value;

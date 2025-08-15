@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 // import Auth from "../../utils/auth";
 import {
   fetchAccountData,
-  getAccountBalance,
-  getTransactionHistory,
+  // getAccountBalance,
+  // getTransactionHistory,
   updateUser,
 } from "../../utils/API";
 import { userContext } from "../../App";
@@ -14,13 +14,14 @@ import { PlaidPopUp } from "../../utils/Plaid";
 export default function Dashboard() {
   const { user, setUser } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp(user._id);
-  // const user = userObject.user;
+  const accountNum = parseInt(localStorage.getItem("current_Account"));
 
+  // TODO: add virtuals here to determine income for what account and time period based on account id and date info
   const [range, setRange] = useState("total");
   const [bankDetails, setBankDetails] = useState({
-    balance: null,
-    income: null,
-    expense: null,
+    balance: user?.accounts[accountNum].available_balance,
+    income: 1,
+    expense: 2,
   });
 
   const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
@@ -30,56 +31,9 @@ export default function Dashboard() {
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
     } else {
-      fetchAccountData(user._id, user.plaidAccessToken);
+      console.log(user.accounts[accountNum]);
     }
-    // getBalance();
-    // getTransactions();
   }, []);
-
-  const getBalance = () => {
-    if (user?.plaidAccessToken) {
-      getAccountBalance(user.plaidAccessToken).then((data) => {
-        console.log(data);
-        if (!data.error) {
-          setBankDetails((bd) => ({
-            ...bd,
-            balance: data[0].balances.available,
-          }));
-        } else if (data.error.message === "INVALID_ACCESS_TOKEN") {
-          const removeToken = updateUser(user._id, "plaidAccessToken", "");
-          setUser(removeToken);
-        }
-      });
-    }
-  };
-
-  const getTransactions = () => {
-    if (user?.plaidAccessToken) {
-      getTransactionHistory(user.plaidAccessToken).then((data) => {
-        console.log(data);
-        if (!data.error) {
-          setBankDetails((bd) => ({
-            ...bd,
-            income: parseFloat(
-              data
-                .filter((t) => t.amount < 0)
-                .reduce((sum, t) => sum + Math.abs(t.amount), 0)
-                .toFixed(2)
-            ),
-            expense: parseFloat(
-              data
-                .filter((t) => t.amount > 0)
-                .reduce((sum, t) => sum + t.amount, 0)
-                .toFixed(2)
-            ),
-          }));
-        } else if (data.error.message === "INVALID_ACCESS_TOKEN") {
-          const removeToken = updateUser(user._id, "plaidAccessToken", "");
-          setUser(removeToken);
-        }
-      });
-    }
-  };
 
   const handleChange = (event) => {
     setRange(event.target.value);

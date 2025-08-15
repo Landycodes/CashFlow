@@ -71,22 +71,6 @@ export const exchangeAndSavePlaidToken = async (public_token, user_id) => {
   }
 };
 
-export const getAccountBalance = (accessToken) => {
-  return fetch("/api/plaid/getAccountBalance", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ accessToken: accessToken }),
-  }).then((response) => response.json());
-};
-
-export const getTransactionHistory = (accessToken) => {
-  return fetch("/api/plaid/getTransactionHistory", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ accessToken: accessToken }),
-  }).then((response) => response.json());
-};
-
 export const fetchAccountData = (id, accessToken) => {
   return fetch("/api/plaid/fetchAccountData", {
     method: "POST",
