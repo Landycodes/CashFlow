@@ -1,3 +1,4 @@
+const Transaction = require("../models/Transaction");
 const User = require("../models/User");
 require("dotenv").config();
 const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
@@ -13,7 +14,7 @@ const client = new PlaidApi({
   },
 });
 
-const getAccountData = async (accessToken) => {
+const getAccountData = async (id, accessToken) => {
   const balanceRes = await client.accountsBalanceGet({
     access_token: accessToken,
   });
@@ -29,42 +30,72 @@ const getAccountData = async (accessToken) => {
     });
   });
 
-  return accountValues;
+  const updatedUser = await User.findByIdAndUpdate(
+    id,
+    {
+      accounts: accountValues,
+      selected_account_id: accountValues[0].account_id,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  return updatedUser;
 };
 
-const getTransactionData = async (accessToken) => {
-  let incomeValues = [];
-  let expenseValues = [];
+const getTransactionData = async (id, accessToken) => {
+  const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .split("T")[0];
+  const today = new Date().toISOString().split("T")[0];
 
-  const transactionRes = await client.transactionsGet({
-    access_token: accessToken,
-    start_date: "2025-01-01", // Adjust date range
-    end_date: new Date().toISOString().split("T")[0],
-    options: { count: 50, offset: 0 },
-  });
-  // console.log(transactionRes.data.transactions);
-  const transactions = transactionRes.data.transactions;
+  const transactions = [];
 
-  transactions.forEach((tv) => {
-    // console.log(tv);
-    if (tv.amount < 0) {
-      incomeValues.push({
-        name: tv.name,
+  let offset = 0;
+  const pageSize = 100;
+
+  while (true) {
+    const transactionRes = await client.transactionsGet({
+      access_token: accessToken,
+      start_date: lastYear,
+      end_date: today,
+      options: { count: pageSize, offset: offset },
+    });
+    const transactionpage = transactionRes.data.transactions;
+    transactions.push(...transactionpage);
+
+    if (transactions.length < pageSize) break;
+
+    offset += pageSize;
+  }
+
+  const tvInsert = transactions.map((tv) => ({
+    updateOne: {
+      filter: {
+        user_id: id,
         account_id: tv.account_id,
-        date: tv.date,
-        amount: tv.amount,
-      });
-    } else {
-      expenseValues.push({
-        name: tv.name,
-        account_id: tv.account_id,
-        date: tv.date,
-        amount: tv.amount,
-      });
-    }
-  });
+        transaction_id: tv.transaction_id,
+      },
+      update: {
+        $setOnInsert: {
+          user_id: id,
+          account_id: tv.account_id,
+          transaction_id: tv.transaction_id,
+          name: tv.name,
+          date: tv.date,
+          amount: Math.abs(tv.amount),
+          type: tv.amount < 0 ? "income" : "expense",
+        },
+      },
+      upsert: true,
+    },
+  }));
 
-  return { incomeValues, expenseValues };
+  const updatedTransactions = await Transaction.bulkWrite(tvInsert);
+
+  return updatedTransactions;
 };
 
 module.exports = {
@@ -99,15 +130,29 @@ module.exports = {
       res.status(400).json({ error: `failed to create link token: ${error}` });
     }
   },
-  async exchange_PublicToken(req, res) {
+  async exchange_PublicToken({ body, params }, res) {
     try {
-      const { public_token } = req.body;
+      const { id } = params;
+      const { public_token } = body;
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
       const itemId = response.data.item_id;
 
       // console.log(accessToken);
-      res.json({ accessToken, itemId });
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { $set: { plaidAccessToken: accessToken } },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Unable to find user" });
+      }
+
+      res.json(accessToken);
     } catch (error) {
       console.error(error);
       res
@@ -116,47 +161,39 @@ module.exports = {
     }
   },
 
-  async fetchAccountData(req, res) {
-    const { id, accessToken } = req.body;
-
+  async fetchAccountData({ body, params }, res) {
+    const { id } = params;
+    const { accessToken } = body;
     try {
-      const user = await User.findById(id);
-      if (!user) {
-        res.status(404).json("Unable to find user to update account info");
+      // const user = await User.findById(id);
+      // if (!user) {
+      //   res.status(404).json("Unable to find user to update account info");
+      // }
+      // const lastUpdated = user?.lastUpdated;
+      // const now = new Date();
+      // const sixHours = 21600000;
+      // const readyToUpdate = now - lastUpdated >= sixHours;
+
+      // if (lastUpdated === undefined || readyToUpdate) {
+      console.log("updating now");
+      const accountUser = await getAccountData(id, accessToken);
+      const transactions = await getTransactionData(id, accessToken);
+
+      if (!accountUser) {
+        return res.status(404).json({ message: "Unable to update accounts." });
       }
-      const lastUpdated = user?.lastUpdated;
-      const now = new Date();
-      const sixHours = 21600000;
-      const readyToUpdate = now - lastUpdated >= sixHours;
 
-      if (lastUpdated === undefined || readyToUpdate) {
-        const accountValues = await getAccountData(accessToken);
-        const transactionValues = await getTransactionData(accessToken);
-
-        const updatedAccount = await User.findByIdAndUpdate(
-          id,
-          {
-            accounts: accountValues,
-            income: transactionValues.incomeValues,
-            expense: transactionValues.expenseValues,
-            lastUpdated: new Date().toISOString(),
-          },
-          {
-            new: true,
-            runValidators: true,
-          }
-        );
-
-        if (!updatedAccount) {
-          return res
-            .status(404)
-            .json({ message: "User not found, Unable to update accounts." });
-        }
-
-        res.json(updatedAccount);
-      } else {
-        res.status(200);
+      if (!transactions) {
+        return res
+          .status(404)
+          .json({ message: "Unable to update transactions." });
       }
+
+      res.json("Success");
+      // } else {
+      //   console.log("not ready to update");
+      //   res.status(200).json(user);
+      // }
     } catch (error) {
       console.error(error);
       res.status(400).json("Failed to store updated account information");

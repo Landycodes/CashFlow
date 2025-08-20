@@ -9,13 +9,13 @@ module.exports = {
   async login({ body }, res) {
     const user = await User.findOne({ email: body.email });
     if (!user) {
-      return res.status(401).json({ message: "Can't find this user" });
+      return res.status(404).json({ message: "Can't find this user" });
     }
 
     if (!user.password) {
       return res
         .status(403)
-        .json({ message: "Email exists with anothe sign in method" });
+        .json({ message: "Email exists with another sign in method" });
     }
 
     const correctPw = await user.isCorrectPassword(body.password);

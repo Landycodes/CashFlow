@@ -28,11 +28,10 @@ export default function Settings() {
 
   const handleRemovePlaidLink = async () => {
     try {
-      const removedTokenUser = await updateUser(
-        user._id,
-        "plaidAccessToken",
-        ""
-      );
+      const removedTokenUser = await updateUser(user._id, {
+        plaidAccessToken: "",
+        accounts: [],
+      });
       setUser(removedTokenUser);
     } catch (error) {
       console.log(error);

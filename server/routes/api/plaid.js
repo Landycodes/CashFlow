@@ -8,7 +8,7 @@ const {
 } = require("../../controller/plaid-controller");
 
 router.route("/create_link_token").post(create_link_token);
-router.route("/exchange_PublicToken").post(exchange_PublicToken);
-router.route("/fetchAccountData").post(fetchAccountData);
+router.route("/exchange_PublicToken/:id").post(exchange_PublicToken);
+router.route("/fetchAccountData/:id").post(fetchAccountData);
 
 module.exports = router;

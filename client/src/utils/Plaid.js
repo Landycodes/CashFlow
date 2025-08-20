@@ -2,7 +2,11 @@ import { useEffect, useState, useContext } from "react";
 import { usePlaidLink } from "react-plaid-link";
 import { useNavigate } from "react-router-dom";
 import { userContext } from "../App";
-import { createPlaidLinkToken, exchangeAndSavePlaidToken } from "./API";
+import {
+  createPlaidLinkToken,
+  exchangeAndSavePlaidToken,
+  fetchAccountData,
+} from "./API";
 
 export function PlaidPopUp(
   id,
@@ -27,8 +31,9 @@ export function PlaidPopUp(
     token: linkToken,
     onSuccess: async (public_token) => {
       try {
-        const updatedUser = await exchangeAndSavePlaidToken(public_token, id);
-        setUser(updatedUser);
+        const token = await exchangeAndSavePlaidToken(user._id, public_token);
+        const userData = await fetchAccountData(user._id, token);
+        setUser(userData);
         navigate("/");
         // onSuccessCallback();
       } catch (error) {
@@ -53,8 +58,4 @@ export function PlaidPopUp(
   }, [linkToken, ready, open]);
 
   return { openPlaidPopUp };
-}
-
-export function fetchPlaidData(access_token) {
-// TODO set up get balance and get transaction here to store the bank details to the user if last updated is null or greater then 6 hours from now
 }

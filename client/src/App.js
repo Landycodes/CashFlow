@@ -110,15 +110,25 @@ function App() {
   }
 
   const checkProfileState = async () => {
+    // console.log("profile check running");
     setLoggedIn(auth.loggedIn());
     if (loggedIn) {
       try {
         const token = auth.getToken();
         const userData = await getMe(token);
-        userData ? setUser(userData) : auth.logout();
+        // userData ? setUser(userData) : auth.logout();
+        if (userData) {
+          let checkedUser = userData;
 
-        if (user?.plaidAccessToken) {
-          fetchAccountData();
+          if (userData.plaidAccessToken) {
+            checkedUser = await fetchAccountData(
+              userData._id,
+              userData.plaidAccessToken
+            );
+          }
+          setUser(checkedUser);
+        } else {
+          auth.logout();
         }
       } catch (error) {
         console.error("Error creating user props", error);

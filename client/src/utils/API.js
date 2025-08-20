@@ -31,11 +31,11 @@ export const loginUser = (userData) => {
   });
 };
 
-export const updateUser = (user_id, key, value) => {
+export const updateUser = (user_id, updatedObject) => {
   return fetch(`/api/update/${user_id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ [key]: value }),
+    body: JSON.stringify(updatedObject),
   }).then((response) => response.json());
 };
 
@@ -57,25 +57,30 @@ export const createPlaidLinkToken = (id) => {
   }).then((response) => response.json());
 };
 
-export const exchangeAndSavePlaidToken = async (public_token, user_id) => {
+export const exchangeAndSavePlaidToken = async (user_id, public_token) => {
   try {
-    const exchangedToken = await fetch("/api/plaid/exchange_PublicToken", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ public_token }),
-    }).then((res) => res.json());
+    /* const exchangedToken = */ return fetch(
+      `/api/plaid/exchange_PublicToken/${user_id}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ public_token }),
+      }
+    ).then((res) => res.json());
 
-    return updateUser(user_id, "plaidAccessToken", exchangedToken.accessToken);
+    // return updateUser(user_id, {
+    //   plaidAccessToken: exchangedToken.accessToken,
+    // }).then((response) => response.json);
   } catch (error) {
     return error;
   }
 };
 
-export const fetchAccountData = (id, accessToken) => {
-  return fetch("/api/plaid/fetchAccountData", {
+export const fetchAccountData = (user_id, accessToken) => {
+  return fetch(`/api/plaid/fetchAccountData/${user_id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id: id, accessToken: accessToken }),
+    body: JSON.stringify({ accessToken: accessToken }),
   }).then((response) => response.json());
 };
 
