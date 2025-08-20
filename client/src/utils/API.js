@@ -1,3 +1,5 @@
+// TODO add JWT auth token methods to apis
+
 export const getMe = (token) => {
   return fetch("/api/me", {
     headers: {
@@ -84,24 +86,9 @@ export const fetchAccountData = (user_id, accessToken) => {
   }).then((response) => response.json());
 };
 
-export const addIncome = (token, income) => {
-  return fetch("/api/addincome", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(income),
-  });
-};
-
-export const addExpense = (token, expense) => {
-  return fetch("/api/addexpense", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(expense),
-  });
+export const getTransactions = (user_id, account_id) => {
+  return fetch(`/api/transaction/getTransactions/${user_id}/${account_id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }).then((response) => response.json());
 };

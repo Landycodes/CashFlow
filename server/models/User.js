@@ -45,38 +45,37 @@ const expenseSchema = require("./Expense");
 //   }
 // );
 
-const userSchema = new Schema(
-  {
-    username: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    uid: {
-      type: String,
-      sparse: true,
-    },
-    plaidAccessToken: {
-      type: String,
-    },
-    accounts: [accountSchema],
-    selected_account_id: {
-      type: String,
-    },
+const userSchema = new Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  uid: {
+    type: String,
+    sparse: true,
+  },
+  plaidAccessToken: {
+    type: String,
+  },
+  accounts: [accountSchema],
+  selected_account_id: {
+    type: String,
+  },
+  last_updated: {
+    type: Date,
+    default: null,
+  },
+});
 
 // hash user password
 userSchema.pre("save", async function (next) {

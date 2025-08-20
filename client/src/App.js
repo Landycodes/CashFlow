@@ -104,11 +104,6 @@ function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(auth.loggedIn());
 
-  // set default account to the first one stored in user accounts
-  if (localStorage.getItem("current_Account") === null) {
-    localStorage.setItem("current_Account", "0");
-  }
-
   const checkProfileState = async () => {
     // console.log("profile check running");
     setLoggedIn(auth.loggedIn());
@@ -116,19 +111,10 @@ function App() {
       try {
         const token = auth.getToken();
         const userData = await getMe(token);
-        // userData ? setUser(userData) : auth.logout();
-        if (userData) {
-          let checkedUser = userData;
+        userData ? setUser(userData) : auth.logout();
 
-          if (userData.plaidAccessToken) {
-            checkedUser = await fetchAccountData(
-              userData._id,
-              userData.plaidAccessToken
-            );
-          }
-          setUser(checkedUser);
-        } else {
-          auth.logout();
+        if (userData?.plaidAccessToken) {
+          await fetchAccountData(userData._id, userData.plaidAccessToken);
         }
       } catch (error) {
         console.error("Error creating user props", error);

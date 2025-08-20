@@ -3,17 +3,21 @@ import { userContext } from "../../App";
 import PieChart from "../Piechart";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
+import { getTransactions } from "../../utils/API";
 
 export default function Dashboard() {
   const { user, setUser } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp(user._id);
-  const accountNum = parseInt(localStorage.getItem("current_Account"));
 
   // TODO: add virtuals here to determine income for what account and time period based on account id and date info
   const [range, setRange] = useState("oneYear");
-  const [haveBankDetails, SetDetailsReady] = useState(false);
-  const [bankDetails, setBankDetails] = useState({
+  const [accountInfoReady, SetaccountInfoReady] = useState(false);
+
+  const [accountDetails, setAccountDetails] = useState({
+    name: null,
     balance: null,
+  });
+  const [transactions, setTransactions] = useState({
     income: null,
     expense: null,
     total: null,
@@ -23,18 +27,46 @@ export default function Dashboard() {
   // const isNegativeBalance = bankDetails.expense > bankDetails.income;
 
   useEffect(() => {
-    console.log(!user?.plaidAccessToken);
+    console.log(user);
 
     // console.log(user["oneYear"]);
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
-    } /* else if (user?.accounts && !haveBankDetails) {
-      setBankDetails({
-        balance: user?.accounts[accountNum].available_balance,
-      });
-      SetDetailsReady(true);
-    } */
+    } else if (user.accounts.length > 0) {
+      const selectedAccount = user.accounts.find(
+        (ac) => ac.account_id === user.selected_account_id
+      );
+
+      if (selectedAccount) {
+        setAccountDetails({
+          name: selectedAccount.name,
+          balance: selectedAccount.available_balance,
+        });
+      }
+      getTransactionTotals();
+
+      SetaccountInfoReady(true);
+    }
   }, []);
+
+  const getTransactionTotals = async () => {
+    const transactionList = await getTransactions(
+      user._id,
+      user.selected_account_id
+    );
+    const income = transactionList.income
+      .reduce((sum, tx) => sum + tx.amount, 0)
+      .toFixed(2);
+    const expense = transactionList.expense
+      .reduce((sum, tx) => sum + tx.amount, 0)
+      .toFixed(2);
+
+    setTransactions({
+      income: income,
+      expense: expense,
+      total: income - expense,
+    });
+  };
 
   // useEffect(() => {
   //   setBankDetails({
@@ -48,21 +80,19 @@ export default function Dashboard() {
     setRange(event.target.value);
   };
 
-  const AccountDash = ({ bankDetails }) => {
+  const AccountDash = ({ accountDetails, transactions }) => {
     return (
       <div className="d-flex flex-column align-items-center bg-light bg-gradient p-3 rounded border border-primary">
-        <h3>{user.accounts[accountNum].name}</h3>
+        <h3>{accountDetails.name}</h3>
         <h2>
           Current Balance:{" "}
-          <span className="text-success">
-            ${user.accounts[accountNum].available_balance}
-          </span>
+          <span className="text-success">${accountDetails.balance}</span>
         </h2>
         <div style={{ width: "225px", height: "225px" }} className="mt-2 mb-3">
           <PieChart
             data={{
               labels: ["Earned", "Spent"],
-              values: [bankDetails.income, bankDetails.expense],
+              values: [transactions.income, transactions.expense],
             }}
           />
         </div>
@@ -83,20 +113,20 @@ export default function Dashboard() {
         <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
 
         <h1>
-          Earned: <span className="text-success">${bankDetails.income}</span>
+          Earned: <span className="text-success">${transactions.income}</span>
         </h1>
         <h4 className="text-center">-</h4>
         <h1>
-          Expenses: <span className="text-danger">${bankDetails.expense}</span>
+          Expenses: <span className="text-danger">${transactions.expense}</span>
         </h1>
         <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
         <h1 className="text-center">
           Total:&nbsp;
           <span
-            className={bankDetails.total < 0 ? "text-danger" : "text-success"}
+            className={transactions.total < 0 ? "text-danger" : "text-success"}
           >
-            {bankDetails.total < 0 ? "-" : ""}$
-            {Math.abs(bankDetails.total).toFixed(2)}
+            {transactions.total < 0 ? "-" : ""}$
+            {Math.abs(transactions.total).toFixed(2)}
           </span>
         </h1>
       </div>
@@ -125,8 +155,11 @@ export default function Dashboard() {
   return (
     <div className="d-flex align-items-center justify-content-center mt-5">
       {user?.plaidAccessToken ? (
-        haveBankDetails ? (
-          <AccountDash bankDetails={bankDetails} />
+        accountInfoReady ? (
+          <AccountDash
+            accountDetails={accountDetails}
+            transactions={transactions}
+          />
         ) : (
           <Loading message={"Getting Bank Details"} />
         )

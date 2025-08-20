@@ -1,7 +1,9 @@
 const Transaction = require("../models/Transaction");
 const User = require("../models/User");
+const { PlaidApi, PlaidEnvironments } = require("plaid");
 require("dotenv").config();
-const { Configuration, PlaidApi, PlaidEnvironments } = require("plaid");
+
+const SIX_HOURS = 1000 * 60 * 60 * 6;
 
 const client = new PlaidApi({
   basePath: PlaidEnvironments.sandbox,
@@ -35,6 +37,7 @@ const getAccountData = async (id, accessToken) => {
     {
       accounts: accountValues,
       selected_account_id: accountValues[0].account_id,
+      last_updated: new Date(),
     },
     {
       new: true,
@@ -164,39 +167,48 @@ module.exports = {
   async fetchAccountData({ body, params }, res) {
     const { id } = params;
     const { accessToken } = body;
+
     try {
-      // const user = await User.findById(id);
-      // if (!user) {
-      //   res.status(404).json("Unable to find user to update account info");
-      // }
-      // const lastUpdated = user?.lastUpdated;
-      // const now = new Date();
-      // const sixHours = 21600000;
-      // const readyToUpdate = now - lastUpdated >= sixHours;
-
-      // if (lastUpdated === undefined || readyToUpdate) {
-      console.log("updating now");
-      const accountUser = await getAccountData(id, accessToken);
-      const transactions = await getTransactionData(id, accessToken);
-
-      if (!accountUser) {
-        return res.status(404).json({ message: "Unable to update accounts." });
+      const user = await User.findById(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
       }
 
+      const lastUpdated = user.last_updated;
+      const now = Date.now();
+      const readyToUpdate =
+        !lastUpdated || now - lastUpdated.getTime() >= SIX_HOURS;
+
+      if (!readyToUpdate) {
+        console.log("Not ready to update");
+        return res.status(200).json(user);
+      }
+
+      console.log("Updating now");
+
+      const accountUser = await getAccountData(id, accessToken);
+      if (!accountUser) {
+        return res.status(404).json({ message: "Unable to update accounts" });
+      }
+
+      const transactions = await getTransactionData(id, accessToken);
       if (!transactions) {
         return res
           .status(404)
-          .json({ message: "Unable to update transactions." });
+          .json({ message: "Unable to update transactions" });
       }
 
-      res.json("Success");
-      // } else {
-      //   console.log("not ready to update");
-      //   res.status(200).json(user);
-      // }
+      return res.status(200).json({
+        message: "Accounts and transactions updated",
+        accounts: accountUser.accounts,
+        transactionsCount: transactions.length,
+      });
     } catch (error) {
       console.error(error);
-      res.status(400).json("Failed to store updated account information");
+      return res.status(500).json({
+        message: "Failed to store updated account information",
+        error: error.message,
+      });
     }
   },
 };
