@@ -198,11 +198,7 @@ module.exports = {
           .json({ message: "Unable to update transactions" });
       }
 
-      return res.status(200).json({
-        message: "Accounts and transactions updated",
-        accounts: accountUser.accounts,
-        transactionsCount: transactions.length,
-      });
+      return res.status(200).json(accountUser);
     } catch (error) {
       console.error(error);
       return res.status(500).json({

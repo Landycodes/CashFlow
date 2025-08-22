@@ -3,36 +3,36 @@ import { userContext } from "../../App";
 import PieChart from "../Piechart";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
-import { getTransactions } from "../../utils/API";
+import { getTransactionTotals } from "../../utils/API";
+
+const ONE_YEAR = 365;
+const SIX_MONTH = 182;
+const THREE_MONTH = 91;
+const ONE_MONTH = 30;
+const TWO_WEEKS = 14;
+const ONE_WEEK = 7;
 
 export default function Dashboard() {
   const { user, setUser } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp(user._id);
 
-  // TODO: add virtuals here to determine income for what account and time period based on account id and date info
-  const [range, setRange] = useState("oneYear");
+  const [range, setRange] = useState(ONE_YEAR);
   const [accountInfoReady, SetaccountInfoReady] = useState(false);
 
   const [accountDetails, setAccountDetails] = useState({
     name: null,
-    balance: null,
+    balance: 0,
   });
   const [transactions, setTransactions] = useState({
-    income: null,
-    expense: null,
-    total: null,
+    income: 0,
+    expense: 0,
+    total: 0,
   });
 
-  // const haveBankDetails = Object.values(bankDetails).every((v) => v !== null);
-  // const isNegativeBalance = bankDetails.expense > bankDetails.income;
-
   useEffect(() => {
-    console.log(user);
-
-    // console.log(user["oneYear"]);
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
-    } else if (user.accounts.length > 0) {
+    } else if (user.selected_account_id) {
       const selectedAccount = user.accounts.find(
         (ac) => ac.account_id === user.selected_account_id
       );
@@ -43,23 +43,19 @@ export default function Dashboard() {
           balance: selectedAccount.available_balance,
         });
       }
-      getTransactionTotals();
 
-      SetaccountInfoReady(true);
+      getTransactionAmounts(range).then(() => {
+        SetaccountInfoReady(true);
+      });
     }
-  }, []);
+  }, [user, range]);
 
-  const getTransactionTotals = async () => {
-    const transactionList = await getTransactions(
+  const getTransactionAmounts = async (days) => {
+    const { income, expense } = await getTransactionTotals(
       user._id,
-      user.selected_account_id
+      user.selected_account_id,
+      days
     );
-    const income = transactionList.income
-      .reduce((sum, tx) => sum + tx.amount, 0)
-      .toFixed(2);
-    const expense = transactionList.expense
-      .reduce((sum, tx) => sum + tx.amount, 0)
-      .toFixed(2);
 
     setTransactions({
       income: income,
@@ -69,11 +65,7 @@ export default function Dashboard() {
   };
 
   // useEffect(() => {
-  //   setBankDetails({
-  //     income: user[range].income,
-  //     expense: user[range].expense,
-  //     total: user[range].income - user[range].expense,
-  //   });
+  //   getTransactionAmounts(range);
   // }, [range]);
 
   const handleChange = (event) => {
@@ -88,7 +80,10 @@ export default function Dashboard() {
           Current Balance:{" "}
           <span className="text-success">${accountDetails.balance}</span>
         </h2>
-        <div style={{ width: "225px", height: "225px" }} className="mt-2 mb-3">
+        <div
+          style={{ width: "225px", height: "225px" }}
+          className="d-flex justify-content-center align-items-center mt-2 mb-3"
+        >
           <PieChart
             data={{
               labels: ["Earned", "Spent"],
@@ -102,33 +97,37 @@ export default function Dashboard() {
           value={range}
           onChange={handleChange}
         >
-          <option value={"oneYear"}>1 Year</option>
-          <option value={"sixMonth"}>6 months</option>
-          <option value={"threeMonth"}>3 months</option>
-          <option value={"oneMonth"}>1 month</option>
-          <option value={"twoWeek"}>2 week</option>
-          <option value={"oneWeek"}>1 week</option>
+          <option value={ONE_YEAR}>1 Year</option>
+          <option value={SIX_MONTH}>6 months</option>
+          <option value={THREE_MONTH}>3 months</option>
+          <option value={ONE_MONTH}>1 month</option>
+          <option value={TWO_WEEKS}>2 week</option>
+          <option value={ONE_WEEK}>1 week</option>
         </select>
 
         <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
 
-        <h1>
-          Earned: <span className="text-success">${transactions.income}</span>
-        </h1>
-        <h4 className="text-center">-</h4>
-        <h1>
-          Expenses: <span className="text-danger">${transactions.expense}</span>
-        </h1>
-        <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
-        <h1 className="text-center">
-          Total:&nbsp;
+        <h3>
+          Deposited:{" "}
+          <span className="text-success">${transactions.income}</span>
+        </h3>
+        {/* <h4 className="text-center">-</h4> */}
+        <hr style={{ height: "3px", backgroundColor: "black" }}></hr>
+
+        <h3>
+          Withdrawn:{" "}
+          <span className="text-danger">${transactions.expense}</span>
+        </h3>
+        <hr style={{ height: "3px", backgroundColor: "black" }}></hr>
+        <h3 className="text-center">
+          CashFlow:&nbsp;
           <span
             className={transactions.total < 0 ? "text-danger" : "text-success"}
           >
             {transactions.total < 0 ? "-" : ""}$
             {Math.abs(transactions.total).toFixed(2)}
           </span>
-        </h1>
+        </h3>
       </div>
     );
   };

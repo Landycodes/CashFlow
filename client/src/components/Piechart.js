@@ -1,9 +1,20 @@
+import { useState, useEffect } from "react";
 import { Pie } from "react-chartjs-2";
 import { Chart, ArcElement as Arc, Tooltip, Legend } from "chart.js";
 
 Chart.register(Arc, Tooltip, Legend);
 
 export default function PieChart({ data }) {
+  const [render, setRender] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setRender(true);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const chartData = {
     labels: data.labels,
     datasets: [
@@ -36,5 +47,9 @@ export default function PieChart({ data }) {
     },
   };
 
-  return <Pie data={chartData} options={options} />;
+  if (render) {
+    return <Pie data={chartData} options={options} />;
+  } else {
+    return <span style={{ fontSize: "100px" }}>🥧</span>;
+  }
 }

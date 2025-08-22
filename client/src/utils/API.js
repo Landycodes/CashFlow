@@ -1,6 +1,6 @@
 // TODO add JWT auth token methods to apis
 
-export const getMe = (token) => {
+export const getMe = async (token) => {
   return fetch("/api/me", {
     headers: {
       "Content-Type": "application/json",
@@ -13,7 +13,7 @@ export const getMe = (token) => {
   });
 };
 
-export const createUser = (userData) => {
+export const createUser = async (userData) => {
   return fetch("/api/newuser", {
     method: "POST",
     headers: {
@@ -23,7 +23,7 @@ export const createUser = (userData) => {
   });
 };
 
-export const loginUser = (userData) => {
+export const loginUser = async (userData) => {
   return fetch("/api/login", {
     method: "POST",
     headers: {
@@ -33,7 +33,7 @@ export const loginUser = (userData) => {
   });
 };
 
-export const updateUser = (user_id, updatedObject) => {
+export const updateUser = async (user_id, updatedObject) => {
   return fetch(`/api/update/${user_id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -41,7 +41,7 @@ export const updateUser = (user_id, updatedObject) => {
   }).then((response) => response.json());
 };
 
-export const googleLogin = (results) => {
+export const googleLogin = async (results) => {
   return fetch("/api/firebase/googlesignin", {
     method: "POST",
     headers: {
@@ -51,7 +51,7 @@ export const googleLogin = (results) => {
   });
 };
 
-export const createPlaidLinkToken = (id) => {
+export const createPlaidLinkToken = async (id) => {
   return fetch("/api/plaid/create_link_token", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ export const exchangeAndSavePlaidToken = async (user_id, public_token) => {
   }
 };
 
-export const fetchAccountData = (user_id, accessToken) => {
+export const fetchAccountData = async (user_id, accessToken) => {
   return fetch(`/api/plaid/fetchAccountData/${user_id}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -86,9 +86,20 @@ export const fetchAccountData = (user_id, accessToken) => {
   }).then((response) => response.json());
 };
 
-export const getTransactions = (user_id, account_id) => {
-  return fetch(`/api/transaction/getTransactions/${user_id}/${account_id}`, {
-    method: "GET",
+export const getTransactionTotals = async (user_id, account_id, days) => {
+  return fetch(
+    `/api/transaction/getTransactionTotals/${user_id}/${account_id}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ days: days }),
+    }
+  ).then((response) => response.json());
+};
+
+export const deleteUserTransactions = async (user_id) => {
+  return fetch(`/api/transaction/deleteUserTransactions/${user_id}`, {
+    method: "DELETE",
     headers: { "Content-Type": "application/json" },
   }).then((response) => response.json());
 };
