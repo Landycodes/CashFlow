@@ -52,9 +52,9 @@ export default function Navbar() {
           </h6>
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
-            onClick={() => navigate("/breakdown")}
+            onClick={() => navigate("/Transactions")}
           >
-            Breakdown
+            Transactions
           </h6>
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"

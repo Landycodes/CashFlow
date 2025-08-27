@@ -61,18 +61,11 @@ export const createPlaidLinkToken = async (id) => {
 
 export const exchangeAndSavePlaidToken = async (user_id, public_token) => {
   try {
-    /* const exchangedToken = */ return fetch(
-      `/api/plaid/exchange_PublicToken/${user_id}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ public_token }),
-      }
-    ).then((res) => res.json());
-
-    // return updateUser(user_id, {
-    //   plaidAccessToken: exchangedToken.accessToken,
-    // }).then((response) => response.json);
+    return fetch(`/api/plaid/exchange_PublicToken/${user_id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ public_token }),
+    }).then((res) => res.json());
   } catch (error) {
     return error;
   }
@@ -95,6 +88,13 @@ export const getTransactionTotals = async (user_id, account_id, days) => {
       body: JSON.stringify({ days: days }),
     }
   ).then((response) => response.json());
+};
+
+export const getTransactionList = async (user_id, account_id) => {
+  return fetch(`/api/transaction/getTransactionList/${user_id}/${account_id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }).then((response) => response.json());
 };
 
 export const deleteUserTransactions = async (user_id) => {

@@ -14,7 +14,7 @@ import Navbar from "./components/Navbar";
 import Settings from "./components/pages/Settings";
 import Loading from "./components/Loading";
 import Expenses from "./components/pages/Expenses";
-import Breakdown from "./components/pages/Breakdown";
+import Transactions from "./components/pages/Transactions";
 import Footer from "./components/Footer";
 import Dashboard from "./components/pages/Dashboard";
 
@@ -83,11 +83,11 @@ function AppRouter({
             }
           />
           <Route
-            path="/breakdown"
+            path="/transactions"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
                 <PlaidProtectedRoute>
-                  <Breakdown />
+                  <Transactions />
                 </PlaidProtectedRoute>
               </ProtectedRoutes>
             }

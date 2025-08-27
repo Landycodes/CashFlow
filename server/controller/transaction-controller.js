@@ -1,5 +1,6 @@
 const Transaction = require("../models/Transaction");
 const { Types } = require("mongoose");
+const dayjs = require("dayjs");
 
 module.exports = {
   async getTransactionTotals({ params, body }, res) {
@@ -13,7 +14,7 @@ module.exports = {
       const transactions = await Transaction.find({
         user_id: new Types.ObjectId(user_id),
         account_id: account_id,
-      }).select("amount type date name");
+      }); /* .select("amount type date name") */
 
       if (transactions.length === 0) {
         res.status(404).json("Unable to get transactions");
@@ -62,6 +63,26 @@ module.exports = {
       res.json(deletedTransactions);
     } catch (error) {
       console.error("Failed to delete transactions", error);
+      res.status(500);
+    }
+  },
+  async getTransactionList({ params }, res) {
+    const { user_id, account_id } = params;
+
+    try {
+      const transactions = await Transaction.find({
+        user_id: new Types.ObjectId(user_id),
+        account_id: account_id,
+      });
+
+      const txResponse = transactions.map((tx) => ({
+        ...tx.toObject(),
+        date: dayjs(tx.date).format("MM/DD/YYYY"),
+      }));
+
+      res.json(txResponse);
+    } catch (error) {
+      console.error(error);
       res.status(500);
     }
   },

@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { userContext } from "../../App";
 import PieChart from "../Piechart";
+import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
 import { getTransactionTotals } from "../../utils/API";
@@ -19,6 +20,15 @@ export default function Dashboard() {
   const [range, setRange] = useState(ONE_YEAR);
   const [accountInfoReady, SetaccountInfoReady] = useState(false);
 
+  useEffect(() => {
+    anime({
+      targets: "#account-dash",
+      translateY: [-200, -25],
+      easing: "spring(2, 45, 12, 0)",
+      duration: 500,
+    });
+  }, []);
+
   const [accountDetails, setAccountDetails] = useState({
     name: null,
     balance: 0,
@@ -32,17 +42,11 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
-    } else if (user.selected_account_id) {
-      const selectedAccount = user.accounts.find(
-        (ac) => ac.account_id === user.selected_account_id
-      );
-
-      if (selectedAccount) {
-        setAccountDetails({
-          name: selectedAccount.name,
-          balance: selectedAccount.available_balance,
-        });
-      }
+    } else if (user.selectedAccount) {
+      setAccountDetails({
+        name: user.selectedAccount.name,
+        balance: user.selectedAccount.available_balance,
+      });
 
       getTransactionAmounts(range).then(() => {
         SetaccountInfoReady(true);
@@ -63,10 +67,6 @@ export default function Dashboard() {
       total: income - expense,
     });
   };
-
-  // useEffect(() => {
-  //   getTransactionAmounts(range);
-  // }, [range]);
 
   const handleChange = (event) => {
     setRange(event.target.value);
@@ -93,16 +93,18 @@ export default function Dashboard() {
         </div>
 
         <select
-          className="w-100 mt-0 mb-2 btn btn-sm border border-2 border-primary rounded"
+          className="form-select text-center border-primary py-1"
+          id="floatingSelect"
           value={range}
           onChange={handleChange}
+          style={{ fontSize: "1.25rem", fontWeight: "500" }} // mimic h3
         >
           <option value={ONE_YEAR}>1 Year</option>
-          <option value={SIX_MONTH}>6 months</option>
-          <option value={THREE_MONTH}>3 months</option>
-          <option value={ONE_MONTH}>1 month</option>
-          <option value={TWO_WEEKS}>2 week</option>
-          <option value={ONE_WEEK}>1 week</option>
+          <option value={SIX_MONTH}>6 Months</option>
+          <option value={THREE_MONTH}>3 Months</option>
+          <option value={ONE_MONTH}>1 Month</option>
+          <option value={TWO_WEEKS}>2 Weeks</option>
+          <option value={ONE_WEEK}>1 Week</option>
         </select>
 
         <hr style={{ height: "5px", backgroundColor: "black" }}></hr>
@@ -152,7 +154,10 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="d-flex align-items-center justify-content-center mt-5">
+    <div
+      className="d-flex align-items-center justify-content-center mt-5"
+      id="account-dash"
+    >
       {user?.plaidAccessToken ? (
         accountInfoReady ? (
           <AccountDash

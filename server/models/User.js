@@ -45,37 +45,43 @@ const expenseSchema = require("./Expense");
 //   }
 // );
 
-const userSchema = new Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
+const userSchema = new Schema(
+  {
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    uid: {
+      type: String,
+      sparse: true,
+    },
+    plaidAccessToken: {
+      type: String,
+    },
+    selected_account_id: {
+      type: String,
+    },
+    last_updated: {
+      type: Date,
+      default: null,
+    },
+    accounts: [accountSchema],
   },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  uid: {
-    type: String,
-    sparse: true,
-  },
-  plaidAccessToken: {
-    type: String,
-  },
-  accounts: [accountSchema],
-  selected_account_id: {
-    type: String,
-  },
-  last_updated: {
-    type: Date,
-    default: null,
-  },
-});
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 // hash user password
 userSchema.pre("save", async function (next) {
@@ -100,12 +106,17 @@ userSchema.plugin(fieldEncryption, {
   fields: ["plaidAccessToken"],
   secret: process.env.MONGOOSE_FIELD_ENCRYPT_KEY,
 });
-// // returns total income
-// userSchema.virtual("Totalincome").get(function () {
-//   let Total = 0;
-//   this.income.forEach((i) => (Total += i.amount));
-//   return Total;
-// });
+
+// returns total income
+userSchema.virtual("selectedAccount").get(function () {
+  if (!this.selected_account_id || !Array.isArray(this.accounts)) {
+    return null;
+  }
+  return (
+    this.accounts.find((ac) => ac.account_id === this.selected_account_id) ||
+    null
+  );
+});
 
 // // returns total expense
 // userSchema.virtual("Totalexpense").get(function () {

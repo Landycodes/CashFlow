@@ -86,7 +86,7 @@ const getTransactionData = async (id, accessToken) => {
           user_id: id,
           account_id: tv.account_id,
           transaction_id: tv.transaction_id,
-          name: tv.name,
+          name: tv.merchant_name ?? tv.name,
           date: tv.date,
           amount: Math.abs(tv.amount),
           type: tv.amount < 0 ? "income" : "expense",

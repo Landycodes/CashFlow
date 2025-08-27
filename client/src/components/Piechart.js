@@ -10,7 +10,7 @@ export default function PieChart({ data }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setRender(true);
-    }, 300);
+    }, 400);
 
     return () => clearTimeout(timer);
   }, []);
