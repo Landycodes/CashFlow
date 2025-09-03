@@ -97,6 +97,17 @@ export const getTransactionList = async (user_id, account_id) => {
   }).then((response) => response.json());
 };
 
+export const getTransactionRange = async (user_id, account_id, range) => {
+  return fetch(
+    `/api/transaction/getTransactionRange/${user_id}/${account_id}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ range: range }),
+    }
+  ).then((response) => response.json());
+};
+
 export const deleteUserTransactions = async (user_id) => {
   return fetch(`/api/transaction/deleteUserTransactions/${user_id}`, {
     method: "DELETE",

@@ -86,6 +86,29 @@ module.exports = {
       res.status(500);
     }
   },
+  async getTransactionRange({ params, body }, res) {
+    const { user_id, account_id } = params;
+    const { range } = body;
+
+    try {
+      const transactions = await Transaction.find({
+        user_id: new Types.ObjectId(user_id),
+        account_id: account_id,
+      })
+        .sort({ date: -1 })
+        .limit(range);
+
+      const txResponse = transactions.map((tx) => ({
+        ...tx.toObject(),
+        date: dayjs(tx.date).format("MM/DD/YYYY"),
+      }));
+
+      res.json(txResponse);
+    } catch (error) {
+      console.error(error);
+      res.status(500);
+    }
+  },
 
   //delete income by id
   //delete expense by id
