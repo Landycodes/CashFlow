@@ -1,19 +1,28 @@
 import { useEffect, useState, useContext } from "react";
 import { userContext } from "../../App";
-import PieChart from "../../utils/Piechart";
 import AccountCard from "../cards/AccountCard";
 import WelcomeCard from "../cards/WelcomeCard";
 import CashFlowCard from "../cards/CashFlowCard";
-import TransactionsCard from "../cards/TransactionsCard";
+import OverviewCard from "../cards/OverviewCard";
 import BillsCard from "../cards/BillsCard";
 import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
-import { getTransactionTotals } from "../../utils/API";
 
 export default function Dashboard() {
   const { user, setUser } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp(user._id);
+
+  const rangeSelection = {
+    ONE_YEAR: 365,
+    SIX_MONTH: 182,
+    THREE_MONTH: 91,
+    ONE_MONTH: 30,
+    TWO_WEEKS: 14,
+    ONE_WEEK: 7,
+  };
+
+  const [range, setRange] = useState(rangeSelection.ONE_YEAR);
 
   const [accountInfoReady, SetaccountInfoReady] = useState(true);
 
@@ -40,8 +49,12 @@ export default function Dashboard() {
             <AccountCard />
             <div className="d-flex flex-row justify-content-between">
               <BillsCard />
-              <CashFlowCard />
-              <TransactionsCard />
+              <CashFlowCard
+                range={range}
+                setRange={setRange}
+                rangeSelection={rangeSelection}
+              />
+              <OverviewCard range={range} />
             </div>
           </div>
         ) : (

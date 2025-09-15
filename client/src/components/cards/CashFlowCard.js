@@ -4,16 +4,9 @@ import { useEffect } from "react";
 import { userContext } from "../../App";
 import { getTransactionTotals } from "../../utils/API";
 
-export default function CashflowCard() {
+export default function CashflowCard({ range, setRange, rangeSelection }) {
   const { user, setUser } = useContext(userContext);
-  const ONE_YEAR = 365;
-  const SIX_MONTH = 182;
-  const THREE_MONTH = 91;
-  const ONE_MONTH = 30;
-  const TWO_WEEKS = 14;
-  const ONE_WEEK = 7;
 
-  const [range, setRange] = useState(ONE_YEAR);
   const [transactions, setTransactions] = useState({
     income: 0,
     expense: 0,
@@ -65,12 +58,12 @@ export default function CashflowCard() {
         onChange={(event) => setRange(event.target.value)}
         style={{ fontSize: "1.25rem", fontWeight: "500" }} // mimic h3
       >
-        <option value={ONE_YEAR}>1 Year</option>
-        <option value={SIX_MONTH}>6 Months</option>
-        <option value={THREE_MONTH}>3 Months</option>
-        <option value={ONE_MONTH}>1 Month</option>
-        <option value={TWO_WEEKS}>2 Weeks</option>
-        <option value={ONE_WEEK}>1 Week</option>
+        <option value={rangeSelection.ONE_YEAR}>1 Year</option>
+        <option value={rangeSelection.SIX_MONTH}>6 Months</option>
+        <option value={rangeSelection.THREE_MONTH}>3 Months</option>
+        <option value={rangeSelection.ONE_MONTH}>1 Month</option>
+        <option value={rangeSelection.TWO_WEEKS}>2 Weeks</option>
+        <option value={rangeSelection.ONE_WEEK}>1 Week</option>
       </select>
 
       <hr style={{ height: "5px", backgroundColor: "black" }}></hr>

@@ -31,10 +31,6 @@ export default function PieChart({ data }) {
     // radius: 100,
     plugins: {
       legend: { position: "bottom" },
-      title: {
-        display: true,
-        text: "Monthly Expenses Pie Chart",
-      },
       tooltip: {
         callbacks: {
           label: (context) => `$${context.formattedValue}`,
@@ -43,6 +39,9 @@ export default function PieChart({ data }) {
           }),
         },
         usePointStyle: true, // must be set for labelPointStyle to apply
+      },
+      datalabels: {
+        display: false,
       },
     },
   };

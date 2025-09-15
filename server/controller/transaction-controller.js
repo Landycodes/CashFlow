@@ -86,22 +86,33 @@ module.exports = {
       res.status(500);
     }
   },
-  async getTransactionRange({ params, body }, res) {
+  async getTransactionGroups({ params, body }, res) {
     const { user_id, account_id } = params;
-    const { range } = body;
+    const { days } = body;
 
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    console.log(cutoff);
     try {
-      const transactions = await Transaction.find({
-        user_id: new Types.ObjectId(user_id),
-        account_id: account_id,
-      })
-        .sort({ date: -1 })
-        .limit(range);
-
-      const txResponse = transactions.map((tx) => ({
-        ...tx.toObject(),
-        date: dayjs(tx.date).format("MM/DD/YYYY"),
-      }));
+      const txResponse = await Transaction.aggregate([
+        {
+          $match: {
+            user_id: new Types.ObjectId(user_id),
+            account_id: account_id,
+            date: { $gte: cutoff },
+            type: "expense",
+          },
+        },
+        {
+          $group: {
+            _id: { name: "$name", type: "$type" },
+            total: { $sum: "$amount" },
+            count: { $sum: 1 },
+          },
+        },
+      ])
+        .sort({ total: -1 })
+        .limit(10);
 
       res.json(txResponse);
     } catch (error) {

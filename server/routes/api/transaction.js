@@ -3,7 +3,7 @@ const {
   getTransactionTotals,
   deleteUserTransactions,
   getTransactionList,
-  getTransactionRange,
+  getTransactionGroups,
 } = require("../../controller/transaction-controller");
 
 router
@@ -15,8 +15,8 @@ router
   .get(getTransactionList);
 
 router
-  .route("/getTransactionRange/:user_id/:account_id")
-  .post(getTransactionRange);
+  .route("/getTransactionGroups/:user_id/:account_id")
+  .post(getTransactionGroups);
 
 router.route("/deleteUserTransactions/:user_id").delete(deleteUserTransactions);
 
