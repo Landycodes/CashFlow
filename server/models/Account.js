@@ -14,6 +14,10 @@ const accountSchema = new Schema(
       type: Number,
       required: true,
     },
+    bills: {
+      type: [String],
+      default: [],
+    },
   },
   { _id: true }
 );

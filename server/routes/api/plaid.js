@@ -2,8 +2,6 @@ const router = require("express").Router();
 const {
   create_link_token,
   exchange_PublicToken,
-  getAccountBalance,
-  getTransactionHistory,
   fetchAccountData,
 } = require("../../controller/plaid-controller");
 

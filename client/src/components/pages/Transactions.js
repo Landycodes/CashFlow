@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getTransactionList } from "../../utils/API";
+import { getTransactionList, removeBill } from "../../utils/API";
 import { userContext } from "../../App";
+import { addBill } from "../../utils/API";
 
 export default function Transactions() {
   //create function to iterate through expenses and incomes and add a row
   //ability to edit each row and relay that to database
-  const [checked, setCheck] = useState(true);
-  const [transactions, setTransactions] = useState([]);
   const { user, setUser } = useContext(userContext);
+  const [checked, setCheck] = useState(user.selectedAccount.bills || []);
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
     if (!user || !user?.selected_account_id) {
@@ -15,8 +16,7 @@ export default function Transactions() {
     }
 
     getTransactionList(user._id, user.selected_account_id).then((data) => {
-      console.log(data);
-
+      // console.log(data);
       const txArr = [];
 
       data.forEach((tx) => {
@@ -32,7 +32,17 @@ export default function Transactions() {
 
       setTransactions(txArr);
     });
-  }, []);
+  }, [user]);
+
+  const handleCheck = async (event, rowName) => {
+    if (event.target.checked) {
+      setCheck((prev) => [...prev, rowName]);
+      await addBill(user._id, user.selected_account_id, rowName);
+    } else {
+      setCheck((prev) => prev.filter((name) => name !== rowName));
+      await removeBill(user._id, user.selected_account_id, rowName);
+    }
+  };
 
   return (
     <div className="d-flex flex-column align-items-center">
@@ -40,18 +50,19 @@ export default function Transactions() {
         className="table table-sm align-middle table-striped table-bordered border-dark table-hover my-4"
         style={{ width: "60vw" }}
       >
-        <thead>
+        <thead className="text-center">
           <tr>
             <th>Name</th>
             <th>Amount</th>
 
             <th>Date</th>
             <th>Category</th>
-            <th></th>
+            <th>Bills</th>
           </tr>
         </thead>
         <tbody>
           {transactions.map((row) => {
+            // console.log(row.amount);
             return (
               <tr key={row.id}>
                 <td>{row.name}</td>
@@ -65,9 +76,19 @@ export default function Transactions() {
                 <td>{row.date}</td>
 
                 <td>{row.category}</td>
-                <td style={{ width: "150px" }}>
+                <td>
                   <div className="d-flex justify-content-around">
-                    <button className="btn btn-sm btn-secondary">Edit</button>
+                    {row.type === "expense" ? (
+                      <input
+                        type="checkbox"
+                        className={`btn ${row.name}`}
+                        autoComplete="off"
+                        checked={checked.includes(row.name) ? true : false}
+                        onChange={(event) => handleCheck(event, row.name)}
+                      />
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </td>
               </tr>

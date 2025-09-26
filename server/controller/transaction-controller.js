@@ -92,7 +92,6 @@ module.exports = {
 
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
-    console.log(cutoff);
     try {
       const txResponse = await Transaction.aggregate([
         {

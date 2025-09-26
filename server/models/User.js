@@ -4,46 +4,6 @@ const { fieldEncryption } = require("mongoose-field-encryption");
 require("dotenv").config();
 
 const accountSchema = require("./Account");
-const incomeSchema = require("./Income");
-const expenseSchema = require("./Expense");
-
-// const userSchema = new Schema(
-//   {
-//     username: {
-//       type: String,
-//       required: true,
-//     },
-//     email: {
-//       type: String,
-//       required: true,
-//       unique: true,
-//       match: [/.+@.+\..+/, "Must use a valid email address"],
-//     },
-//     password: {
-//       type: String,
-//     },
-//     uid: {
-//       type: String,
-//       sparse: true,
-//     },
-//     plaidAccessToken: {
-//       type: String,
-//     },
-//     accounts: [accountSchema],
-//     categories: [],
-//     income: [incomeSchema],
-//     expense: [expenseSchema],
-//     lastUpdated: {
-//       type: Date,
-//     },
-//   },
-//   //   set this to use virtual below
-//   {
-//     toJSON: {
-//       virtuals: true,
-//     },
-//   }
-// );
 
 const userSchema = new Schema(
   {

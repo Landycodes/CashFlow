@@ -1,5 +1,6 @@
 // TODO add JWT auth token methods to apis
 
+// ****************** USER ROUTES *******************
 export const getMe = async (token) => {
   return fetch("/api/me", {
     headers: {
@@ -41,6 +42,7 @@ export const updateUser = async (user_id, updatedObject) => {
   }).then((response) => response.json());
 };
 
+// ****************** GOOGLE SIGN IN ROUTE *******************
 export const googleLogin = async (results) => {
   return fetch("/api/firebase/googlesignin", {
     method: "POST",
@@ -51,6 +53,7 @@ export const googleLogin = async (results) => {
   });
 };
 
+// ****************** PLAID ROUTES *******************
 export const createPlaidLinkToken = async (id) => {
   return fetch("/api/plaid/create_link_token", {
     method: "POST",
@@ -79,6 +82,7 @@ export const fetchAccountData = async (user_id, accessToken) => {
   }).then((response) => response.json());
 };
 
+// ****************** TRANSACTION ROUTES *******************
 export const getTransactionTotals = async (user_id, account_id, days) => {
   return fetch(
     `/api/transaction/getTransactionTotals/${user_id}/${account_id}`,
@@ -112,5 +116,29 @@ export const deleteUserTransactions = async (user_id) => {
   return fetch(`/api/transaction/deleteUserTransactions/${user_id}`, {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },
+  }).then((response) => response.json());
+};
+
+// ****************** ACCOUNT ROUTES *******************
+export const getBills = async (user_id, account_id) => {
+  return fetch(`/api/account/getBills/${user_id}/${account_id}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }).then((response) => response.json());
+};
+
+export const addBill = async (user_id, account_id, billName) => {
+  return fetch(`/api/account/addbill/${user_id}/${account_id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ billName: billName }),
+  }).then((response) => response.json());
+};
+
+export const removeBill = async (user_id, account_id, billName) => {
+  return fetch(`/api/account/deleteBill/${user_id}/${account_id}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ billName: billName }),
   }).then((response) => response.json());
 };

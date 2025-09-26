@@ -73,6 +73,7 @@ const getTransactionData = async (id, accessToken) => {
 
     offset += pageSize;
   }
+  // console.log(transactions);
 
   const tvInsert = transactions.map((tv) => ({
     updateOne: {
