@@ -1,28 +1,56 @@
 const { Types } = require("mongoose");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
+const dayjs = require("dayjs");
 
 module.exports = {
+  // Grabs list of bills from selected user account and pulls the latest bill from each
   async getBills({ params }, res) {
     const { user_id, account_id } = params;
 
     try {
-      const user = await User.findOne(
-        { _id: user_id, "accounts.account_id": account_id },
-        { "accounts.$": 1 }
-      );
+      const account = await User.aggregate([
+        { $match: { _id: new Types.ObjectId(user_id) } },
+        { $unwind: "$accounts" },
+        { $match: { "accounts.account_id": account_id } },
+        { $project: { _id: 0, bills: "$accounts.bills" } },
+      ]);
+      const billNames = account[0].bills || [];
 
-      console.log(user);
-      const billNames = user.accounts[0].bills;
-      console.log(billNames);
+      //   console.log(billNames);
 
-      const bills = await Transaction.find({
-        user_id: new Types.ObjectId(user_id),
-        account_id: account_id,
-        name: { $in: billNames },
-      });
+      const bills = await Transaction.aggregate([
+        {
+          $match: {
+            user_id: new Types.ObjectId(user_id),
+            account_id: account_id,
+            name: { $in: billNames },
+          },
+        },
+        { $sort: { date: -1 } },
+        {
+          $group: {
+            _id: "$name",
+            latest: { $first: "$$ROOT" },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            name: "$_id",
+            amount: "$latest.amount",
+            date: {
+              $dateToString: {
+                format: "%m/%d/%Y",
+                date: "$latest.date",
+              },
+            },
+          },
+        },
+        { $sort: { amount: -1 } },
+      ]);
 
-      console.log(bills);
+      //   console.log(bills);
 
       res.json(bills);
     } catch (error) {
