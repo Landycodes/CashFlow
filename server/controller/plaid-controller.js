@@ -3,6 +3,10 @@ const User = require("../models/User");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
 require("dotenv").config();
 
+// ################################
+const fs = require("fs");
+// ################################
+
 const SIX_HOURS = 1000 * 60 * 60 * 6;
 
 const client = new PlaidApi({
@@ -16,11 +20,18 @@ const client = new PlaidApi({
   },
 });
 
-const getAccountData = async (id, accessToken) => {
+// Fetch Data Helper Function: Account Data
+const setAccountInfo = async (id, plaidAccessToken) => {
   const balanceRes = await client.accountsBalanceGet({
-    access_token: accessToken,
+    access_token: plaidAccessToken,
   });
 
+  //#################################################################################
+  const result = JSON.stringify(balanceRes.data, null, 2);
+
+  fs.writeFileSync("../ufAccountData.json", result);
+  console.log("unfiltered account data file created!");
+  //#################################################################################
   const balanceData = balanceRes.data.accounts;
   let accountValues = [];
 
@@ -45,10 +56,18 @@ const getAccountData = async (id, accessToken) => {
     }
   );
 
+  //#################################################################################
+  const filteredResult = JSON.stringify(updatedUser, null, 2);
+
+  fs.writeFileSync("../AccountData.json", filteredResult);
+  console.log("filtered account data file created!");
+  //#################################################################################
+
   return updatedUser;
 };
 
-const getTransactionData = async (id, accessToken) => {
+// Fetch Data Helper Function: Transaction Data
+const setTransactionInfo = async (id, plaidAccessToken) => {
   const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
     .toISOString()
     .split("T")[0];
@@ -61,7 +80,7 @@ const getTransactionData = async (id, accessToken) => {
 
   while (true) {
     const transactionRes = await client.transactionsGet({
-      access_token: accessToken,
+      access_token: plaidAccessToken,
       start_date: lastYear,
       end_date: today,
       options: { count: pageSize, offset: offset },
@@ -69,10 +88,17 @@ const getTransactionData = async (id, accessToken) => {
     const transactionpage = transactionRes.data.transactions;
     transactions.push(...transactionpage);
 
-    if (transactions.length < pageSize) break;
+    if (transactionpage.length < pageSize) break;
 
     offset += pageSize;
   }
+
+  //#################################################################################
+  const unfilteredResult = JSON.stringify(transactions, null, 2);
+
+  fs.writeFileSync("../ufTransactionData.json", unfilteredResult);
+  console.log("unfiltered transaction data file created!");
+  //#################################################################################
   // console.log(transactions);
 
   const tvInsert = transactions.map((tv) => ({
@@ -98,6 +124,23 @@ const getTransactionData = async (id, accessToken) => {
   }));
 
   const updatedTransactions = await Transaction.bulkWrite(tvInsert);
+
+  //#################################################################################
+  const affectedTransactionIds = transactions.map((t) => t.transaction_id);
+
+  const affectedAccountIds = transactions.map((t) => t.account_id);
+
+  const affectedDocs = await Transaction.find({
+    user_id: id,
+    account_id: { $in: affectedAccountIds },
+    transaction_id: { $in: affectedTransactionIds },
+  });
+
+  const filteredResult = JSON.stringify(affectedDocs, null, 2);
+
+  fs.writeFileSync("../TransactionData.json", filteredResult);
+  console.log("filtered transaction data file created!");
+  //#################################################################################
 
   return updatedTransactions;
 };
@@ -140,7 +183,7 @@ module.exports = {
       const { public_token } = body;
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
-      const itemId = response.data.item_id;
+      // const itemId = response.data.item_id;
 
       // console.log(accessToken);
       const updatedUser = await User.findByIdAndUpdate(
@@ -156,7 +199,7 @@ module.exports = {
         return res.status(404).json({ message: "Unable to find user" });
       }
 
-      res.json(accessToken);
+      res.status(200).end(); // res.json(accessToken);
     } catch (error) {
       console.error(error);
       res
@@ -165,34 +208,37 @@ module.exports = {
     }
   },
 
-  async fetchAccountData({ body, params }, res) {
-    const { id } = params;
-    const { accessToken } = body;
+  async fetchAccountData({ user = null }, res) {
+    if (!user) {
+      return res.status(404).json({ fetchAccountData: "Token user not found" });
+    }
 
     try {
-      const user = await User.findById(id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      const foundUser = await User.findById(user._id);
+
+      if (!foundUser) {
+        return res.status(404).json({ fetchAccountData: "User not found" });
       }
 
-      const lastUpdated = user.last_updated;
-      const now = Date.now();
+      const { id, plaidAccessToken } = foundUser.toObject();
+
       const readyToUpdate =
-        !lastUpdated || now - lastUpdated.getTime() >= SIX_HOURS;
+        !foundUser.last_updated ||
+        Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
       if (!readyToUpdate) {
         console.log("Not ready to update");
-        return res.status(200).json(user);
+        return res.status(200).json(foundUser);
       }
 
       console.log("Updating now");
 
-      const accountUser = await getAccountData(id, accessToken);
+      const accountUser = await setAccountInfo(id, plaidAccessToken);
       if (!accountUser) {
         return res.status(404).json({ message: "Unable to update accounts" });
       }
 
-      const transactions = await getTransactionData(id, accessToken);
+      const transactions = await setTransactionInfo(id, plaidAccessToken);
       if (!transactions) {
         return res
           .status(404)
@@ -206,6 +252,40 @@ module.exports = {
         message: "Failed to store updated account information",
         error: error.message,
       });
+    }
+  },
+  async getRecurringTransactions({ user = null, params }, res) {
+    if (!user) {
+      return res
+        .status(404)
+        .json({ getRecurringTransactions: "Token user not found" });
+    }
+    const foundUser = await User.findById(user._id);
+
+    // console.log(foundUser);
+
+    if (!foundUser.plaidAccessToken) {
+      return res
+        .status(204)
+        .json("getRecurringTransactions: No token assigned to user");
+    }
+
+    const request = {
+      access_token: foundUser.plaidAccessToken,
+      account_ids: [foundUser.selected_account_id],
+    };
+
+    try {
+      const response = await client.transactionsRecurringGet(request);
+      let inflowStreams = response.data.inflow_streams;
+      let outflowStreams = response.data.outflow_streams;
+
+      // console.log(inflowStreams);
+      // console.log(outflowStreams);
+      return res.status(200);
+    } catch (error) {
+      error.response ? console.log(error.response.data) : console.error(error);
+      return res.status(500).json("Failed to get recurring transactions");
     }
   },
 };

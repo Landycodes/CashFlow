@@ -10,6 +10,7 @@ import {
 
 export function PlaidPopUp(
   id,
+  token,
   //   onSuccessCallback = () => {},
   onErrorCallback = () => {}
 ) {
@@ -31,8 +32,11 @@ export function PlaidPopUp(
     token: linkToken,
     onSuccess: async (public_token) => {
       try {
-        const token = await exchangeAndSavePlaidToken(user._id, public_token);
-        const userData = await fetchAccountData(user._id, token);
+        /* const plaidToken =  */ await exchangeAndSavePlaidToken(
+          user._id,
+          public_token
+        );
+        const userData = await fetchAccountData(token);
         setUser(userData);
         navigate("/");
         // onSuccessCallback();

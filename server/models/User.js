@@ -78,61 +78,6 @@ userSchema.virtual("selectedAccount").get(function () {
   );
 });
 
-// // returns total expense
-// userSchema.virtual("Totalexpense").get(function () {
-//   let Total = 0;
-//   this.expense.forEach((i) => (Total += i.amount));
-//   return Total;
-// });
-
-// //method for getting income/expense within a range of days
-// userSchema.methods.dateRange = function (days) {
-//   const currentDate = new Date();
-//   let incomeTotal = 0;
-//   let expenseTotal = 0;
-
-//   const calculateTotal = (arr) => {
-//     return arr.reduce((total, item) => {
-//       const itemDate = new Date(item.date); // ISO string → Date
-//       const dayDifference = (currentDate - itemDate) / (1000 * 60 * 60 * 24);
-//       if (dayDifference <= days) {
-//         const amount = parseFloat(item.amount.toString()); // convert Decimal128 to number
-//         return total + amount;
-//       }
-//       return total;
-//     }, 0);
-//   };
-
-//   incomeTotal = calculateTotal(this.income).toFixed(2);
-//   expenseTotal = calculateTotal(this.expense).toFixed(2);
-//   return { income: incomeTotal, expense: expenseTotal };
-// };
-
-// // return income in the last 7 days from today
-// userSchema.virtual("oneWeek").get(function () {
-//   return this.dateRange(7);
-// });
-// // return income in the last 14 days from today
-// userSchema.virtual("twoWeek").get(function () {
-//   return this.dateRange(14);
-// });
-// // return income in the last 30 days from today
-// userSchema.virtual("oneMonth").get(function () {
-//   return this.dateRange(30);
-// });
-// // return income in the last 90 days from today
-// userSchema.virtual("threeMonth").get(function () {
-//   return this.dateRange(90);
-// });
-// // return income in the last 180 days from today
-// userSchema.virtual("sixMonth").get(function () {
-//   return this.dateRange(180);
-// });
-// // return income in the last 365 days from today
-// userSchema.virtual("oneYear").get(function () {
-//   return this.dateRange(365);
-// });
-
 const User = model("User", userSchema);
 
 module.exports = User;

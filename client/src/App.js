@@ -26,6 +26,7 @@ function AppRouter({
   loggedIn,
   setLoggedIn,
   checkProfileState,
+  token,
 }) {
   const location = useLocation();
 
@@ -56,7 +57,7 @@ function AppRouter({
             path="/"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Dashboard />
+                <Dashboard token={token} />
               </ProtectedRoutes>
             }
           />
@@ -68,7 +69,7 @@ function AppRouter({
             path="/settings"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Settings />
+                <Settings token={token} />
               </ProtectedRoutes>
             }
           />
@@ -103,18 +104,20 @@ function AppRouter({
 function App() {
   const [user, setUser] = useState(undefined);
   const [loggedIn, setLoggedIn] = useState(auth.loggedIn());
+  const [token, setToken] = useState(auth.getToken());
 
   const checkProfileState = async () => {
     // console.log("profile check running");
+    setToken(auth.getToken());
     setLoggedIn(auth.loggedIn());
     if (loggedIn) {
       try {
-        const token = auth.getToken();
+        // const token = auth.getToken();
         const userData = await getMe(token);
         userData ? setUser(userData) : auth.logout();
 
         if (userData?.plaidAccessToken) {
-          await fetchAccountData(userData._id, userData.plaidAccessToken);
+          await fetchAccountData(token);
         }
       } catch (error) {
         console.error("Error creating user props", error);
@@ -138,6 +141,7 @@ function App() {
             loggedIn={loggedIn}
             setLoggedIn={setLoggedIn}
             checkProfileState={checkProfileState}
+            token={token}
           />
         </userContext.Provider>
       )}

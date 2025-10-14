@@ -17,8 +17,9 @@ export default function BillsCard() {
       style={{ width: "325px" }}
     >
       <h3>Bills</h3>
-      {bills.map((bill) => {
-        return (
+
+      {bills.length > 0 ? (
+        bills.map((bill) => (
           <ul
             key={bill.name}
             className="list-group list-group-flush list-unstyled w-100 border rounded border-black p-2"
@@ -29,8 +30,10 @@ export default function BillsCard() {
               <li>Last Paid: {bill.date}</li>
             </ul>
           </ul>
-        );
-      })}
+        ))
+      ) : (
+        <h1>No bills :p</h1>
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
 import { deleteUserTransactions, updateUser } from "../../utils/API";
 import { PlaidPopUp } from "../../utils/Plaid";
-export default function Settings() {
+export default function Settings({ token }) {
   const { user, setUser } = useContext(userContext);
   const [loading, setLoading] = useState(false);
   const [selectMenu, setselectMenu] = useState(false);
@@ -18,7 +18,7 @@ export default function Settings() {
   const handlePlaidLink = () => {
     try {
       setLoading(true);
-      openPlaidPopUp();
+      openPlaidPopUp(token);
     } catch (error) {
       console.log(error);
     } finally {

@@ -8,8 +8,10 @@ import BillsCard from "../cards/BillsCard";
 import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
+import { getRecurringTransactions } from "../../utils/API";
+import auth from "../../utils/auth";
 
-export default function Dashboard() {
+export default function Dashboard({ token }) {
   const { user, setUser } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp(user._id);
 
@@ -35,9 +37,15 @@ export default function Dashboard() {
     });
   }, []);
 
+  // const token = auth.getToken();
+  // console.log(token);
+
   useEffect(() => {
+    // console.log(user);
     if (!user?.plaidAccessToken) {
-      openPlaidPopUp();
+      openPlaidPopUp(token);
+    } else {
+      getRecurringTransactions(token).then((data) => console.log(data));
     }
   }, [user]);
 

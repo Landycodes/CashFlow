@@ -74,11 +74,23 @@ export const exchangeAndSavePlaidToken = async (user_id, public_token) => {
   }
 };
 
-export const fetchAccountData = async (user_id, accessToken) => {
-  return fetch(`/api/plaid/fetchAccountData/${user_id}`, {
+export const fetchAccountData = async (token) => {
+  return fetch("/api/plaid/fetchAccountData", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ accessToken: accessToken }),
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+};
+
+export const getRecurringTransactions = async (token) => {
+  console.log("Fetching recurring transactions");
+  return fetch("/api/plaid/getrecurringTransactions", {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
   }).then((response) => response.json());
 };
 
