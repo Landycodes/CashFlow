@@ -26,7 +26,6 @@ function AppRouter({
   loggedIn,
   setLoggedIn,
   checkProfileState,
-  token,
 }) {
   const location = useLocation();
 
@@ -57,7 +56,7 @@ function AppRouter({
             path="/"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Dashboard token={token} />
+                <Dashboard />
               </ProtectedRoutes>
             }
           />
@@ -69,7 +68,7 @@ function AppRouter({
             path="/settings"
             element={
               <ProtectedRoutes loggedIn={loggedIn}>
-                <Settings token={token} />
+                <Settings />
               </ProtectedRoutes>
             }
           />
@@ -102,22 +101,23 @@ function AppRouter({
 }
 
 function App() {
-  const [user, setUser] = useState(undefined);
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
   const [loggedIn, setLoggedIn] = useState(auth.loggedIn());
-  const [token, setToken] = useState(auth.getToken());
 
   const checkProfileState = async () => {
     // console.log("profile check running");
-    setToken(auth.getToken());
     setLoggedIn(auth.loggedIn());
     if (loggedIn) {
       try {
-        // const token = auth.getToken();
-        const userData = await getMe(token);
+        const authToken = auth.getToken();
+        setToken(authToken);
+
+        const userData = await getMe(authToken);
         userData ? setUser(userData) : auth.logout();
 
         if (userData?.plaidAccessToken) {
-          await fetchAccountData(token);
+          await fetchAccountData(authToken);
         }
       } catch (error) {
         console.error("Error creating user props", error);
@@ -134,14 +134,13 @@ function App() {
       {!user && loggedIn ? (
         <Loading />
       ) : (
-        <userContext.Provider value={{ user, setUser }}>
+        <userContext.Provider value={{ user, setUser, token, setToken }}>
           <AppRouter
             user={user}
             setUser={setUser}
             loggedIn={loggedIn}
             setLoggedIn={setLoggedIn}
             checkProfileState={checkProfileState}
-            token={token}
           />
         </userContext.Provider>
       )}

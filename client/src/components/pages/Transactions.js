@@ -6,16 +6,16 @@ import { addBill } from "../../utils/API";
 export default function Transactions() {
   //create function to iterate through expenses and incomes and add a row
   //ability to edit each row and relay that to database
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser, token } = useContext(userContext);
   const [checked, setCheck] = useState(user.selectedAccount.bills || []);
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    if (!user || !user?.selected_account_id) {
+    if (!token || !user || !user?.selected_account_id) {
       return;
     }
 
-    getTransactionList(user._id, user.selected_account_id).then((data) => {
+    getTransactionList(token).then((data) => {
       // console.log(data);
       const txArr = [];
 
@@ -32,7 +32,7 @@ export default function Transactions() {
 
       setTransactions(txArr);
     });
-  }, [user]);
+  }, [token, user]);
 
   const handleCheck = async (event, rowName) => {
     if (event.target.checked) {

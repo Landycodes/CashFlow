@@ -1,57 +1,34 @@
 const Transaction = require("../models/Transaction");
 const { Types } = require("mongoose");
-const dayjs = require("dayjs");
+const { getTransactions } = require("./services/transactionServices");
 
 module.exports = {
-  async getTransactionTotals({ params, body }, res) {
-    const { user_id, account_id } = params;
-    let { days } = body;
-
-    // Convert to milliseconds
-    days = days * 1000 * 60 * 60 * 24;
-
+  async getTransactionTotals({ user = null, body }, res) {
     try {
-      const transactions = await Transaction.find({
-        user_id: new Types.ObjectId(user_id),
-        account_id: account_id,
-      }); /* .select("amount type date name") */
+      const { days } = body;
+      const transactions = await getTransactions(user, "totals", { days });
 
-      if (transactions.length === 0) {
-        res.status(404).json("Unable to get transactions");
+      if (transactions.length <= 0) {
+        res
+          .status(404)
+          .json({ getTransactionTotals: "Unable to find transactions" });
       }
 
-      const currentDate = new Date().getTime();
-
-      const income = transactions
-        .filter(
-          (t) =>
-            t.type === "income" &&
-            currentDate - new Date(t.date).getTime() <= days
-        )
-        .reduce((sum, tx) => sum + tx.amount, 0)
-        .toFixed(2);
-
-      const expense = transactions
-        .filter(
-          (t) =>
-            t.type === "expense" &&
-            currentDate - new Date(t.date).getTime() <= days
-        )
-        .reduce((sum, tx) => sum + tx.amount, 0)
-        .toFixed(2);
-
-      return res.json({ income, expense });
-    } catch (err) {
-      console.error(err);
-      return res.status(400).json(err);
+      return res.json(transactions);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ getTransactionTotals: "Failed to retrieve transactions" });
     }
   },
-  async deleteUserTransactions({ params }, res) {
-    const { user_id } = params;
+  async deleteUserTransactions({ user = null }, res) {
+    if (!user)
+      res.status(404).json({ deleteUserTransactions: "Unable to find user" });
 
     try {
       const deletedTransactions = await Transaction.deleteMany({
-        user_id: user_id,
+        user_id: user._id,
       });
 
       if (!deletedTransactions) {
@@ -66,59 +43,75 @@ module.exports = {
       res.status(500);
     }
   },
-  async getTransactionList({ params }, res) {
-    const { user_id, account_id } = params;
-
+  async getTransactionList({ user = null }, res) {
     try {
-      const transactions = await Transaction.find({
-        user_id: new Types.ObjectId(user_id),
-        account_id: account_id,
-      });
+      const transactions = await getTransactions(user, "list");
 
-      const txResponse = transactions.map((tx) => ({
-        ...tx.toObject(),
-        date: dayjs(tx.date).format("MM/DD/YYYY"),
-      }));
+      if (transactions.length <= 0) {
+        res.status(404).json({ getTransactionList: "No transactions found" });
+      }
 
-      res.json(txResponse);
+      res.json(transactions);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res
+        .status(500)
+        .json({ getTransactionList: "Failed to get transactions" });
     }
   },
-  async getTransactionGroups({ params, body }, res) {
-    const { user_id, account_id } = params;
-    const { days } = body;
-
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
+  async getTransactionGroups({ user = null, body }, res) {
     try {
-      const txResponse = await Transaction.aggregate([
-        {
-          $match: {
-            user_id: new Types.ObjectId(user_id),
-            account_id: account_id,
-            date: { $gte: cutoff },
-            type: "expense",
-          },
-        },
-        {
-          $group: {
-            _id: { name: "$name", type: "$type" },
-            total: { $sum: "$amount" },
-            count: { $sum: 1 },
-          },
-        },
-      ])
-        .sort({ total: -1 })
-        .limit(10);
+      const { days } = body;
+      const transactions = await getTransactions(user, "group", { days });
 
-      res.json(txResponse);
+      if (transactions.length <= 0) {
+        return res
+          .status(404)
+          .json({ getTransactionGroups: "No transactions found" });
+      }
+
+      res.json(transactions);
     } catch (error) {
       console.error(error);
-      res.status(500);
+      res
+        .status(500)
+        .json({ getTransactionGroups: "Failed to get transaction groups" });
     }
   },
+
+  // async getTransactionGroups({ params, body }, res) {
+  //   const { user_id, account_id } = params;
+  //   const { days } = body;
+
+  //   const cutoff = new Date();
+  //   cutoff.setDate(cutoff.getDate() - days);
+  //   try {
+  //     const txResponse = await Transaction.aggregate([
+  //       {
+  //         $match: {
+  //           user_id: new Types.ObjectId(user_id),
+  //           account_id: account_id,
+  //           date: { $gte: cutoff },
+  //           type: "expense",
+  //         },
+  //       },
+  //       {
+  //         $group: {
+  //           _id: { name: "$name", type: "$type" },
+  //           total: { $sum: "$amount" },
+  //           count: { $sum: 1 },
+  //         },
+  //       },
+  //     ])
+  //       .sort({ total: -1 })
+  //       .limit(10);
+
+  //     res.json(txResponse);
+  //   } catch (error) {
+  //     console.error(error);
+  //     res.status(500);
+  //   }
+  // },
 
   //delete income by id
   //delete expense by id

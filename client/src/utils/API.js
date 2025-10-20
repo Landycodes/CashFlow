@@ -54,20 +54,25 @@ export const googleLogin = async (results) => {
 };
 
 // ****************** PLAID ROUTES *******************
-export const createPlaidLinkToken = async (id) => {
+export const createPlaidLinkToken = async (token) => {
   return fetch("/api/plaid/create_link_token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ _id: id }),
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
   }).then((response) => response.json());
 };
 
-export const exchangeAndSavePlaidToken = async (user_id, public_token) => {
+export const exchangeAndSavePlaidToken = async (token, public_token) => {
   try {
-    return fetch(`/api/plaid/exchange_PublicToken/${user_id}`, {
+    return fetch("/api/plaid/exchange_PublicToken", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ public_token }),
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ public_token: public_token }),
     }).then((res) => res.json());
   } catch (error) {
     return error;
@@ -95,39 +100,45 @@ export const getRecurringTransactions = async (token) => {
 };
 
 // ****************** TRANSACTION ROUTES *******************
-export const getTransactionTotals = async (user_id, account_id, days) => {
-  return fetch(
-    `/api/transaction/getTransactionTotals/${user_id}/${account_id}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ days: days }),
-    }
-  ).then((response) => response.json());
-};
-
-export const getTransactionList = async (user_id, account_id) => {
-  return fetch(`/api/transaction/getTransactionList/${user_id}/${account_id}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
+export const getTransactionTotals = async (token, days) => {
+  return fetch("/api/transaction/getTransactions/Totals", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ days: days }),
   }).then((response) => response.json());
 };
 
-export const getTransactionGroups = async (user_id, account_id, days) => {
-  return fetch(
-    `/api/transaction/getTransactionGroups/${user_id}/${account_id}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ days: days }),
-    }
-  ).then((response) => response.json());
+export const getTransactionList = async (token) => {
+  return fetch("/api/transaction/getTransactions/List", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
 };
 
-export const deleteUserTransactions = async (user_id) => {
-  return fetch(`/api/transaction/deleteUserTransactions/${user_id}`, {
+export const getTransactionGroups = async (token, days) => {
+  return fetch("/api/transaction/getTransactions/Groups", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ days: days }),
+  }).then((response) => response.json());
+};
+
+export const deleteUserTransactions = async (token) => {
+  return fetch("/api/transaction/deleteUserTransactions", {
     method: "DELETE",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
   }).then((response) => response.json());
 };
 

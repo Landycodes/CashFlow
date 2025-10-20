@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { authMiddleware } = require("../../utils/auth");
 const {
   getTransactionTotals,
   deleteUserTransactions,
@@ -7,17 +8,17 @@ const {
 } = require("../../controller/transaction-controller");
 
 router
-  .route("/getTransactionTotals/:user_id/:account_id")
-  .post(getTransactionTotals);
+  .route("/getTransactions/Totals")
+  .post(authMiddleware, getTransactionTotals);
+
+router.route("/getTransactions/List").get(authMiddleware, getTransactionList);
 
 router
-  .route("/getTransactionList/:user_id/:account_id")
-  .get(getTransactionList);
+  .route("/getTransactions/Groups")
+  .post(authMiddleware, getTransactionGroups);
 
 router
-  .route("/getTransactionGroups/:user_id/:account_id")
-  .post(getTransactionGroups);
-
-router.route("/deleteUserTransactions/:user_id").delete(deleteUserTransactions);
+  .route("/deleteUserTransactions")
+  .delete(authMiddleware, deleteUserTransactions);
 
 module.exports = router;

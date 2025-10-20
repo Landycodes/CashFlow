@@ -5,7 +5,7 @@ import { userContext } from "../../App";
 import { getTransactionTotals } from "../../utils/API";
 
 export default function CashflowCard({ range, setRange, rangeSelection }) {
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser, token } = useContext(userContext);
 
   const [transactions, setTransactions] = useState({
     income: 0,
@@ -14,17 +14,13 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
   });
 
   useEffect(() => {
-    if (user?.plaidAccessToken && user?.selectedAccount) {
-      getTransactionAmounts(range);
+    if (token && user?.plaidAccessToken && user?.selectedAccount) {
+      getTransactionAmounts(token, range);
     }
-  }, [user, range]);
+  }, [user, range, token]);
 
-  const getTransactionAmounts = async (days) => {
-    const { income, expense } = await getTransactionTotals(
-      user._id,
-      user.selected_account_id,
-      days
-    );
+  const getTransactionAmounts = async (token, days) => {
+    const { income, expense } = await getTransactionTotals(token, days);
 
     setTransactions({
       income: income,

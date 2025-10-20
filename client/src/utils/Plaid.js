@@ -9,18 +9,20 @@ import {
 } from "./API";
 
 export function PlaidPopUp(
-  id,
-  token,
-  //   onSuccessCallback = () => {},
-  onErrorCallback = () => {}
+  onSuccessCallback = () => {
+    window.location.reload();
+  },
+  onErrorCallback = (E) => {
+    console.log(E);
+  }
 ) {
   const [linkToken, setLinkToken] = useState(null);
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser, token } = useContext(userContext);
   const navigate = useNavigate();
 
   const createLinkToken = async () => {
     try {
-      const response = await createPlaidLinkToken(id);
+      const response = await createPlaidLinkToken(token);
       setLinkToken(response.link_token);
     } catch (error) {
       console.error("Error creating Plaid link token:", error);
@@ -32,14 +34,11 @@ export function PlaidPopUp(
     token: linkToken,
     onSuccess: async (public_token) => {
       try {
-        /* const plaidToken =  */ await exchangeAndSavePlaidToken(
-          user._id,
-          public_token
-        );
+        await exchangeAndSavePlaidToken(token, public_token);
         const userData = await fetchAccountData(token);
         setUser(userData);
         navigate("/");
-        // onSuccessCallback();
+        onSuccessCallback();
       } catch (error) {
         onErrorCallback(error);
       }

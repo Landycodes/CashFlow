@@ -9,11 +9,10 @@ import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
 import { getRecurringTransactions } from "../../utils/API";
-import auth from "../../utils/auth";
 
-export default function Dashboard({ token }) {
-  const { user, setUser } = useContext(userContext);
-  const { openPlaidPopUp } = PlaidPopUp(user._id);
+export default function Dashboard() {
+  const { user, token } = useContext(userContext);
+  const { openPlaidPopUp } = PlaidPopUp();
 
   const rangeSelection = {
     ONE_YEAR: 365,
@@ -43,11 +42,16 @@ export default function Dashboard({ token }) {
   useEffect(() => {
     // console.log(user);
     if (!user?.plaidAccessToken) {
-      openPlaidPopUp(token);
-    } else {
-      getRecurringTransactions(token).then((data) => console.log(data));
+      openPlaidPopUp();
     }
   }, [user]);
+
+  // useEffect(() => {
+  //   if (token) {
+  //     console.log(token);
+  //     getRecurringTransactions(token).then((data) => console.log(data));
+  //   }
+  // }, [token]);
 
   if (user?.plaidAccessToken) {
     return (

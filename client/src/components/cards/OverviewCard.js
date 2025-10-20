@@ -6,25 +6,27 @@ import { getTransactionGroups } from "../../utils/API";
 import BarChart from "../../utils/Barchart";
 
 export default function OverviewCard({ range }) {
-  const { user } = useContext(userContext);
+  const { user, token } = useContext(userContext);
   const [chartData, setChartData] = useState({
     expense: { labels: [], values: [] },
   });
 
   useEffect(() => {
-    getTransactionGroups(user._id, user.selected_account_id, range).then(
-      (res) => {
-        const expenseTx = res.filter((tx) => tx._id.type === "expense");
+    if (!token) return;
 
-        setChartData({
-          expense: {
-            labels: expenseTx.map((tx) => tx._id.name),
-            values: expenseTx.map((tx) => tx.total.toFixed(2)),
-          },
-        });
-      }
-    );
-  }, [user._id, user.selected_account_id, range]);
+    getTransactionGroups(token, range).then((res) => {
+      if (!Array.isArray(res)) return;
+
+      const expenseTx = res.filter((tx) => tx._id.type === "expense");
+
+      setChartData({
+        expense: {
+          labels: expenseTx.map((tx) => tx._id.name),
+          values: expenseTx.map((tx) => tx.total.toFixed(2)),
+        },
+      });
+    });
+  }, [token, range]);
 
   return (
     <div

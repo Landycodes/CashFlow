@@ -146,10 +146,11 @@ const setTransactionInfo = async (id, plaidAccessToken) => {
 };
 
 module.exports = {
-  async create_link_token({ body }, res) {
+  async create_link_token({ user = null }, res) {
+    // const id = user.id
     try {
       // Get the client_user_id by searching for the current user
-      const user = await User.findOne({ _id: body._id });
+      // const foundUser = await User.findOne({ _id: id});
       if (!user) {
         return res.status(404).json({ error: "User Not Found" });
       }
@@ -177,15 +178,16 @@ module.exports = {
       res.status(400).json({ error: `failed to create link token: ${error}` });
     }
   },
-  async exchange_PublicToken({ body, params }, res) {
+  async exchange_PublicToken({ body, user = null }, res) {
+    if (!user) {
+      return res.status(404).json({ error: "User Not Found" });
+    }
     try {
-      const { id } = params;
+      const id = user._id;
       const { public_token } = body;
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
-      // const itemId = response.data.item_id;
 
-      // console.log(accessToken);
       const updatedUser = await User.findByIdAndUpdate(
         id,
         { $set: { plaidAccessToken: accessToken } },
@@ -196,7 +198,9 @@ module.exports = {
       );
 
       if (!updatedUser) {
-        return res.status(404).json({ message: "Unable to find user" });
+        return res
+          .status(404)
+          .json({ message: "Unable to assign plaid token to user" });
       }
 
       res.status(200).end(); // res.json(accessToken);

@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
-import { usePlaidLink } from "react-plaid-link";
-import { useNavigate } from "react-router-dom";
+// import { usePlaidLink } from "react-plaid-link";
+// import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
 import { deleteUserTransactions, updateUser } from "../../utils/API";
 import { PlaidPopUp } from "../../utils/Plaid";
-export default function Settings({ token }) {
-  const { user, setUser } = useContext(userContext);
+import auth from "../../utils/auth";
+export default function Settings() {
+  const { user, setUser, token } = useContext(userContext);
   const [loading, setLoading] = useState(false);
   const [selectMenu, setselectMenu] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(
@@ -18,6 +19,7 @@ export default function Settings({ token }) {
   const handlePlaidLink = () => {
     try {
       setLoading(true);
+      const token = auth.getToken();
       openPlaidPopUp(token);
     } catch (error) {
       console.log(error);
@@ -35,7 +37,7 @@ export default function Settings({ token }) {
           plaidAccessToken: "",
           accounts: [],
         }),
-        deleteUserTransactions(user._id),
+        deleteUserTransactions(token),
       ]);
 
       if (updatedAccount && updatedTransactions) {
