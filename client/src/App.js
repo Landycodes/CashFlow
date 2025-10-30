@@ -23,6 +23,8 @@ export const userContext = createContext();
 function AppRouter({
   user,
   setUser,
+  token,
+  setToken,
   loggedIn,
   setLoggedIn,
   checkProfileState,
@@ -103,18 +105,27 @@ function AppRouter({
 function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loggedIn, setLoggedIn] = useState(auth.loggedIn());
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const checkProfileState = async () => {
     // console.log("profile check running");
-    setLoggedIn(auth.loggedIn());
-    if (loggedIn) {
+    const imLoggedIn = auth.loggedIn();
+    setLoggedIn(imLoggedIn);
+
+    if (imLoggedIn) {
       try {
         const authToken = auth.getToken();
-        setToken(authToken);
 
         const userData = await getMe(authToken);
-        userData ? setUser(userData) : auth.logout();
+        if (!userData) {
+          setUser(null);
+          setToken(null);
+          setLoggedIn(false);
+          auth.logout();
+          return;
+        }
+        setUser(userData);
+        setToken(authToken);
 
         if (userData?.plaidAccessToken) {
           await fetchAccountData(authToken);
@@ -126,24 +137,30 @@ function App() {
   };
 
   useEffect(() => {
-    checkProfileState();
-  }, []);
+    const debounce = setTimeout(() => {
+      checkProfileState();
+    }, 500);
+
+    return () => clearTimeout(debounce);
+  }, [loggedIn]);
+
+  if (loggedIn && (!user || !token)) {
+    return <Loading />;
+  }
 
   return (
     <Router>
-      {!user && loggedIn ? (
-        <Loading />
-      ) : (
-        <userContext.Provider value={{ user, setUser, token, setToken }}>
-          <AppRouter
-            user={user}
-            setUser={setUser}
-            loggedIn={loggedIn}
-            setLoggedIn={setLoggedIn}
-            checkProfileState={checkProfileState}
-          />
-        </userContext.Provider>
-      )}
+      <userContext.Provider value={{ user, setUser, token, setToken }}>
+        <AppRouter
+          user={user}
+          setUser={setUser}
+          loggedIn={loggedIn}
+          setLoggedIn={setLoggedIn}
+          token={token}
+          setToken={setToken}
+          checkProfileState={checkProfileState}
+        />
+      </userContext.Provider>
     </Router>
   );
 }

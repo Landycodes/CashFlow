@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../App";
-import { getBills } from "../../utils/API";
+import { getBills, getRecurringTransactions } from "../../utils/API";
 
 export default function BillsCard() {
-  const { user } = useContext(userContext);
+  const { user, token } = useContext(userContext);
   const [bills, setBills] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     getBills(user._id, user.selected_account_id).then((data) => setBills(data));
+    getRecurringTransactions(token)
   }, []);
 
   return (

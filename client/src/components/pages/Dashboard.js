@@ -40,7 +40,6 @@ export default function Dashboard() {
   // console.log(token);
 
   useEffect(() => {
-    // console.log(user);
     if (!user?.plaidAccessToken) {
       openPlaidPopUp();
     }
@@ -59,7 +58,7 @@ export default function Dashboard() {
         {accountInfoReady ? (
           <div className="d-flex flex-column justify-content-center align-items-center">
             <AccountCard />
-            <div className="d-flex flex-row justify-content-between">
+            <div className="d-flex flex-row justify-content-between align-items-start">
               <BillsCard />
               <CashFlowCard
                 range={range}

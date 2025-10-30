@@ -3,6 +3,7 @@ import PieChart from "../../utils/Piechart";
 import { useEffect } from "react";
 import { userContext } from "../../App";
 import { getTransactionTotals } from "../../utils/API";
+import Transactions from "../pages/Transactions";
 
 export default function CashflowCard({ range, setRange, rangeSelection }) {
   const { user, setUser, token } = useContext(userContext);
@@ -35,17 +36,23 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
       style={{ width: "325px" }}
     >
       <h3>CashFlow</h3>
-      <div
-        style={{ width: "225px", height: "225px" }}
-        className="d-flex justify-content-center align-items-center mt-2 mb-3"
-      >
-        <PieChart
-          data={{
-            labels: ["Earned", "Spent"],
-            values: [transactions.income, transactions.expense],
-          }}
-        />
-      </div>
+      {transactions.income > 0 && transactions.expense > 0 ? (
+        <>
+          <div
+            style={{ width: "225px", height: "225px" }}
+            className="d-flex justify-content-center align-items-center mt-2 mb-3"
+          >
+            <PieChart
+              data={{
+                labels: ["Earned", "Spent"],
+                values: [transactions.income, transactions.expense],
+              }}
+            />
+          </div>
+        </>
+      ) : (
+        ""
+      )}
 
       <select
         className="form-select text-center border-primary py-1"

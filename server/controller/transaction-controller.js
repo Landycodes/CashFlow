@@ -1,6 +1,6 @@
 const Transaction = require("../models/Transaction");
 const { Types } = require("mongoose");
-const { getTransactions } = require("./services/transactionServices");
+const { getTransactions } = require("./services/transactionService");
 
 module.exports = {
   async getTransactionTotals({ user = null, body }, res) {
@@ -64,11 +64,11 @@ module.exports = {
       const { days } = body;
       const transactions = await getTransactions(user, "group", { days });
 
-      if (transactions.length <= 0) {
-        return res
-          .status(404)
-          .json({ getTransactionGroups: "No transactions found" });
-      }
+      // if (transactions.length <= 0) {
+      //   return res
+      //     .status(404)
+      //     .json({ getTransactionGroups: "No transactions found" });
+      // }
 
       res.json(transactions);
     } catch (error) {
