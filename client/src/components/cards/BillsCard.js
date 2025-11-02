@@ -10,8 +10,8 @@ export default function BillsCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getBills(user._id, user.selected_account_id).then((data) => setBills(data));
-    getRecurringTransactions(token)
+    // getBills(user._id, user.selected_account_id).then((data) => setBills(data));
+    // getRecurringTransactions(token)
   }, []);
 
   return (

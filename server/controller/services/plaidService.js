@@ -46,6 +46,7 @@ module.exports = {
     let accountValues = [];
 
     balanceData.forEach((bd) => {
+      console.log(bd.bills);
       accountValues.push({
         name: bd.name,
         account_id: bd.account_id,
@@ -132,9 +133,42 @@ module.exports = {
 
     return updatedTransactions;
   },
-  async setBillInfo(data) {
-    // console.log(data);
-    console.log(data.inflow_streams);
-    console.log(data.outflow_streams);
+  async setBillInfo(id, plaidAccessToken, selected_account_id) {
+    if (!selected_account_id) return null;
+
+    try {
+      const request = {
+        access_token: plaidAccessToken,
+        account_ids: [selected_account_id],
+      };
+
+      const response = await client.transactionsRecurringGet(request);
+
+      if (!response?.data?.outflow_streams) {
+        console.log("No recurring bills found");
+        return null;
+      }
+
+      const bills = response.data.outflow_streams.map((bd) => ({
+        name: bd.merchant_name,
+        amount: Number(bd.average_amount.amount.toFixed(2)),
+        last_paid: bd.last_date,
+        next_due: bd.predicted_next_date,
+        frequency: bd.frequency,
+      }));
+
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: id, "accounts.account_id": selected_account_id },
+        {
+          $set: { "accounts.$.bills": bills },
+        },
+        { new: true, runValidators: true }
+      );
+      //   console.log(updatedUser.accounts[0].bills);
+
+      return updatedUser;
+    } catch (error) {
+      error.response ? console.log(error.response.data) : console.error(error);
+    }
   },
 };

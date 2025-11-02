@@ -73,7 +73,7 @@ export const exchangeAndSavePlaidToken = async (token, public_token) => {
         authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ public_token: public_token }),
-    }).then((res) => res.json());
+    }).then((res) => res.status);
   } catch (error) {
     return error;
   }
@@ -86,17 +86,7 @@ export const fetchAccountData = async (token) => {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-  }).then((response) => response.json());
-};
-
-export const getRecurringTransactions = async (token) => {
-  console.log("Fetching recurring transactions");
-  return fetch("/api/plaid/getrecurringTransactions", {
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
-    },
-  }).then((response) => response.json());
+  }).then((response) => response.status);
 };
 
 // ****************** TRANSACTION ROUTES *******************

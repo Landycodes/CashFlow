@@ -15,7 +15,7 @@ const billSchema = new Schema(
       default: null,
     },
     next_due: {
-      type: date,
+      type: Date,
       default: null,
     },
     frequency: {

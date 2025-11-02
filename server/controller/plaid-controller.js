@@ -23,15 +23,10 @@ const client = new PlaidApi({
 
 module.exports = {
   async create_link_token({ user = null }, res) {
-    // const id = user.id
-    try {
-      // Get the client_user_id by searching for the current user
-      // const foundUser = await User.findOne({ _id: id});
-      if (!user) {
-        return res.status(404).json({ error: "User Not Found" });
-      }
+    if (!user) return res.status(404).json({ error: "User Not Found" });
 
-      const clientUserId = user.id;
+    try {
+      const clientUserId = user._id;
       const request = {
         user: {
           client_user_id: clientUserId,
@@ -101,7 +96,8 @@ module.exports = {
         return res.status(404).json({ fetchAccountData: "User not found" });
       }
 
-      const { id, plaidAccessToken } = foundUser.toObject();
+      const { id, plaidAccessToken, selected_account_id } =
+        foundUser.toObject();
 
       const readyToUpdate =
         !foundUser.last_updated ||
@@ -114,56 +110,34 @@ module.exports = {
 
       console.log("Updating now");
 
-      const accountUser = await setAccountInfo(id, plaidAccessToken);
-      if (!accountUser) {
-        return res.status(404).json({ message: "Unable to update accounts" });
+      // Bills have to be set after account info is updated
+      const [accountInfo, transactions] = await Promise.all([
+        setAccountInfo(id, plaidAccessToken),
+        setTransactionInfo(id, plaidAccessToken),
+      ]);
+      const bills = await setBillInfo(
+        id,
+        plaidAccessToken,
+        selected_account_id
+      );
+
+      if (!accountInfo || !transactions || !bills) {
+        return res.status(400).json({
+          fetchAccountData: "One or more services failed",
+          accountInfo: accountInfo,
+          transactions: transactions,
+          bills: bills,
+        });
       }
 
-      const transactions = await setTransactionInfo(id, plaidAccessToken);
-      if (!transactions) {
-        return res
-          .status(404)
-          .json({ message: "Unable to update transactions" });
-      }
-
-      return res.status(200).json(accountUser);
+      console.log("Account Update Successfull!");
+      return res.status(200).end();
     } catch (error) {
       console.error(error);
       return res.status(500).json({
-        message: "Failed to store updated account information",
+        fetchAccountData: "Failed to store updated account information",
         error: error.message,
       });
-    }
-  },
-  async getRecurringTransactions({ user = null, params }, res) {
-    if (!user) {
-      return res
-        .status(404)
-        .json({ getRecurringTransactions: "Token user not found" });
-    }
-    const foundUser = await User.findById(user._id);
-
-    // console.log(foundUser);
-
-    if (!foundUser.plaidAccessToken) {
-      return res
-        .status(204)
-        .json("getRecurringTransactions: No token assigned to user");
-    }
-
-    const request = {
-      access_token: foundUser.plaidAccessToken,
-      account_ids: [foundUser.selected_account_id],
-    };
-
-    try {
-      const response = await client.transactionsRecurringGet(request);
-      setBillInfo(response?.data);
-
-      return res.status(200);
-    } catch (error) {
-      error.response ? console.log(error.response.data) : console.error(error);
-      return res.status(500).json("Failed to get recurring transactions");
     }
   },
 };
