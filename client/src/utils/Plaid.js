@@ -9,6 +9,7 @@ import {
 } from "./API";
 
 export function PlaidPopUp(
+  ACCESS_TOKEN = null,
   onSuccessCallback = () => {
     window.location.reload();
   },
@@ -22,7 +23,7 @@ export function PlaidPopUp(
 
   const createLinkToken = async () => {
     try {
-      const response = await createPlaidLinkToken(token);
+      const response = await createPlaidLinkToken(token, ACCESS_TOKEN);
       setLinkToken(response.link_token);
     } catch (error) {
       console.error("Error creating Plaid link token:", error);

@@ -92,7 +92,7 @@ export default function BarChart({ data }) {
 
   if (render) {
     return (
-      <div style={{ width: "400px", height: "175px" }}>
+      <div style={{ width: "400px", height: "auto" /* "175px" */ }}>
         <Bar data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     );

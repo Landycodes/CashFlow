@@ -3,19 +3,16 @@ const User = require("../../models/User");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
 require("dotenv").config();
 
-const client = new PlaidApi({
-  basePath: PlaidEnvironments.sandbox,
-  baseOptions: {
-    headers: {
-      "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-      "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
-      "Plaid-Version": "2020-09-14",
-    },
-  },
-});
+//###################
+const TEST_ACCOUNT_DATA = require("../../__Tests__/ufAccountData.json");
+const TEST_TRANSACTION_DATA = require("../../__Tests__/ufTransactionData.json");
+const TEST_BILL_DATA = require("../../__Tests__/ufBills.json");
+//###################
 
+// ########### USED TO CAPTURE DATA FOR TEST #################
 const fs = require("fs");
-const writeToJSONFile = async (filepath, data, id = null) => {
+const writeToJSONFile = async (filename, data, id = null) => {
+  const filepath = `../../__Tests__/${filename}`;
   if (id != null) {
     const affectedTransactionIds = data.map((t) => t.transaction_id);
     const affectedAccountIds = data.map((t) => t.account_id);
@@ -33,20 +30,25 @@ const writeToJSONFile = async (filepath, data, id = null) => {
 };
 
 module.exports = {
-  async setAccountInfo(id, plaidAccessToken) {
-    const balanceRes = await client.accountsBalanceGet({
-      access_token: plaidAccessToken,
-    });
+  async setAccountInfo(client, id, plaidAccessToken) {
+    //#################  PRODUCTION API CALL #####################
+    // const balanceRes = await client.accountsBalanceGet({
+    //     access_token: plaidAccessToken,
+    //   });
 
-    //#################################################################################
-    writeToJSONFile("../ufAccountData.json", balanceRes.data);
-    //#################################################################################
+    // TEST API DATA INJECTION
+    const balanceRes = {};
+    balanceRes.data = TEST_ACCOUNT_DATA;
+
+    // **
+    // writeToJSONFile("ufAccountData.json", balanceRes.data);
+    // **
 
     const balanceData = balanceRes.data.accounts;
     let accountValues = [];
 
     balanceData.forEach((bd) => {
-      console.log(bd.bills);
+      // console.log(bd);
       accountValues.push({
         name: bd.name,
         account_id: bd.account_id,
@@ -67,41 +69,46 @@ module.exports = {
       }
     );
 
-    //#################################################################################
-    writeToJSONFile("../AccountData.json", updatedUser);
-    //#################################################################################
+    //**
+    // writeToJSONFile("AccountData.json", updatedUser);
+    //**
 
     return updatedUser;
   },
-  async setTransactionInfo(id, plaidAccessToken) {
-    const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
-    const today = new Date().toISOString().split("T")[0];
+  async setTransactionInfo(client, id, plaidAccessToken) {
+    //#################  PRODUCTION API METHOD #####################
+    // const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+    //   .toISOString()
+    //   .split("T")[0];
+    // const today = new Date().toISOString().split("T")[0];
 
-    const transactions = [];
+    // const transactions = [];
 
-    let offset = 0;
-    const pageSize = 100;
+    // let offset = 0;
+    // const pageSize = 100;
 
-    while (true) {
-      const transactionRes = await client.transactionsGet({
-        access_token: plaidAccessToken,
-        start_date: lastYear,
-        end_date: today,
-        options: { count: pageSize, offset: offset },
-      });
-      const transactionpage = transactionRes.data.transactions;
-      transactions.push(...transactionpage);
+    // while (true) {
+    //   const transactionRes = await client.transactionsGet({
+    //     access_token: plaidAccessToken,
+    //     start_date: lastYear,
+    //     end_date: today,
+    //     options: { count: pageSize, offset: offset },
+    //   });
 
-      if (transactionpage.length < pageSize) break;
+    //   const transactionpage = transactionRes.data.transactions;
+    //   transactions.push(...transactionpage);
 
-      offset += pageSize;
-    }
+    //   if (transactionpage.length < pageSize) break;
 
-    //#################################################################################
-    writeToJSONFile("../ufTransactionData.json", transactions);
-    //#################################################################################
+    //   offset += pageSize;
+    // }
+
+    // TEST API DATA INJECTION
+    const transactions = TEST_TRANSACTION_DATA;
+
+    //**
+    // writeToJSONFile("../ufTransactionData.json", transactions);
+    //**
 
     const tvInsert = transactions.map((tv) => ({
       updateOne: {
@@ -127,13 +134,13 @@ module.exports = {
 
     const updatedTransactions = await Transaction.bulkWrite(tvInsert);
 
-    //#################################################################################
-    writeToJSONFile("../TransactionData.json", transactions, id);
-    //#################################################################################
+    //**
+    // writeToJSONFile("../TransactionData.json", transactions, id);
+    //**
 
     return updatedTransactions;
   },
-  async setBillInfo(id, plaidAccessToken, selected_account_id) {
+  async setBillInfo(client, id, plaidAccessToken, selected_account_id) {
     if (!selected_account_id) return null;
 
     try {
@@ -142,12 +149,21 @@ module.exports = {
         account_ids: [selected_account_id],
       };
 
-      const response = await client.transactionsRecurringGet(request);
+      //#################  PRODUCTION API CALL #####################
+      // const response = await client.transactionsRecurringGet(request);
 
-      if (!response?.data?.outflow_streams) {
-        console.log("No recurring bills found");
-        return null;
-      }
+      // if (!response?.data?.outflow_streams) {
+      //   console.log("No recurring bills found");
+      //   return null;
+      // }
+
+      // TEST API DATA INJECTION
+      const response = {};
+      response.data = TEST_BILL_DATA;
+
+      //**
+      // writeToJSONFile("../ufBills.json", response.data);
+      //**
 
       const bills = response.data.outflow_streams.map((bd) => ({
         name: bd.merchant_name,
@@ -155,12 +171,26 @@ module.exports = {
         last_paid: bd.last_date,
         next_due: bd.predicted_next_date,
         frequency: bd.frequency,
+        charged_to: bd.account_id,
       }));
 
+      const income = response.data.inflow_streams.map((inc) => ({
+        name: inc.description,
+        amount: Math.abs(inc.average_amount.amount.toFixed(2)),
+        last_paid: inc.last_date,
+        next_pay: inc.predicted_next_date,
+        frequency: inc.frequency,
+        deposited_to: inc.account_id,
+      }));
+
+      //**
+      // writeToJSONFile("../Bills.json", bills);
+      //**
+
       const updatedUser = await User.findOneAndUpdate(
-        { _id: id, "accounts.account_id": selected_account_id },
+        { _id: id },
         {
-          $set: { "accounts.$.bills": bills },
+          $set: { bills: bills, income: income },
         },
         { new: true, runValidators: true }
       );

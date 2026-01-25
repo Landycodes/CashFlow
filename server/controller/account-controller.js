@@ -5,52 +5,84 @@ const dayjs = require("dayjs");
 
 module.exports = {
   // Grabs list of bills from selected user account and pulls the latest bill from each
-  async getBills({ params }, res) {
-    const { user_id, account_id } = params;
+  async getBills({ user = null }, res) {
+    if (!user) res.status(404).json({ getBills: "Token user not found" });
+
+    const account = await User.findById(user._id, "selected_account_id");
+    const account_id = account.selected_account_id;
 
     try {
-      const account = await User.aggregate([
-        { $match: { _id: new Types.ObjectId(user_id) } },
+      const bills = await User.aggregate([
+        { $match: { _id: new Types.ObjectId(user._id) } },
         { $unwind: "$accounts" },
         { $match: { "accounts.account_id": account_id } },
-        { $project: { _id: 0, bills: "$accounts.bills" } },
-      ]);
-      const billNames = account[0].bills || [];
-
-      //   console.log(billNames);
-
-      const bills = await Transaction.aggregate([
-        {
-          $match: {
-            user_id: new Types.ObjectId(user_id),
-            account_id: account_id,
-            name: { $in: billNames },
-          },
-        },
-        { $sort: { date: -1 } },
-        {
-          $group: {
-            _id: "$name",
-            latest: { $first: "$$ROOT" },
-          },
-        },
+        { $unwind: "$accounts.bills" }, // unwind bills array to format each individually
         {
           $project: {
             _id: 0,
-            name: "$_id",
-            amount: "$latest.amount",
-            date: {
+            name: "$accounts.bills.name",
+            amount: "$accounts.bills.amount",
+            last_paid: {
               $dateToString: {
                 format: "%m/%d/%Y",
-                date: "$latest.date",
+                date: "$accounts.bills.last_paid",
               },
             },
+            next_due: {
+              $dateToString: {
+                format: "%m/%d/%Y",
+                date: "$accounts.bills.next_due",
+              },
+            },
+            frequency: "$accounts.bills.frequency",
           },
         },
-        { $sort: { amount: -1 } },
       ]);
 
-      //   console.log(bills);
+      if (bills.length <= 0) return;
+
+      // const billNames = accountBills.map((b) => b.name);
+
+      // // console.log(billNames);
+
+      // const bills = await Transaction.aggregate([
+      //   {
+      //     $match: {
+      //       user_id: new Types.ObjectId(user._id),
+      //       account_id: account_id,
+      //       name: { $in: billNames },
+      //     },
+      //   },
+      //   { $sort: { date: -1 } },
+      //   {
+      //     $group: {
+      //       _id: "$name",
+      //       latest: { $first: "$$ROOT" },
+      //     },
+      //   },
+      //   {
+      //     $project: {
+      //       _id: 0,
+      //       name: "$_id",
+      //       amount: "$latest.amount",
+      //       last_paid: {
+      //         $dateToString: {
+      //           format: "%m/%d/%Y",
+      //           date: "$latest.date",
+      //         },
+      //       },
+      //       next_due: {
+      //         $dateToString: {
+      //           format: "%m/%d/%Y",
+      //           date: "$latest.date",
+      //         },
+      //       },
+      //     },
+      //   },
+      //   { $sort: { amount: -1 } },
+      // ]);
+
+      // console.log(bills);
 
       res.json(bills);
     } catch (error) {

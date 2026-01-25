@@ -22,6 +22,10 @@ const billSchema = new Schema(
       type: String,
       default: "MONTHLY",
     },
+    charged_to: {
+      type: String,
+      required: true,
+    },
   },
   { _id: true }
 );

@@ -1,5 +1,5 @@
 const { Schema, model } = require("mongoose");
-const billSchema = require("./Bills");
+// const billSchema = require("./Bills");
 
 const accountSchema = new Schema(
   {
@@ -15,9 +15,9 @@ const accountSchema = new Schema(
       type: Number,
       required: true,
     },
-    bills: {
-      type: [billSchema],
-    },
+    // bills: {
+    //   type: [billSchema],
+    // },
   },
   { _id: true }
 );

@@ -4,6 +4,8 @@ const { fieldEncryption } = require("mongoose-field-encryption");
 require("dotenv").config();
 
 const accountSchema = require("./Account");
+const billSchema = require("./Bills");
+const incomeSchema = require("./Income")
 
 const userSchema = new Schema(
   {
@@ -36,6 +38,8 @@ const userSchema = new Schema(
       default: null,
     },
     accounts: [accountSchema],
+    bills: [billSchema],
+    income: [incomeSchema]
   },
   {
     toJSON: { virtuals: true },

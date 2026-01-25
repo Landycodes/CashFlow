@@ -1,6 +1,11 @@
 import { createContext, useEffect, useState } from "react";
 import "./App.css";
-import { fetchAccountData, getMe } from "./utils/API";
+import {
+  createPlaidLinkToken,
+  exchangeAndSavePlaidToken,
+  fetchAccountData,
+  getMe,
+} from "./utils/API";
 import {
   BrowserRouter as Router,
   Routes,
@@ -17,6 +22,7 @@ import Expenses from "./components/pages/Expenses";
 import Transactions from "./components/pages/Transactions";
 import Footer from "./components/Footer";
 import Dashboard from "./components/pages/Dashboard";
+import { PlaidPopUp } from "./utils/Plaid";
 
 export const userContext = createContext();
 
@@ -28,6 +34,7 @@ function AppRouter({
   loggedIn,
   setLoggedIn,
   checkProfileState,
+  plaidAuthExpired,
 }) {
   const location = useLocation();
 
@@ -43,7 +50,7 @@ function AppRouter({
   };
 
   const PlaidProtectedRoute = ({ children }) => {
-    if (!user?.plaidAccessToken) {
+    if (!user?.plaidAccessToken || plaidAuthExpired) {
       return <Navigate to="/" replace />;
     }
     return children;
@@ -106,6 +113,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [plaidAuthExpired, setPlaidAuthExpire] = useState(false);
 
   const checkProfileState = async () => {
     // console.log("profile check running");
@@ -128,7 +136,13 @@ function App() {
         setToken(authToken);
 
         if (userData?.plaidAccessToken) {
-          await fetchAccountData(authToken);
+          const accountData = await fetchAccountData(authToken);
+          if (accountData === 200) {
+            setPlaidAuthExpire(false);
+          }
+          if (accountData === 401) {
+            setPlaidAuthExpire(true);
+          }
         }
       } catch (error) {
         console.error("Error creating user props", error);
@@ -150,7 +164,9 @@ function App() {
 
   return (
     <Router>
-      <userContext.Provider value={{ user, setUser, token, setToken }}>
+      <userContext.Provider
+        value={{ user, setUser, token, setToken, plaidAuthExpired }}
+      >
         <AppRouter
           user={user}
           setUser={setUser}
@@ -159,6 +175,7 @@ function App() {
           token={token}
           setToken={setToken}
           checkProfileState={checkProfileState}
+          plaidAuthExpired={plaidAuthExpired}
         />
       </userContext.Provider>
     </Router>

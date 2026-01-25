@@ -10,7 +10,7 @@ export default function BillsCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // getBills(user._id, user.selected_account_id).then((data) => setBills(data));
+    getBills(token).then((data) => setBills(data));
     // getRecurringTransactions(token)
   }, []);
 
@@ -30,7 +30,13 @@ export default function BillsCard() {
             <li>{bill.name}</li>
             <ul className="list-unstyled mx-5">
               <li>Amount: {bill.amount}</li>
-              <li>Last Paid: {bill.date}</li>
+              <li>Last Paid: {bill.last_paid}</li>
+              <li>Next Payment: {bill.next_due}</li>
+              <li>
+                Due:{" "}
+                {bill.frequency.charAt(0) +
+                  bill.frequency.slice(1).toLowerCase()}
+              </li>
             </ul>
           </ul>
         ))

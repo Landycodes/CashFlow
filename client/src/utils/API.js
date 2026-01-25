@@ -133,10 +133,13 @@ export const deleteUserTransactions = async (token) => {
 };
 
 // ****************** ACCOUNT ROUTES *******************
-export const getBills = async (user_id, account_id) => {
-  return fetch(`/api/account/getBills/${user_id}/${account_id}`, {
+export const getBills = async (token) => {
+  return fetch("/api/account/getBills", {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
   }).then((response) => response.json());
 };
 

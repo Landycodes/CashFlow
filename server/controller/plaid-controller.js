@@ -10,6 +10,7 @@ require("dotenv").config();
 
 const SIX_HOURS = 1000 * 60 * 60 * 6;
 
+// PLAID PRODUCTION AND SANDBOX CHANGE HERE
 const client = new PlaidApi({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
@@ -22,7 +23,7 @@ const client = new PlaidApi({
 });
 
 module.exports = {
-  async create_link_token({ user = null }, res) {
+  async create_link_token({ user = null, ACCESS_TOKEN = null }, res) {
     if (!user) return res.status(404).json({ error: "User Not Found" });
 
     try {
@@ -38,6 +39,10 @@ module.exports = {
         // Add this in later for real time updates
         // webhook: "https://webhook.example.com",
       };
+
+      if (ACCESS_TOKEN) {
+        request.access_token = ACCESS_TOKEN;
+      }
 
       const createTokenResponse = await client.linkTokenCreate(request);
       res.json(createTokenResponse.data);
@@ -103,19 +108,21 @@ module.exports = {
         !foundUser.last_updated ||
         Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
-      if (!readyToUpdate) {
-        console.log("Not ready to update");
-        return res.status(200).json(foundUser);
-      }
+      // if (!readyToUpdate) {
+      //   console.log("Not ready to update");
+      //   return res.status(200).json(foundUser);
+      // }
 
       console.log("Updating now");
 
       // Bills have to be set after account info is updated
       const [accountInfo, transactions] = await Promise.all([
-        setAccountInfo(id, plaidAccessToken),
-        setTransactionInfo(id, plaidAccessToken),
+        setAccountInfo(client, id, plaidAccessToken),
+        setTransactionInfo(client, id, plaidAccessToken),
       ]);
+
       const bills = await setBillInfo(
+        client,
         id,
         plaidAccessToken,
         selected_account_id
@@ -133,10 +140,13 @@ module.exports = {
       console.log("Account Update Successfull!");
       return res.status(200).end();
     } catch (error) {
-      console.error(error);
+      // console.error(error);
+      if (error?.response?.data?.error_code === "ITEM_LOGIN_REQUIRED") {
+        return res.status(401).json({ API_error: "LOGIN_REQUIRED" });
+      }
       return res.status(500).json({
         fetchAccountData: "Failed to store updated account information",
-        error: error.message,
+        API_error: error,
       });
     }
   },

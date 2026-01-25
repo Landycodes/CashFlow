@@ -11,7 +11,7 @@ import { PlaidPopUp } from "../../utils/Plaid";
 import { getRecurringTransactions } from "../../utils/API";
 
 export default function Dashboard() {
-  const { user, token } = useContext(userContext);
+  const { user, token, plaidAuthExpired } = useContext(userContext);
   const { openPlaidPopUp } = PlaidPopUp();
 
   const rangeSelection = {
@@ -40,7 +40,7 @@ export default function Dashboard() {
   // console.log(token);
 
   useEffect(() => {
-    if (!user?.plaidAccessToken) {
+    if (!user?.plaidAccessToken || plaidAuthExpired) {
       openPlaidPopUp();
     }
   }, [user]);
