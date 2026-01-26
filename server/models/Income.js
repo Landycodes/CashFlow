@@ -14,7 +14,7 @@ const incomeSchema = new Schema(
       type: Date,
       default: null,
     },
-    next_pay: {
+    predicted_next_pay: {
       type: Date,
       default: null,
     },

@@ -29,6 +29,29 @@ const writeToJSONFile = async (filename, data, id = null) => {
   console.log(`Data written to ${filepath}`);
 };
 
+const predictNextDate = async (tx_ids) => {
+  if (tx_ids.length < 2) {
+    return null;
+  }
+
+  const dates = await Transaction.aggregate([
+    { $match: { transaction_id: { $in: tx_ids } } },
+    { $sort: { date: 1 } },
+    { $group: { _id: null, dates: { $push: "$date" } } },
+    { $project: { _id: 0, dates: 1 } },
+  ]).then((t) => t[0]?.dates ?? []);
+
+  let totalInterval = 0;
+  for (let i = 1; i < dates.length; i++) {
+    totalInterval += dates[i] - dates[i - 1];
+  }
+
+  const avg = totalInterval / (dates.length - 1);
+  const lastDate = dates[dates.length - 1];
+
+  return new Date(lastDate.getTime() + avg);
+};
+
 module.exports = {
   async setAccountInfo(client, id, plaidAccessToken) {
     //#################  PRODUCTION API CALL #####################
@@ -174,14 +197,22 @@ module.exports = {
         charged_to: bd.account_id,
       }));
 
-      const income = response.data.inflow_streams.map((inc) => ({
-        name: inc.description,
-        amount: Math.abs(inc.average_amount.amount.toFixed(2)),
-        last_paid: inc.last_date,
-        next_pay: inc.predicted_next_date,
-        frequency: inc.frequency,
-        deposited_to: inc.account_id,
-      }));
+      const income = await Promise.all(
+        response.data.inflow_streams.map(async (inc) => {
+          if (!inc.predicted_next_date) {
+            const pd = await predictNextDate(inc.transaction_ids);
+            inc.predicted_next_date = pd;
+          }
+          return {
+            name: inc.description,
+            amount: Math.abs(inc.average_amount.amount.toFixed(2)),
+            last_paid: inc.last_date,
+            predicted_next_pay: inc.predicted_next_date,
+            frequency: inc.frequency,
+            deposited_to: inc.account_id,
+          };
+        })
+      );
 
       //**
       // writeToJSONFile("../Bills.json", bills);
