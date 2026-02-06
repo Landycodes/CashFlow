@@ -7,9 +7,65 @@
   overflow-x: hidden;
 } */
 
+#loginForm {
+  transform: translateY(-25%);
+  background-image: var(--box-color);
+  /* height: 50vh;
+  width: auto; */
+}
+
+.title {
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 2.5rem;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.5rem
+}
+
 .bg-gradient {
     background-image: var(--bs-gradient);
 }
+
+.form-control.bg-gradient {
+  background-color: transparent;              /* see-through so gradient shows */
+  background-image: var(--bs-gradient);       /* Bootstrap gradient variable */
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  box-shadow: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* Focus state */
+.form-control.bg-gradient:focus {
+  border-color: #fff;
+  box-shadow: none;                            /* remove Bootstrap glow */
+}
+
+/* Autofill fix (Chrome/Edge) */
+input.form-control.bg-gradient:-webkit-autofill,
+input.form-control.bg-gradient:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bs-gradient) inset;
+  -webkit-text-fill-color: #fff;
+  transition: background-color 5000s ease-in-out 0s;  /* prevents flash */
+}
+
+/* Placeholder text and secondary text */
+.form-control.bg-gradient::placeholder,
+.btn.secondary-txt,
+.secondary-txt {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ############### NAVBAR ######################### */
 
 .menu-container {
   height: 30px;
@@ -31,10 +87,13 @@
 .menu-btn { 
   margin: 0;
   cursor: pointer;
+  color: var(--txt-color);
 }
 .menu-btn:hover {
-  background-color: gainsboro;
+  /* background-color: gainsboro; */
+  color:rgba(255, 255, 255, 0.7);
 }
+
 
 .dynamic-text {
   text-wrap: nowrap;

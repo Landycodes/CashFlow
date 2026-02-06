@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import Auth from "../utils/auth";
 import { userContext } from "../App";
 import { useLocation, useNavigate } from "react-router-dom";
+import { updateUser } from "../utils/API";
 
 export default function Navbar() {
   const { user, setUser } = useContext(userContext);
@@ -35,21 +36,52 @@ export default function Navbar() {
     setDate(`${month}/${day}/${year}`);
   };
 
+  const handleAccountSelect = async (event) => {
+    const updatedUser = await updateUser(user._id, {
+      selected_account_id: event.target.value,
+    });
+    setUser(updatedUser);
+  };
+
   return (
-    <nav className="w-100 d-flex justify-content-end bg-light">
+    <nav className="w-100 d-flex bg-gradient justify-content-end">
       <div className="d-flex justify-content-between w-100">
-        <span className="mx-2 d-flex flex-row border border-top-0 border-bottom-0 border-2 border-secondary">
-          <h6 className="bg-light p-2 pt-3 mx-1">{name}</h6>
-          <h6 className="bg-light p-2 pt-3 mx-1">{time}</h6>
-          <h6 className="bg-light p-2 pt-3 mx-1">{date}</h6>
+        <span className="mx-2 d-flex flex-row">
+          <h6 className="p-2 pt-3 mx-1">Welcome, {name}!</h6>
+          <h6 className="p-2 pt-3 mx-1">{time}</h6>
+          <h6 className="p-2 pt-3 mx-1">{date}</h6>
+          <div className="form-floating w-100">
+            {user?.selected_account_id && user.accounts.length > 1 ? (
+              <select
+                value={user.selected_account_id}
+                onChange={handleAccountSelect}
+                className="form-select p-1"
+              >
+                {user?.accounts ? (
+                  user.accounts.map((acct) => {
+                    return (
+                      <option key={acct.account_id} value={acct.account_id}>
+                        {acct.name}
+                      </option>
+                    );
+                  })
+                ) : (
+                  <option selected>No Account To Select From</option>
+                )}
+              </select>
+            ) : (
+              ""
+            )}
+          </div>
         </span>
         <span className="d-flex flex-row mx-2">
           <h6
-            className="menu-btn p-3 pt-3 border-start border-secondary"
+            className="menu-btn p-3 pt-3"
             onClick={() => navigate("/expenses")}
           >
             Expenses
           </h6>
+          <span className="rhombus"></span>
           <h6
             className="menu-btn p-3 pt-3 border-start border-secondary"
             onClick={() => navigate("/Transactions")}
@@ -78,7 +110,6 @@ export default function Navbar() {
           >
             Logout
           </h6>
-          {/* </div> */}
         </span>
       </div>
     </nav>

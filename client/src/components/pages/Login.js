@@ -133,11 +133,11 @@ export default function Login() {
     }
   };
 
-  const handleRedirect = async () => {
-    console.log("Checking Credential");
-    const data = await getRedirectResult(fireAuth);
-    console.log("Credential: ", data);
-  };
+  // const handleRedirect = async () => {
+  //   console.log("Checking Credential");
+  //   const data = await getRedirectResult(fireAuth);
+  //   console.log("Credential: ", data);
+  // };
 
   const throwError = (error) => {
     return error !== "" ? (
@@ -150,14 +150,13 @@ export default function Login() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100">
       <form
-        className="form d-flex flex-column justify-content-center align-items-center p-3 pt-4 rounded border bg-light"
+        className="form d-flex flex-column justify-content-center align-items-center p-5 rounded border border-black"
         id="loginForm"
-        style={{ transform: "translateY(-25%)" }}
         onSubmit={handleSubmit}
       >
-        <header className="bg-light bg-gradient w-100 d-flex flex-column align-items-center">
-          <h2 className="m-0">CashFlow</h2>
-          <h5>Track your spending</h5>
+        <header className="text-light w-100 d-flex m-1 flex-column align-items-center">
+          <h2 className="title m-0">BALNCE</h2>
+          <h5 className="subtitle">Track your spending</h5>
         </header>
 
         <br></br>
@@ -166,7 +165,7 @@ export default function Login() {
           ""
         ) : (
           <input
-            className="form-control w-75 m-1 border border-primary dynamic-text"
+            className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
             type="text"
             placeholder="username"
             onChange={handleInputChange}
@@ -175,7 +174,7 @@ export default function Login() {
           />
         )}
         <input
-          className="form-control w-75 m-1 border border-primary dynamic-text"
+          className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
           type="text"
           placeholder="Email"
           name="email"
@@ -183,7 +182,7 @@ export default function Login() {
           defaultValue={form.email}
         />
         <input
-          className="form-control w-75 m-1 border border-primary dynamic-text"
+          className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
           type="password"
           placeholder="Password"
           onChange={handleInputChange}
@@ -208,9 +207,11 @@ export default function Login() {
             {login ? "Create Account" : "Log in instead"}
           </button>
 
-          <h3 className="rounded w-25 text-center text-nowrap">-Or-</h3>
+          <h3 className="rounded secondary-txt w-25 text-center text-nowrap">
+            -Or-
+          </h3>
           <button
-            className="btn btn-light dynamic-text m-1 bg-light bg-gradient border border-primary"
+            className="secondary-txt btn dynamic-text m-1 bg-gradient"
             type="button"
             onClick={handleGoogle}
           >

@@ -1,3 +1,13 @@
+:root {
+  --bg-color: linear-gradient(rgb(39, 39, 39), rgba(48, 25, 52, 0.808));
+  --box-color: linear-gradient(rgb(37, 37, 37), rgba(48, 25, 52, 0.918));
+  --txt-color: white
+}
+
+* {
+  color: var(--txt-color);
+}
+
 html {
   height: 100%;
 }
@@ -9,14 +19,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  background-image:
-    linear-gradient(rgba(48, 25, 52, .5), rgba(48, 25, 52, .5)),
-    url("../public/tucsonCity.jpg");
-  background-repeat: no-repeat; /*comment out for moneyBackground*/
-  background-size: cover; /*change to contain for moneyBackground and cover for tucsonCity*/
-  background-position: center;
-  background-attachment: fixed;
+  background-image: var(--bg-color);
 }
 
 code {
