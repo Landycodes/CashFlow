@@ -7,6 +7,11 @@
   overflow-x: hidden;
 } */
 
+.bg-gradient {
+    background-image: var(--bs-gradient);
+}
+
+/* ############ LOGIN PAGE ################## */
 #loginForm {
   transform: translateY(-25%);
   background-image: var(--box-color);
@@ -31,26 +36,20 @@
   font-size: 1.5rem
 }
 
-.bg-gradient {
-    background-image: var(--bs-gradient);
-}
-
 .form-control.bg-gradient {
-  background-color: transparent;              /* see-through so gradient shows */
-  background-image: var(--bs-gradient);       /* Bootstrap gradient variable */
+  background-color: transparent;             
+  background-image: var(--bs-gradient);     
   border: 1px solid rgba(255, 255, 255, 0.5);
   color: #fff;
   box-shadow: none;
   transition: border-color 0.2s ease-in-out;
 }
 
-/* Focus state */
 .form-control.bg-gradient:focus {
   border-color: #fff;
-  box-shadow: none;                            /* remove Bootstrap glow */
+  box-shadow: none;                            
 }
 
-/* Autofill fix (Chrome/Edge) */
 input.form-control.bg-gradient:-webkit-autofill,
 input.form-control.bg-gradient:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px var(--bs-gradient) inset;
@@ -94,10 +93,25 @@ input.form-control.bg-gradient:-webkit-autofill:focus {
   color:rgba(255, 255, 255, 0.7);
 }
 
-
-.dynamic-text {
-  text-wrap: nowrap;
+nav .form-select {
+  background-color: rgba(56, 45, 56, 0.658);
+  background-image:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");  
+  color: var(--txt-color);
+  max-width: fit-content;
+  border-color: gray;
 }
+
+nav .form-select:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: gray;
+}
+
+
+/* .dynamic-text {
+  text-wrap: nowrap;
+} */
 
 .v-align {
   padding-top: 40%;
@@ -114,7 +128,7 @@ input.form-control.bg-gradient:-webkit-autofill:focus {
 }
 
 @media screen and (min-width: 520px) and (max-width: 780px) {
-  .dynamic-text {
+  .text-nowrap {
       font-size: 2.5vw;
   }
   #loginForm {
@@ -123,7 +137,7 @@ input.form-control.bg-gradient:-webkit-autofill:focus {
 }
 
 @media screen and (max-width: 520px) {
-  .dynamic-text {
+  .text-nowrap {
     font-size: 11px;
   }
   #loginForm {

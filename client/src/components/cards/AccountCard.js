@@ -53,19 +53,19 @@ export default function CurrentAccountInfo() {
     }
   }, [user]);
 
-  const handleAccountSelect = async (event) => {
-    const updatedUser = await updateUser(user._id, {
-      selected_account_id: event.target.value,
-    });
-    setUser(updatedUser);
-  };
+  // const handleAccountSelect = async (event) => {
+  //   const updatedUser = await updateUser(user._id, {
+  //     selected_account_id: event.target.value,
+  //   });
+  //   setUser(updatedUser);
+  // };
 
   return (
     <div
-      className="d-flex flex-column align-items-start bg-light bg-gradient p-3 my-4 rounded border border-primary"
+      className="d-flex flex-column align-items-start bg-gradient p-3 my-4 rounded border border-secondary"
       style={{ minWidth: "350px" }}
     >
-      <div className="form-floating w-100">
+      {/* <div className="form-floating w-100">
         <select
           value={user.selected_account_id}
           onChange={handleAccountSelect}
@@ -83,7 +83,7 @@ export default function CurrentAccountInfo() {
             <option selected>No Account To Select From</option>
           )}
         </select>
-      </div>
+      </div> */}
       <h2>
         Current Balance:{" "}
         <span className="text-success text-nowrap">

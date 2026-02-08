@@ -1,11 +1,13 @@
 :root {
   --bg-color: linear-gradient(rgb(39, 39, 39), rgba(48, 25, 52, 0.808));
   --box-color: linear-gradient(rgb(37, 37, 37), rgba(48, 25, 52, 0.918));
-  --txt-color: white
+  --txt-color: white;
+  --data-bg: rgba(97, 97, 97, 0.575);
 }
 
 * {
   color: var(--txt-color);
+  font-family: "VT323", monospace;
 }
 
 html {

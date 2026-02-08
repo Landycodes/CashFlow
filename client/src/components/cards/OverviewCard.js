@@ -30,7 +30,7 @@ export default function OverviewCard({ range }) {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-light bg-gradient p-3 mx-5 rounded border border-primary"
+      className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 h-auto rounded border border-secondary"
       // style={{ width: "400px", height: "auto" }}
     >
       <h3>Overview</h3>

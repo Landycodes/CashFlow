@@ -57,7 +57,7 @@ function AppRouter({
   };
 
   return (
-    <div className="backgroundImage d-flex flex-column min-vh-100">
+    <div className="d-flex flex-column min-vh-100">
       {loggedIn && <Navbar />}
       <main className="flex-grow-1">
         <Routes>

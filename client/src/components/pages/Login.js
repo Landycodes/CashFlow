@@ -165,7 +165,7 @@ export default function Login() {
           ""
         ) : (
           <input
-            className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
+            className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
             type="text"
             placeholder="username"
             onChange={handleInputChange}
@@ -174,7 +174,7 @@ export default function Login() {
           />
         )}
         <input
-          className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
+          className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
           type="text"
           placeholder="Email"
           name="email"
@@ -182,7 +182,7 @@ export default function Login() {
           defaultValue={form.email}
         />
         <input
-          className="form-control bg-gradient w-75 m-2 p-2 dynamic-text"
+          className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
           type="password"
           placeholder="Password"
           onChange={handleInputChange}
@@ -194,13 +194,13 @@ export default function Login() {
 
         <div className="d-flex flex-column justify-content-center align-items-center mt-2">
           <button
-            className="btn btn-success w-50 m-1 dynamic-text"
+            className="btn btn-success w-50 m-1 text-nowrap"
             type="submit"
           >
             Submit
           </button>
           <button
-            className="btn btn-primary m-1 dynamic-text"
+            className="btn btn-primary m-1 text-nowrap"
             type="button"
             onClick={() => setlogin(!login)}
           >
@@ -211,7 +211,7 @@ export default function Login() {
             -Or-
           </h3>
           <button
-            className="secondary-txt btn dynamic-text m-1 bg-gradient"
+            className="secondary-txt btn text-nowrap m-1 bg-gradient"
             type="button"
             onClick={handleGoogle}
           >
