@@ -11,6 +11,8 @@
     background-image: var(--bs-gradient);
 }
 
+
+
 /* ############ LOGIN PAGE ################## */
 #loginForm {
   transform: translateY(-25%);
@@ -58,9 +60,7 @@ input.form-control.bg-gradient:-webkit-autofill:focus {
 }
 
 /* Placeholder text and secondary text */
-.form-control.bg-gradient::placeholder,
-.btn.secondary-txt,
-.secondary-txt {
+.form-control.bg-gradient::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 

@@ -194,24 +194,24 @@ export default function Login() {
 
         <div className="d-flex flex-column justify-content-center align-items-center mt-2">
           <button
-            className="btn btn-success w-50 m-1 text-nowrap"
+            className="btn btn-outline-success w-50 m-1 my-2 fs-5 text-nowrap"
             type="submit"
           >
             Submit
           </button>
           <button
-            className="btn btn-primary m-1 text-nowrap"
+            className="btn btn-outline-primary m-1 my-2 fs-5 text-nowrap"
             type="button"
             onClick={() => setlogin(!login)}
           >
             {login ? "Create Account" : "Log in instead"}
           </button>
 
-          <h3 className="rounded secondary-txt w-25 text-center text-nowrap">
+          <h3 className="rounded text-light w-25 text-center text-nowrap">
             -Or-
           </h3>
           <button
-            className="secondary-txt btn text-nowrap m-1 bg-gradient"
+            className="text-light text-opacity-75 btn text-nowrap m-1 fs-5 bg-gradient"
             type="button"
             onClick={handleGoogle}
           >

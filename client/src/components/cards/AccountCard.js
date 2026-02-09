@@ -3,94 +3,87 @@ import { userContext } from "../../App";
 import { useState } from "react";
 import { useEffect } from "react";
 import { updateUser } from "../../utils/API";
+import formatDate from "../../utils/dateFormatter";
 
 export default function CurrentAccountInfo() {
+  const now = Date.parse("2026-01-01T00:00:00.000Z"); /* Date.now(); */
   const { user, setUser } = useContext(userContext);
   const [accountDetails, setAccountDetails] = useState({
     name: null,
     balance: 0,
     next_pay: null,
+    due_before_payday: null,
     id: null,
   });
 
-  const convertNextPayDate = (incObj) => {
-    function getSuffixFor(day) {
-      if (day % 10 === 1 && day !== 11) return "st";
-      if (day % 10 === 2 && day !== 12) return "nd";
-      if (day % 10 === 3 && day !== 13) return "rd";
-      return "th";
-    }
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      const day = date.getUTCDate();
-      const month = date.toLocaleString("en-US", {
-        month: "short",
-        timeZone: "UTC",
-      });
-      return `${month} ${day}${getSuffixFor(day)}`;
-    }
-
-    if (incObj.length > 1) {
-      const dates = [];
-      incObj.forEach((io) => {
-        const formattedDate = formatDate(io.predicted_next_pay);
-        dates.push(`${io.description}: ${formattedDate}`);
-      });
-      return dates.join(" / ");
-    }
-
-    return formatDate(incObj[0].predicted_next_pay);
-  };
-
   useEffect(() => {
-    if (user?.selectedAccount) {
+    if (!user?.selectedAccount) return;
+
+    if (
+      user?.bills.filter((b) => b.charged_to === user.selected_account_id)
+        .length > 0
+    ) {
+      const nextPayCheck = user.income
+        .filter((i) => i.deposited_to === user.selected_account_id)
+        .reduce((acc, cv) => {
+          if (!acc) return cv;
+
+          const closetDate = Math.abs(Date.parse(acc.predicted_next_pay) - now);
+          const currentDate = Math.abs(Date.parse(cv.predicted_next_pay) - now);
+
+          return currentDate < closetDate ? cv : acc;
+        }, null);
+
+      const dueBefore_Payday = user.bills
+        .filter(
+          (b) =>
+            b.charged_to === user.selected_account_id &&
+            Date.parse(b.next_due) < Date.parse(nextPayCheck.predicted_next_pay)
+        )
+        .reduce((sum, b) => sum + b.amount, 0);
+
       setAccountDetails({
         name: user.selectedAccount.name,
         balance: user.selectedAccount.available_balance,
-        next_pay: convertNextPayDate(user.income),
+        next_pay: formatDate(nextPayCheck.predicted_next_pay),
+        due_before_payday: dueBefore_Payday,
+        id: user.selectedAccount.account_id,
+      });
+    } else {
+      setAccountDetails({
+        name: user.selectedAccount.name,
+        balance: user.selectedAccount.available_balance,
         id: user.selectedAccount.account_id,
       });
     }
   }, [user]);
-
-  // const handleAccountSelect = async (event) => {
-  //   const updatedUser = await updateUser(user._id, {
-  //     selected_account_id: event.target.value,
-  //   });
-  //   setUser(updatedUser);
-  // };
 
   return (
     <div
       className="d-flex flex-column align-items-start bg-gradient p-3 my-4 rounded border border-secondary"
       style={{ minWidth: "350px" }}
     >
-      {/* <div className="form-floating w-100">
-        <select
-          value={user.selected_account_id}
-          onChange={handleAccountSelect}
-          className="form-select"
-        >
-          {user?.accounts ? (
-            user.accounts.map((acct) => {
-              return (
-                <option key={acct.account_id} value={acct.account_id}>
-                  {acct.name}
-                </option>
-              );
-            })
-          ) : (
-            <option selected>No Account To Select From</option>
-          )}
-        </select>
-      </div> */}
-      <h2>
-        Current Balance:{" "}
-        <span className="text-success text-nowrap">
-          ${accountDetails.balance}
-        </span>
-      </h2>
-      <h2>Next Paycheck: {accountDetails.next_pay}</h2>
+      <h3 className="text-muted text-opacity-50">Account Overview</h3>
+      <h2>Current Balance: ${accountDetails.balance}</h2>
+      {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
+        ""
+      ) : (
+        <>
+          <h2>Next Paycheck: {accountDetails.next_pay}</h2>
+          <h2>
+            Amount Due Before Paycheck:{" "}
+            <span className="text-danger text-nowrap">
+              ${accountDetails.due_before_payday}
+            </span>
+          </h2>
+          <h2>
+            Leftover:{" "}
+            <span className="text-success text-nowrap">
+              ${accountDetails.balance - accountDetails.due_before_payday}
+            </span>
+          </h2>
+        </>
+      )}
     </div>
   );
 }

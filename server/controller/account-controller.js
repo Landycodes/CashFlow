@@ -14,27 +14,27 @@ module.exports = {
     try {
       const bills = await User.aggregate([
         { $match: { _id: new Types.ObjectId(user._id) } },
-        { $unwind: "$accounts" },
-        { $match: { "accounts.account_id": account_id } },
-        { $unwind: "$accounts.bills" }, // unwind bills array to format each individually
+        { $unwind: "$bills" },
+        { $match: { "bills.charged_to": account_id } },
         {
           $project: {
             _id: 0,
-            name: "$accounts.bills.name",
-            amount: "$accounts.bills.amount",
+            name: "$bills.name",
+            amount: "$bills.amount",
             last_paid: {
               $dateToString: {
                 format: "%m/%d/%Y",
-                date: "$accounts.bills.last_paid",
+                date: "$bills.last_paid",
               },
             },
             next_due: {
               $dateToString: {
                 format: "%m/%d/%Y",
-                date: "$accounts.bills.next_due",
+                date: "$bills.next_due",
               },
             },
-            frequency: "$accounts.bills.frequency",
+            frequency: "$bills.frequency",
+            id: "$bills._id",
           },
         },
       ]);

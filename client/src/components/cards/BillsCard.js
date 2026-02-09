@@ -10,8 +10,10 @@ export default function BillsCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getBills(token).then((data) => setBills(data));
+    // getBills(token).then((data) => setBills(data));
     // getRecurringTransactions(token)
+    // console.log(user);
+    setBills(user.bills);
   }, []);
 
   return (
@@ -24,7 +26,7 @@ export default function BillsCard() {
       {bills.length > 0 ? (
         bills.map((bill) => (
           <ul
-            key={bill.name}
+            key={bill._id}
             className="list-group list-group-flush list-unstyled w-100 border rounded border-black p-2 m-1"
           >
             <li>{bill.name}</li>
