@@ -5,6 +5,7 @@ import WelcomeCard from "../cards/WelcomeCard";
 import CashFlowCard from "../cards/CashFlowCard";
 import OverviewCard from "../cards/OverviewCard";
 import BillsCard from "../cards/BillsCard";
+import CalendarCard from "../cards/CalenderCard";
 import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
@@ -56,16 +57,19 @@ export default function Dashboard() {
     return (
       <>
         {accountInfoReady ? (
-          <div className="d-flex flex-column justify-content-center align-items-center">
-            <AccountCard />
-            <div className="d-flex flex-row justify-content-between align-items-start">
+          <div className="d-flex flex-row justify-content-center align-items-start m-4 gap-5">
+            <OverviewCard range={range} />
+            <div className="d-flex flex-column justify-content-center align-items-center gap-5">
+              <AccountCard />
               <BillsCard />
+            </div>
+            <div className="d-flex flex-column justify-content-center align-items-center gap-5">
+              <CalendarCard />
               <CashFlowCard
                 range={range}
                 setRange={setRange}
                 rangeSelection={rangeSelection}
               />
-              <OverviewCard range={range} />
             </div>
           </div>
         ) : (

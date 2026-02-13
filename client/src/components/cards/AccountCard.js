@@ -6,6 +6,7 @@ import { updateUser } from "../../utils/API";
 import formatDate from "../../utils/dateFormatter";
 
 export default function CurrentAccountInfo() {
+  // TODO: CHANGE BACK AFTER TESTING
   const now = Date.parse("2026-01-01T00:00:00.000Z"); /* Date.now(); */
   const { user, setUser } = useContext(userContext);
   const [accountDetails, setAccountDetails] = useState({
@@ -18,7 +19,7 @@ export default function CurrentAccountInfo() {
 
   useEffect(() => {
     if (!user?.selectedAccount) return;
-
+    // TODO: THROW THIS LOGIC IN THE BACKEND
     if (
       user?.bills.filter((b) => b.charged_to === user.selected_account_id)
         .length > 0
@@ -60,30 +61,34 @@ export default function CurrentAccountInfo() {
 
   return (
     <div
-      className="d-flex flex-column align-items-start bg-gradient p-3 my-4 rounded border border-secondary"
-      style={{ minWidth: "350px" }}
+      className="d-flex flex-column align-items-center bg-gradient p-3 rounded border border-secondary"
+      style={{ minWidth: "500px" }}
     >
-      <h3 className="text-muted text-opacity-50">Account Overview</h3>
-      <h2>Current Balance: ${accountDetails.balance}</h2>
-      {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
-        ""
-      ) : (
-        <>
-          <h2>Next Paycheck: {accountDetails.next_pay}</h2>
-          <h2>
-            Amount Due Before Paycheck:{" "}
-            <span className="text-danger text-nowrap">
-              ${accountDetails.due_before_payday}
-            </span>
-          </h2>
-          <h2>
-            Leftover:{" "}
-            <span className="text-success text-nowrap">
-              ${accountDetails.balance - accountDetails.due_before_payday}
-            </span>
-          </h2>
-        </>
-      )}
+      <h3 className="text-muted text-opacity-50">Account</h3>
+      <div className="d-flex flex-column align-items-start">
+        <span className="info-text fs-5">
+          <p>Current Balance: ${accountDetails.balance}</p>
+          {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
+            ""
+          ) : (
+            <>
+              <p>Next Paycheck: {accountDetails.next_pay}</p>
+              <p>
+                Amount Due Before Paycheck:{" "}
+                <span className="text-danger text-nowrap">
+                  ${accountDetails.due_before_payday}
+                </span>
+              </p>
+              <p>
+                Leftover:{" "}
+                <span className="text-success text-nowrap">
+                  ${accountDetails.balance - accountDetails.due_before_payday}
+                </span>
+              </p>
+            </>
+          )}
+        </span>
+      </div>
     </div>
   );
 }

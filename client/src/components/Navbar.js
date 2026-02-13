@@ -75,7 +75,6 @@ export default function Navbar() {
         <h6 className="menu-btn p-3 pt-3" onClick={() => navigate("/expenses")}>
           Expenses
         </h6>
-        <span className="rhombus"></span>
         <h6
           className="menu-btn p-3 pt-3 border-start border-secondary"
           onClick={() => navigate("/Transactions")}

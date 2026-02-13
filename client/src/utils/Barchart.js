@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  Colors,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 
@@ -19,7 +20,8 @@ Chart.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
+  Colors
 );
 
 export default function BarChart({ data }) {
@@ -40,7 +42,7 @@ export default function BarChart({ data }) {
         backgroundColor: "rgba(255, 99, 132, 0.6)",
         borderWidth: 1,
         label: "Spending",
-        barThickness: 25, // <-- fixed bar width in pixels
+        // barThickness: 25, // <-- fixed bar width in pixels
         maxBarThickness: 25, // optional: ensure it never grows too wide
       },
     ],
@@ -49,10 +51,10 @@ export default function BarChart({ data }) {
   const options = {
     indexAxis: "y", // horizontal bars
     responsive: true,
-    maintainAspectRatio: false, // allows custom width/height
+    maintainAspectRatio: true,
     plugins: {
       legend: {
-        position: "top",
+        display: false,
       },
       tooltip: {
         callbacks: {
@@ -67,19 +69,21 @@ export default function BarChart({ data }) {
         anchor: "end",
         align: "end",
         font: { size: 14 },
-        formatter: (value) => `$${value}`, // shows value inside bar
+        color: "white",
+        formatter: (value) => `$${Number(value).toLocaleString()}`,
         clamp: true,
       },
     },
     scales: {
       x: {
         beginAtZero: true,
-        max: 500,
+        grace: 1000,
         display: false, // hides the bottom axis
       },
       y: {
         ticks: {
           font: { size: 14 },
+          color: "white",
           maxTicksLimit: 10,
           callback: function (val) {
             const label = this.getLabelForValue(val);
@@ -92,7 +96,7 @@ export default function BarChart({ data }) {
 
   if (render) {
     return (
-      <div style={{ width: "400px", height: "auto" /* "175px" */ }}>
+      <div style={{ minWidth: "500px", maxHeight: "100%" }}>
         <Bar data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     );

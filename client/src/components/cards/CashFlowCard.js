@@ -33,7 +33,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
   return (
     <div
       className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 rounded border border-secondary"
-      style={{ width: "325px" }}
+      style={{ width: "350px" }}
     >
       <h3>CashFlow</h3>
       {transactions.income > 0 && transactions.expense > 0 ? (

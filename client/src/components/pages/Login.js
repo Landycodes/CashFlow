@@ -173,6 +173,7 @@ export default function Login() {
             defaultValue={form.username}
           />
         )}
+        {/* TODO: HANDLE AUTOFILL TO NOT CHANGE THE BACKGROUND */}
         <input
           className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
           type="text"
