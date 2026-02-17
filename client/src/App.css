@@ -114,6 +114,26 @@ nav .form-select:focus {
 
 /* ############## END NAVBAR STYLES ################## */
 
+/* ############## CALENDAR ######################## */
+.calendar *{
+  font-size: 1rem;
+  max-width: 500px;
+  margin: 0, auto;
+  color: white;
+}
+
+.calendar .fc-toolbar-title {
+  padding: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.calendar .fc-scrollgrid-sync-inner {
+  background-color: rgb(61, 61, 61);
+}
+
+
+
 
 @media screen and (max-width: 1200px) {
   #loginForm {

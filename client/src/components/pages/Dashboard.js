@@ -58,18 +58,20 @@ export default function Dashboard() {
       <>
         {accountInfoReady ? (
           <div className="d-flex flex-row justify-content-center align-items-start m-4 gap-5">
-            <OverviewCard range={range} />
+            <div className="d-flex flex-column justify-content-center align-items-start gap-5">
+              <OverviewCard range={range} />
+              <CashFlowCard
+                range={range}
+                setRange={setRange}
+                rangeSelection={rangeSelection}
+              />
+            </div>
             <div className="d-flex flex-column justify-content-center align-items-center gap-5">
               <AccountCard />
               <BillsCard />
             </div>
             <div className="d-flex flex-column justify-content-center align-items-center gap-5">
               <CalendarCard />
-              <CashFlowCard
-                range={range}
-                setRange={setRange}
-                rangeSelection={rangeSelection}
-              />
             </div>
           </div>
         ) : (

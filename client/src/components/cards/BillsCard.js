@@ -19,15 +19,15 @@ export default function BillsCard() {
   return (
     <div
       className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 rounded border border-secondary"
-      style={{ width: "325px" }}
+      style={{ width: "500px" }}
     >
-      <h3>Upcoming Bills</h3>
+      <h3 className="text-muted text-opacity-50">Upcoming Bills</h3>
 
       {bills.length > 0 ? (
         bills.map((bill) => (
           <ul
             key={bill._id}
-            className="list-group list-group-flush list-unstyled w-100 border rounded border-black p-2 m-1"
+            className="info-text list-group list-group-flush list-unstyled w-100 border rounded border-black p-2 m-1"
           >
             <li>{bill.name}</li>
             <ul className="list-unstyled mx-5">
