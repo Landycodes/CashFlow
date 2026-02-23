@@ -64,7 +64,7 @@ export default function CurrentAccountInfo() {
       className="d-flex flex-column align-items-center bg-gradient p-3 rounded border border-secondary"
       style={{ minWidth: "500px" }}
     >
-      <h3 className="text-muted text-opacity-50">Account</h3>
+      <h3 className="text-light text-opacity-75">Account</h3>
       <div className="d-flex flex-column align-items-start">
         <span className="info-text fs-5">
           <p>Current Balance: ${accountDetails.balance}</p>

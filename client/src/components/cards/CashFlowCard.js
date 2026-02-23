@@ -35,7 +35,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
       className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 rounded border border-secondary"
       style={{ minWidth: "535px", maxHeight: "100%" }}
     >
-      <h3 className="text-muted text-opacity-50">CashFlow</h3>
+      <h3 className="text-light text-opacity-75">CashFlow</h3>
 
       <div className="d-flex flex-row justify-content-between align-items-between w-100">
         <div>
@@ -57,7 +57,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
             ""
           )}
 
-          <select
+          {/* <select
             className="form-select text-center border-primary py-1"
             id="floatingSelect"
             value={range}
@@ -70,7 +70,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
             <option value={rangeSelection.ONE_MONTH}>1 Month</option>
             <option value={rangeSelection.TWO_WEEKS}>2 Weeks</option>
             <option value={rangeSelection.ONE_WEEK}>1 Week</option>
-          </select>
+          </select> */}
         </div>
         <div className="info-text d-flex flex-column justify-content-evenly align-items-start">
           <h5>

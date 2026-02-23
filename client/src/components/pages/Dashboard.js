@@ -52,28 +52,57 @@ export default function Dashboard() {
   //     getRecurringTransactions(token).then((data) => console.log(data));
   //   }
   // }, [token]);
+  const handleRangeChange = (rangeVal) => {
+    setRange(rangeVal);
+  };
+
+  const rangeBtn = (rangeVal, label) => {
+    const isActive = range === rangeVal;
+    return (
+      <button
+        type="button"
+        value={rangeVal}
+        onClick={() => handleRangeChange(rangeVal)}
+        className={`btn btn-outline-secondary border-0 ${
+          isActive ? "active bg-light text-dark" : "text-light opacity-75"
+        }`}
+      >
+        {label}
+      </button>
+    );
+  };
 
   if (user?.plaidAccessToken) {
     return (
       <>
         {accountInfoReady ? (
-          <div className="d-flex flex-row justify-content-center align-items-start m-4 gap-5">
-            <div className="d-flex flex-column justify-content-center align-items-start gap-5">
-              <OverviewCard range={range} />
-              <CashFlowCard
-                range={range}
-                setRange={setRange}
-                rangeSelection={rangeSelection}
-              />
+          <>
+            <div className="d-flex flex-row justify-content-center align-items-start m-4 gap-3">
+              <div className="d-flex flex-column justify-content-center align-items-start gap-3">
+                <div className="d-flex mx-5 gap-2 bg-gradient rounded border border-secondary">
+                  {rangeBtn(rangeSelection.ONE_WEEK, "1W")}
+                  {rangeBtn(rangeSelection.TWO_WEEKS, "2W")}
+                  {rangeBtn(rangeSelection.ONE_MONTH, "1M")}
+                  {rangeBtn(rangeSelection.THREE_MONTH, "3M")}
+                  {rangeBtn(rangeSelection.SIX_MONTH, "6M")}
+                  {rangeBtn(rangeSelection.ONE_YEAR, "YTD")}
+                </div>
+                <CashFlowCard
+                  range={range}
+                  setRange={setRange}
+                  rangeSelection={rangeSelection}
+                />
+                <OverviewCard range={range} />
+              </div>
+              <div className="d-flex flex-column justify-content-center align-items-center gap-3">
+                <AccountCard />
+                <BillsCard />
+              </div>
+              <div className="d-flex flex-column justify-content-center align-items-center gap-5">
+                <CalendarCard />
+              </div>
             </div>
-            <div className="d-flex flex-column justify-content-center align-items-center gap-5">
-              <AccountCard />
-              <BillsCard />
-            </div>
-            <div className="d-flex flex-column justify-content-center align-items-center gap-5">
-              <CalendarCard />
-            </div>
-          </div>
+          </>
         ) : (
           <Loading message={"Getting Bank Details"} />
         )}

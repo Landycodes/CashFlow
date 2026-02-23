@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../App";
 import { getBills, getRecurringTransactions } from "../../utils/API";
+import formatDate from "../../utils/dateFormatter";
 
 export default function BillsCard() {
   const { user, token } = useContext(userContext);
@@ -19,9 +20,14 @@ export default function BillsCard() {
   return (
     <div
       className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 rounded border border-secondary"
-      style={{ width: "500px" }}
+      style={{
+        width: "500px",
+        height: "500px",
+        overflow: "scroll",
+        overflowX: "hidden",
+      }}
     >
-      <h3 className="text-muted text-opacity-50">Upcoming Bills</h3>
+      <h3 className="text-light text-opacity-75">Upcoming Bills</h3>
 
       {bills.length > 0 ? (
         bills.map((bill) => (
@@ -31,9 +37,9 @@ export default function BillsCard() {
           >
             <li>{bill.name}</li>
             <ul className="list-unstyled mx-5">
-              <li>Amount: {bill.amount}</li>
-              <li>Last Paid: {bill.last_paid}</li>
-              <li>Next Payment: {bill.next_due}</li>
+              <li>Amount: ${Number(bill.amount).toLocaleString()}</li>
+              <li>Last Paid: {formatDate(bill.last_paid)}</li>
+              <li>Next Payment: {formatDate(bill.next_due)}</li>
               <li>
                 Due:{" "}
                 {bill.frequency.charAt(0) +

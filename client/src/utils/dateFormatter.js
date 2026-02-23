@@ -13,5 +13,5 @@ export default function formatDate(dateString) {
     timeZone: "UTC",
   });
 
-  return `${month} ${day}${getSuffixFor(day)}`;
+  return `${month}, ${day}${getSuffixFor(day)}`;
 }

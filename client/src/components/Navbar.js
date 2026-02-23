@@ -72,23 +72,26 @@ export default function Navbar() {
         )}
       </span>
       <span className="d-flex flex-row mx-2">
-        <h6 className="menu-btn p-3 pt-3" onClick={() => navigate("/expenses")}>
+        <h6
+          className="menu-btn p-3 pt-3 fs-5"
+          onClick={() => navigate("/expenses")}
+        >
           Expenses
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
           onClick={() => navigate("/Transactions")}
         >
           Transactions
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
           onClick={() => navigate("/")}
         >
           Dashboard
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
           onClick={() => {
             navigate("/settings");
           }}
@@ -96,7 +99,7 @@ export default function Navbar() {
           Settings
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-end border-secondary"
+          className="menu-btn p-3 pt-3 fs-5 border-start border-end border-secondary"
           onClick={() => {
             Auth.logout() && setUser(null);
           }}
