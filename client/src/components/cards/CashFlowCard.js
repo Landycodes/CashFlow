@@ -73,26 +73,27 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
           </select> */}
         </div>
         <div className="info-text d-flex flex-column justify-content-evenly align-items-start">
-          <h5>
-            Deposited:{" "}
-            <span className="text-success">${transactions.income}</span>
-          </h5>
-
-          <h5>
-            Withdrawn:{" "}
-            <span className="text-danger">${transactions.expense}</span>
-          </h5>
-          <h5 className="text-center">
-            CashFlow:&nbsp;
-            <span
+          <div className="d-flex">
+            <div className="bg-dark rounded p-3 m-1">
+              <h5>Deposited</h5>
+              <h4 className="text-success ms-2">${transactions.income}</h4>
+            </div>
+            <div className="bg-dark rounded p-3 m-1">
+              <h5>Withdrawn</h5>
+              <h4 className="text-danger ms-2">${transactions.expense}</h4>
+            </div>
+          </div>
+          <div className="d-flex flex-column align-items-center bg-dark rounded p-3 w-100">
+            <h5>CashFlow</h5>
+            <h4
               className={
                 transactions.total < 0 ? "text-danger" : "text-success"
               }
             >
               {transactions.total < 0 ? "-" : ""}$
               {Math.abs(transactions.total).toFixed(2)}
-            </span>
-          </h5>
+            </h4>
+          </div>
         </div>
       </div>
     </div>

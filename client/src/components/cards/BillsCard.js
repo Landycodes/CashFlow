@@ -33,18 +33,45 @@ export default function BillsCard() {
         bills.map((bill) => (
           <ul
             key={bill._id}
-            className="info-text list-group list-group-flush list-unstyled w-100 border rounded border-black p-2 m-1"
+            className="info-text list-group list-group-flush list-unstyled w-100 bg-dark rounded p-2 m-1"
           >
-            <li>{bill.name}</li>
-            <ul className="list-unstyled mx-5">
-              <li>Amount: ${Number(bill.amount).toLocaleString()}</li>
-              <li>Last Paid: {formatDate(bill.last_paid)}</li>
-              <li>Next Payment: {formatDate(bill.next_due)}</li>
-              <li>
-                Due:{" "}
-                {bill.frequency.charAt(0) +
-                  bill.frequency.slice(1).toLowerCase()}
-              </li>
+            <li className="d-flex justify-content start">
+              <h5 className=" border border-secondary rounded p-2 px-3 my-2 mx-3">
+                {bill.name}
+              </h5>
+            </li>
+            <ul className="d-flex justify-content-between list-unstyled mx-5">
+              <div className="d-flex flex-column justify-content-between gap-2">
+                <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
+                  Amount
+                  <h4 className="mx-4">
+                    ${Number(bill.amount).toLocaleString()}
+                  </h4>
+                </li>
+
+                <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
+                  Last Paid
+                  <h4 className="mx-4 text-nowrap">
+                    {formatDate(bill.last_paid)}
+                  </h4>
+                </li>
+              </div>
+
+              <div className="d-flex flex-column justify-content-between gap-2">
+                <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
+                  Due
+                  <h4 className="mx-4 text-nowrap">
+                    {bill.frequency.charAt(0) +
+                      bill.frequency.slice(1).toLowerCase()}
+                  </h4>
+                </li>
+                <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
+                  Next Payment
+                  <h4 className="mx-4 text-nowrap">
+                    {formatDate(bill.next_due)}
+                  </h4>
+                </li>
+              </div>
             </ul>
           </ul>
         ))

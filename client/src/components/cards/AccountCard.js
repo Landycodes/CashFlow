@@ -61,30 +61,38 @@ export default function CurrentAccountInfo() {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-3 rounded border border-secondary"
+      className="d-flex flex-column align-items-center bg-gradient p-2 rounded border border-secondary"
       style={{ minWidth: "500px" }}
     >
       <h3 className="text-light text-opacity-75">Account</h3>
       <div className="d-flex flex-column align-items-start">
         <span className="info-text fs-5">
-          <p>Current Balance: ${accountDetails.balance}</p>
+          <div className="bg-dark rounded p-3 m-2">
+            <h5>Current Balance</h5>
+            <h3>${accountDetails.balance}</h3>
+          </div>
           {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
             ""
           ) : (
             <>
-              <p>Next Paycheck: {accountDetails.next_pay}</p>
-              <p>
-                Amount Due Before Paycheck:{" "}
-                <span className="text-danger text-nowrap">
-                  ${accountDetails.due_before_payday}
-                </span>
-              </p>
-              <p>
-                Leftover:{" "}
-                <span className="text-success text-nowrap">
+              <div className="d-flex m-2">
+                <div className="bg-dark rounded p-3 m-2">
+                  <h6>Next Paycheck</h6>
+                  <h5>{accountDetails.next_pay}</h5>
+                </div>
+                <div className="bg-dark rounded p-3 m-2">
+                  <h6>Due Before Payday</h6>
+                  <h5 className="text-danger text-nowrap">
+                    ${accountDetails.due_before_payday}
+                  </h5>
+                </div>
+              </div>
+              <div className="bg-dark rounded p-3 m-2">
+                <h5>Leftover</h5>
+                <h3 className="text-success">
                   ${accountDetails.balance - accountDetails.due_before_payday}
-                </span>
-              </p>
+                </h3>
+              </div>
             </>
           )}
         </span>
