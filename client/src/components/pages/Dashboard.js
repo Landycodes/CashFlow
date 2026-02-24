@@ -77,7 +77,7 @@ export default function Dashboard() {
       <>
         {accountInfoReady ? (
           <>
-            <div className="d-flex flex-row justify-content-center align-items-start m-4 gap-3">
+            <div className="d-flex flex-row justify-content-center align-items-center m-4 gap-3">
               <div className="d-flex flex-column justify-content-center align-items-start gap-3">
                 <div className="d-flex mx-5 gap-2 bg-gradient rounded border border-secondary">
                   {rangeBtn(rangeSelection.ONE_WEEK, "1W")}

@@ -115,10 +115,14 @@ nav .form-select:focus {
 /* ############## END NAVBAR STYLES ################## */
 
 /* ############## CALENDAR ######################## */
+.calendar {
+  width: 550px;
+  margin: 0 auto;
+}
+
 .calendar *{
   font-size: 1rem;
-  max-width: 500px;
-  margin: 0, auto;
+  margin: 0 auto;
   color: white;
 }
 
@@ -128,10 +132,45 @@ nav .form-select:focus {
   font-weight: 600;
 }
 
-.calendar .fc-scrollgrid-sync-inner {
+/* .calendar .fc-scrollgrid-sync-inner {
   background-color: rgb(61, 61, 61);
+} */
+.fc-col-header {
+  background-color: rgb(66, 64, 64) !important;
 }
 
+.fc-today-custom {
+  background-color: rgba(0, 123, 255, 0.2) !important;
+}
+
+.fc-event {
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.calendar .fc-scrollgrid,
+.calendar .fc-scrollgrid td,
+.calendar .fc-scrollgrid th {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.day-payday {
+  background-color: rgba(0, 180, 0, 0.25);
+}
+
+.day-bill {
+  background-color: rgba(200, 0, 0, 0.25);
+}
+
+.day-mixed {
+  background: linear-gradient(
+    135deg,
+    rgba(0, 180, 0, 0.3),
+    rgba(200, 0, 0, 0.3)
+  );
+}
+
+/* ############ END CALENDAR STYLES ############## */
 
 
 

@@ -141,7 +141,7 @@ export default function Login() {
 
   const throwError = (error) => {
     return error !== "" ? (
-      <div className="border border-danger rounded bg-light w-75 text-center">
+      <div className="border border-danger rounded bg-gradient text-light w-75 text-center">
         {error}
       </div>
     ) : null;

@@ -108,10 +108,10 @@ module.exports = {
         !foundUser.last_updated ||
         Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
-      // if (!readyToUpdate) {
-      //   console.log("Not ready to update");
-      //   return res.status(200).json(foundUser);
-      // }
+      if (!readyToUpdate) {
+        console.log("Not ready to update");
+        return res.status(200).json(foundUser);
+      }
 
       console.log("Updating now");
 

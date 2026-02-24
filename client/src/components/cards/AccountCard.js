@@ -69,7 +69,7 @@ export default function CurrentAccountInfo() {
         <span className="info-text fs-5">
           <div className="bg-dark rounded p-3 m-2">
             <h5>Current Balance</h5>
-            <h3>${accountDetails.balance}</h3>
+            <h3 className="ms-3">${accountDetails.balance}</h3>
           </div>
           {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
             ""
@@ -82,14 +82,14 @@ export default function CurrentAccountInfo() {
                 </div>
                 <div className="bg-dark rounded p-3 m-2">
                   <h6>Due Before Payday</h6>
-                  <h5 className="text-danger text-nowrap">
+                  <h5 className="text-danger text-nowrap ms-3">
                     ${accountDetails.due_before_payday}
                   </h5>
                 </div>
               </div>
               <div className="bg-dark rounded p-3 m-2">
                 <h5>Leftover</h5>
-                <h3 className="text-success">
+                <h3 className="text-success ms-3">
                   ${accountDetails.balance - accountDetails.due_before_payday}
                 </h3>
               </div>
