@@ -82,7 +82,7 @@ export default function CurrentAccountInfo() {
                 </div>
                 <div className="bg-dark rounded p-3 m-2">
                   <h6>Due Before Payday</h6>
-                  <h5 className="text-danger text-nowrap ms-3">
+                  <h5 className="text-danger ms-3">
                     ${accountDetails.due_before_payday}
                   </h5>
                 </div>

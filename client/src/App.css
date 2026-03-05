@@ -146,6 +146,12 @@ nav .form-select:focus {
 .fc-event {
   font-size: 0.75rem;
   border-radius: 6px;
+  background-color: transparent;
+  border: none;
+}
+
+.fc-daygrid-event-dot {
+  display: none;
 }
 
 .calendar .fc-scrollgrid,
@@ -165,8 +171,8 @@ nav .form-select:focus {
 .day-mixed {
   background: linear-gradient(
     135deg,
-    rgba(0, 180, 0, 0.3),
-    rgba(200, 0, 0, 0.3)
+    rgba(200, 0, 0, 0.3) 50%,
+    rgba(15, 233, 15, 0.3) 50%
   );
 }
 

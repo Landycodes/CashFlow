@@ -15,8 +15,8 @@ export default function CalendarCard() {
 
     const paydays =
       user.income?.map((i) => ({
-        title: i.name,
-        date: i.predicted_next_pay,
+        title: /* i.name */ `+$${Number(i.amount).toLocaleString()}`,
+        date: i.predicted_next_pay.split("T")[0],
         extendedProps: {
           type: "payday",
           amount: i.amount,
@@ -25,8 +25,8 @@ export default function CalendarCard() {
 
     const bills =
       user.bills?.map((b) => ({
-        title: b.name,
-        date: b.next_due,
+        title: /* b.name */ `-$${Number(b.amount).toLocaleString()}`,
+        date: b.next_due.split("T")[0],
         extendedProps: {
           type: "bill",
           amount: b.amount,
@@ -47,6 +47,8 @@ export default function CalendarCard() {
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
           events={events}
+          displayEventTime={false}
+          displayEventEnd={false}
           height={"auto"}
           contentHeight={"auto"}
           fixedWeekCount={true}
@@ -59,15 +61,18 @@ export default function CalendarCard() {
           }}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
           dayCellDidMount={(arg) => {
+            console.log(arg.date);
             const dayEvents = events.filter(
-              (e) => e.date === arg.date.toISOString().split("T")[0]
+              (e) =>
+                e.date.split("T")[0] === arg.date.toLocaleDateString("en-CA"),
             );
+            // console.log(dayEvents);
 
             const hasPayday = dayEvents.some(
-              (e) => e.extendedProps.type === "payday"
+              (e) => e.extendedProps.type === "payday",
             );
             const hasBill = dayEvents.some(
-              (e) => e.extendedProps.type === "bill"
+              (e) => e.extendedProps.type === "bill",
             );
 
             if (hasPayday && hasBill) {
@@ -75,6 +80,8 @@ export default function CalendarCard() {
             } else if (hasPayday) {
               arg.el.classList.add("day-payday");
             } else if (hasBill) {
+              console.log("im special");
+
               arg.el.classList.add("day-bill");
             }
           }}

@@ -76,11 +76,15 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
           <div className="d-flex">
             <div className="bg-dark rounded p-3 m-1">
               <h5>Deposited</h5>
-              <h4 className="text-success ms-2">${transactions.income}</h4>
+              <h4 className="text-success ms-2">
+                ${Number(transactions.income).toLocaleString()}
+              </h4>
             </div>
             <div className="bg-dark rounded p-3 m-1">
               <h5>Withdrawn</h5>
-              <h4 className="text-danger ms-2">${transactions.expense}</h4>
+              <h4 className="text-danger ms-2">
+                ${Number(transactions.expense).toLocaleString()}
+              </h4>
             </div>
           </div>
           <div className="d-flex flex-column align-items-center bg-dark rounded p-3 w-100">
