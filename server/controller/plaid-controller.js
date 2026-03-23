@@ -1,9 +1,10 @@
-const Transaction = require("../models/Transaction");
-const User = require("../models/User");
+// const Transaction = require("../models/Transactions");
+// const User = require("../models/Users");
+const { Transactions, Users } = require("../models");
 const {
   setAccountInfo,
   setTransactionInfo,
-  setBillInfo,
+  setRecurringInfo,
 } = require("./services/plaidService");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
 require("dotenv").config();
@@ -27,7 +28,7 @@ module.exports = {
     if (!user) return res.status(404).json({ error: "User Not Found" });
 
     try {
-      const clientUserId = user._id;
+      const clientUserId = user.id;
       const request = {
         user: {
           client_user_id: clientUserId,
@@ -49,7 +50,7 @@ module.exports = {
     } catch (error) {
       console.error(
         "Error creating Plaid link token:",
-        error.response ? error.response.data : error
+        error.response ? error.response.data : error,
       );
       res.status(400).json({ error: `failed to create link token: ${error}` });
     }
@@ -59,22 +60,21 @@ module.exports = {
       return res.status(404).json({ error: "User Not Found" });
     }
     try {
-      const id = user._id;
+      const id = user.id;
       const { public_token } = body;
       console.log(id, public_token);
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
 
-      const updatedUser = await User.findByIdAndUpdate(
-        id,
-        { $set: { plaidAccessToken: accessToken } },
+      const [updated] = await Users.update(
+        { plaidAccessToken: accessToken },
         {
-          new: true,
-          runValidators: true,
-        }
+          where: { id },
+          individualHooks: true,
+        },
       );
 
-      if (!updatedUser) {
+      if (!updated) {
         return res
           .status(404)
           .json({ message: "Unable to assign plaid token to user" });
@@ -95,58 +95,71 @@ module.exports = {
     }
 
     try {
-      const foundUser = await User.findById(user._id);
+      const foundUser = await Users.findByPk(user.id);
 
       if (!foundUser) {
         return res.status(404).json({ fetchAccountData: "User not found" });
       }
 
-      const { id, plaidAccessToken, selected_account_id } =
-        foundUser.toObject();
+      const plaidAccessToken = foundUser.getPlaidAccessToken();
+      const { id } = foundUser;
 
       const readyToUpdate =
         !foundUser.last_updated ||
         Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
-      if (!readyToUpdate) {
-        console.log("Not ready to update");
-        return res.status(200).json(foundUser);
-      }
+      // if (!readyToUpdate) {
+      //   console.log("Not ready to update");
+      //   return res.status(200).json(foundUser);
+      // }
 
       console.log("Updating now");
 
-      // Bills have to be set after account info is updated
       const [accountInfo, transactions] = await Promise.all([
         setAccountInfo(client, id, plaidAccessToken),
         setTransactionInfo(client, id, plaidAccessToken),
       ]);
 
-      const bills = await setBillInfo(
+      // Retrieving user after selected_account_id has been set
+      const { selected_account_id } = await Users.findByPk(user.id, {
+        attributes: ["selected_account_id"],
+        raw: true,
+      });
+
+      const recurring = await setRecurringInfo(
         client,
         id,
         plaidAccessToken,
-        selected_account_id
+        selected_account_id,
       );
 
-      if (!accountInfo || !transactions || !bills) {
+      // console.log("setting bill info");
+      // const bills = await setBillInfo(
+      //   client,
+      //   id,
+      //   plaidAccessToken,
+      //   selected_account_id,
+      // );
+
+      if (!accountInfo || !transactions || !recurring) {
         return res.status(400).json({
           fetchAccountData: "One or more services failed",
           accountInfo: accountInfo,
           transactions: transactions,
-          bills: bills,
+          recurring: recurring,
         });
       }
 
       console.log("Account Update Successfull!");
       return res.status(200).end();
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       if (error?.response?.data?.error_code === "ITEM_LOGIN_REQUIRED") {
         return res.status(401).json({ API_error: "LOGIN_REQUIRED" });
       }
       return res.status(500).json({
         fetchAccountData: "Failed to store updated account information",
-        API_error: error,
+        API_error: String(error),
       });
     }
   },

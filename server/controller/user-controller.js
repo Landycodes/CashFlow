@@ -1,13 +1,12 @@
-// import user model
-const User = require("../models/User");
-// import sign token function from auth
+const User = require("../models/Users");
+const { Op } = require("sequelize");
 const { signToken } = require("../utils/auth");
 
 module.exports = {
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
   // {body} is destructured req.body
   async login({ body }, res) {
-    const user = await User.findOne({ email: body.email });
+    const user = await User.findOne({ where: { email: body.email } });
     if (!user) {
       return res.status(404).json({ message: "Can't find this user" });
     }
@@ -28,10 +27,20 @@ module.exports = {
   },
   async getSingleUser({ user = null, params }, res) {
     const foundUser = await User.findOne({
-      $or: [
-        { _id: user ? user._id : params.id },
-        { username: params.username },
-      ],
+      where: {
+        [Op.or]: [
+          {
+            id: {
+              [Op.eq]: user ? user.id : params.id,
+            },
+          },
+          {
+            username: {
+              [Op.eq]: params.username?.trim(),
+            },
+          },
+        ],
+      },
     });
 
     if (!foundUser) {
@@ -53,30 +62,32 @@ module.exports = {
       const token = signToken(user);
       res.json({ token, user });
     } catch (error) {
-      if (error.code === 11000) {
+      if (error.name === "SequelizeUniqueConstraintError") {
         return res
           .status(400)
           .json({ message: "An account with this email already exists." });
-      } else if (error.name === "ValidationError") {
+      } else if (error.name === "SequelizeValidationError") {
         res.status(403).json({ message: "Username and Email are required" });
         console.error(error);
       }
     }
   },
 
-  async updateUser({ body, params }, res) {
+  async updateUser({ user = null, body }, res) {
+    // console.log(user);
+    if (!user) return res.status(400).json({ message: "Something is wrong!" });
+
     try {
-      const id = params.id;
-      // console.log(body);
-      const updatedUser = await User.findByIdAndUpdate(id, body, {
-        new: true,
-        runValidators: true,
+      const [updated] = await User.update(body, {
+        where: { id: user.id },
+        individualHooks: true,
       });
 
-      if (!updatedUser) {
+      if (!updated) {
         return res.status(404).json({ message: "Unable to find user" });
       }
 
+      const updatedUser = await User.findByPk(user.id);
       res.json(updatedUser);
     } catch (error) {
       console.error(error);

@@ -33,7 +33,7 @@ export default function BillsCard() {
           overflowX: "hidden",
         }}
       >
-        {bills.length > 0 ? (
+        {bills?.length > 0 ? (
           bills.map((bill) => (
             <ul
               key={bill._id}

@@ -10,7 +10,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [selectMenu, setselectMenu] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(
-    user.selected_account_id
+    user.selected_account_id,
   );
 
   const { openPlaidPopUp } = PlaidPopUp(user._id);
@@ -31,7 +31,7 @@ export default function Settings() {
   const handleRemovePlaidLink = async () => {
     try {
       const [updatedAccount, updatedTransactions] = await Promise.all([
-        updateUser(user._id, {
+        updateUser(token, {
           last_updated: "",
           selected_account_id: "",
           plaidAccessToken: "",

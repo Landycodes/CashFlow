@@ -34,10 +34,13 @@ export const loginUser = async (userData) => {
   });
 };
 
-export const updateUser = async (user_id, updatedObject) => {
-  return fetch(`/api/update/${user_id}`, {
+export const updateUser = async (token, updatedObject) => {
+  return fetch("/api/update", {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
     body: JSON.stringify(updatedObject),
   }).then((response) => response.json());
 };

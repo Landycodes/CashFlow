@@ -1,6 +1,6 @@
 const { Types } = require("mongoose");
-const User = require("../models/User");
-const Transaction = require("../models/Transaction");
+const User = require("../models/Users");
+const Transaction = require("../models/Transactions");
 const dayjs = require("dayjs");
 
 module.exports = {
@@ -41,49 +41,6 @@ module.exports = {
 
       if (bills.length <= 0) return;
 
-      // const billNames = accountBills.map((b) => b.name);
-
-      // // console.log(billNames);
-
-      // const bills = await Transaction.aggregate([
-      //   {
-      //     $match: {
-      //       user_id: new Types.ObjectId(user._id),
-      //       account_id: account_id,
-      //       name: { $in: billNames },
-      //     },
-      //   },
-      //   { $sort: { date: -1 } },
-      //   {
-      //     $group: {
-      //       _id: "$name",
-      //       latest: { $first: "$$ROOT" },
-      //     },
-      //   },
-      //   {
-      //     $project: {
-      //       _id: 0,
-      //       name: "$_id",
-      //       amount: "$latest.amount",
-      //       last_paid: {
-      //         $dateToString: {
-      //           format: "%m/%d/%Y",
-      //           date: "$latest.date",
-      //         },
-      //       },
-      //       next_due: {
-      //         $dateToString: {
-      //           format: "%m/%d/%Y",
-      //           date: "$latest.date",
-      //         },
-      //       },
-      //     },
-      //   },
-      //   { $sort: { amount: -1 } },
-      // ]);
-
-      // console.log(bills);
-
       res.json(bills);
     } catch (error) {
       console.error(error);
@@ -99,7 +56,7 @@ module.exports = {
         { _id: new Types.ObjectId(user_id), "accounts.account_id": account_id },
         {
           $addToSet: { "accounts.$.bills": billName },
-        }
+        },
       );
 
       if (!user.acknowledged) {
@@ -121,7 +78,7 @@ module.exports = {
         { _id: new Types.ObjectId(user_id), "accounts.account_id": account_id },
         {
           $pull: { "accounts.$.bills": billName },
-        }
+        },
       );
 
       if (!user.acknowledged) {

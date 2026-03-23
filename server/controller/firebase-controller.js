@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const User = require("../models/Users");
 const { signToken } = require("../utils/auth");
 const { auth, app } = require("firebase-admin");
 const { applicationDefault, initializeApp } = require("firebase-admin/app");

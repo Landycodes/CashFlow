@@ -42,7 +42,7 @@ export default function CalendarCard() {
       <h3 className="text-center text-light text-opacity-75">
         Finance Calendar
       </h3>
-      <div className="calendar info-text">
+      <div id="calendar" className="calendar info-text">
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"

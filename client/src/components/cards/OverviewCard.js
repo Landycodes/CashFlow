@@ -16,13 +16,13 @@ export default function OverviewCard({ range }) {
 
     getTransactionGroups(token, range).then((res) => {
       if (!Array.isArray(res)) return;
-
-      const expenseTx = res.filter((tx) => tx._id.type === "expense");
+      console.log("RESPONSE: ", res);
+      const expenseTx = res.filter((tx) => tx.type === "EXPENSE");
 
       setChartData({
         expense: {
-          labels: expenseTx.map((tx) => tx._id.name),
-          values: expenseTx.map((tx) => tx.total.toFixed(2)),
+          labels: expenseTx.map((tx) => tx.name),
+          values: expenseTx.map((tx) => Number(tx.total).toLocaleString()),
         },
       });
     });

@@ -11,6 +11,6 @@ const { authMiddleware } = require("../../utils/auth");
 router.route("/newuser").post(createUser).put(authMiddleware);
 router.route("/login").post(login);
 router.route("/me").get(authMiddleware, getSingleUser);
-router.route("/update/:id").put(updateUser);
+router.route("/update").get(authMiddleware).put(updateUser);
 
 module.exports = router;

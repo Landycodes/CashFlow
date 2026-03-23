@@ -49,7 +49,7 @@ export default function Navbar() {
         <h6 className="p-2 pt-3 mx-1 fs-4 text-nowrap">Welcome, {name}!</h6>
         <h6 className="p-2 pt-3 mx-1 fs-5 text-nowrap">{date}</h6>
         <h6 className="p-2 pt-3 mx-1 fs-5 text-nowrap">{time}</h6>
-        {user?.selected_account_id && user.accounts.length > 1 ? (
+        {user?.selected_account_id && user.accounts?.length > 1 ? (
           <select
             value={user.selected_account_id}
             onChange={handleAccountSelect}

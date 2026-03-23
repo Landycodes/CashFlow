@@ -1,5 +1,5 @@
-const Transaction = require("../models/Transaction");
-const { Types } = require("mongoose");
+const Transaction = require("../models/Transactions");
+
 const { getTransactions } = require("./services/transactionService");
 
 module.exports = {
@@ -25,10 +25,11 @@ module.exports = {
   async deleteUserTransactions({ user = null }, res) {
     if (!user)
       res.status(404).json({ deleteUserTransactions: "Unable to find user" });
+    console.log(user);
 
     try {
-      const deletedTransactions = await Transaction.deleteMany({
-        user_id: user._id,
+      const deletedTransactions = await Transaction.destroy({
+        where: { userId: user.id },
       });
 
       if (!deletedTransactions) {

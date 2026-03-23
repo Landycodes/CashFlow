@@ -1,8 +1,16 @@
-const mongoose = require("mongoose");
+const { Sequelize } = require("sequelize");
+require("dotenv").config({ path: "../.env" });
 
-mongoose.connect(process.env.MONGODB_URI || "mongodb://127.0.0.1/cashflowDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const sequelize = new Sequelize(
+  process.env.PGDB_NAME,
+  process.env.PGDB_USER,
+  process.env.PGDB_PASSWORD,
+  {
+    host: "localhost",
+    dialect: "postgres",
+    port: 5432,
+    logging: false,
+  },
+);
 
-module.exports = mongoose.connection;
+module.exports = { sequelize };

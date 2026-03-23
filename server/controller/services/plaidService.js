@@ -1,5 +1,4 @@
-const Transaction = require("../../models/Transaction");
-const User = require("../../models/User");
+const { Users, Transactions, Accounts, Recurring } = require("../../models");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
 require("dotenv").config();
 
@@ -17,10 +16,12 @@ const writeToJSONFile = async (filename, data, id = null) => {
     const affectedTransactionIds = data.map((t) => t.transaction_id);
     const affectedAccountIds = data.map((t) => t.account_id);
 
-    data = await Transaction.find({
-      user_id: id,
-      account_id: { $in: affectedAccountIds },
-      transaction_id: { $in: affectedTransactionIds },
+    data = await Transactions.findAll({
+      where: {
+        user_id: id,
+        account_id: { [Op.in]: affectedAccountIds },
+        transaction_id: { [Op.in]: affectedTransactionIds },
+      },
     });
   }
 
@@ -34,12 +35,15 @@ const predictNextDate = async (tx_ids) => {
     return null;
   }
 
-  const dates = await Transaction.aggregate([
-    { $match: { transaction_id: { $in: tx_ids } } },
-    { $sort: { date: 1 } },
-    { $group: { _id: null, dates: { $push: "$date" } } },
-    { $project: { _id: 0, dates: 1 } },
-  ]).then((t) => t[0]?.dates ?? []);
+  const transactions = await Transactions.findAll({
+    where: {
+      transaction_id: { [Op.in]: tx_ids },
+    },
+    attributes: ["date"],
+    order: [["date", "ASC"]],
+  });
+
+  const dates = transactions.map((t) => t.date);
 
   let totalInterval = 0;
   for (let i = 1; i < dates.length; i++) {
@@ -55,107 +59,109 @@ const predictNextDate = async (tx_ids) => {
 module.exports = {
   async setAccountInfo(client, id, plaidAccessToken) {
     //#################  PRODUCTION API CALL #####################
-    // const balanceRes = await client.accountsBalanceGet({
-    //     access_token: plaidAccessToken,
-    //   });
+    console.log("Setting Account Info...");
+    try {
+      const balanceRes = await client.accountsBalanceGet({
+        access_token: plaidAccessToken,
+      });
 
-    // TEST API DATA INJECTION
-    const balanceRes = {};
-    balanceRes.data = TEST_ACCOUNT_DATA;
+      // TEST API DATA INJECTION
+      // const balanceRes = {};
+      // balanceRes.data = TEST_ACCOUNT_DATA;
 
-    // **
-    // writeToJSONFile("ufAccountData.json", balanceRes.data);
-    // **
+      // **
+      // writeToJSONFile("ufAccountData.json", balanceRes.data);
+      // **
 
-    const balanceData = balanceRes.data.accounts;
-    let accountValues = [];
-
-    balanceData.forEach((bd) => {
-      // console.log(bd);
-      accountValues.push({
+      const balanceData = balanceRes.data.accounts;
+      const accountValues = balanceData.map((bd) => ({
         name: bd.name,
         account_id: bd.account_id,
         available_balance: bd.balances.available,
-      });
-    });
+        user_id: id,
+      }));
 
-    const updatedUser = await User.findByIdAndUpdate(
-      id,
-      {
-        accounts: accountValues,
-        selected_account_id: accountValues[0].account_id,
-        last_updated: new Date(),
-      },
-      {
-        new: true,
-        runValidators: true,
+      await Promise.all(
+        accountValues.map((account) => Accounts.upsert(account)),
+      );
+
+      const [updated] = await Users.update(
+        {
+          selected_account_id: accountValues[0].account_id,
+          last_updated: new Date(),
+        },
+        {
+          where: { id },
+          individualHooks: true,
+        },
+      );
+
+      if (!updated) {
+        throw new Error("Unable to find user");
       }
-    );
 
-    //**
-    // writeToJSONFile("AccountData.json", updatedUser);
-    //**
+      const updatedUser = await Users.findByPk(id, {
+        include: [{ model: Accounts, as: "accounts" }],
+      });
 
-    return updatedUser;
+      //**
+      // writeToJSONFile("AccountData.json", updatedUser);
+      //**
+
+      return updatedUser;
+    } catch (error) {
+      throw new Error(`Failed to set account info: ${error}`);
+    }
   },
   async setTransactionInfo(client, id, plaidAccessToken) {
+    console.log("Setting Transaction Info...");
     //#################  PRODUCTION API METHOD #####################
-    // const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-    //   .toISOString()
-    //   .split("T")[0];
-    // const today = new Date().toISOString().split("T")[0];
+    const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    const today = new Date().toISOString().split("T")[0];
 
-    // const transactions = [];
+    const transactions = [];
 
-    // let offset = 0;
-    // const pageSize = 100;
+    let offset = 0;
+    const pageSize = 100;
 
-    // while (true) {
-    //   const transactionRes = await client.transactionsGet({
-    //     access_token: plaidAccessToken,
-    //     start_date: lastYear,
-    //     end_date: today,
-    //     options: { count: pageSize, offset: offset },
-    //   });
+    while (true) {
+      const transactionRes = await client.transactionsGet({
+        access_token: plaidAccessToken,
+        start_date: lastYear,
+        end_date: today,
+        options: { count: pageSize, offset: offset },
+      });
 
-    //   const transactionpage = transactionRes.data.transactions;
-    //   transactions.push(...transactionpage);
+      const transactionpage = transactionRes.data.transactions;
+      transactions.push(...transactionpage);
 
-    //   if (transactionpage.length < pageSize) break;
+      if (transactionpage.length < pageSize) break;
 
-    //   offset += pageSize;
-    // }
+      offset += pageSize;
+    }
 
     // TEST API DATA INJECTION
-    const transactions = TEST_TRANSACTION_DATA;
+    // const transactions = TEST_TRANSACTION_DATA;
 
     //**
     // writeToJSONFile("../ufTransactionData.json", transactions);
     //**
 
-    const tvInsert = transactions.map((tv) => ({
-      updateOne: {
-        filter: {
-          user_id: id,
-          account_id: tv.account_id,
-          transaction_id: tv.transaction_id,
-        },
-        update: {
-          $setOnInsert: {
-            user_id: id,
-            account_id: tv.account_id,
-            transaction_id: tv.transaction_id,
-            name: tv.merchant_name ?? tv.name,
-            date: tv.date,
-            amount: Math.abs(tv.amount),
-            type: tv.amount < 0 ? "income" : "expense",
-          },
-        },
-        upsert: true,
-      },
+    const txInsert = transactions.map((tx) => ({
+      user_id: id,
+      account_id: tx.account_id,
+      transaction_id: tx.transaction_id,
+      name: tx.merchant_name ?? tx.name,
+      date: new Date(tx.date),
+      amount: Math.abs(tx.amount),
+      type: tx.amount < 0 ? "INCOME" : "EXPENSE",
     }));
 
-    const updatedTransactions = await Transaction.bulkWrite(tvInsert);
+    const updatedTransactions = await Transactions.bulkCreate(txInsert, {
+      ignoreDuplicates: true,
+    });
 
     //**
     // writeToJSONFile("../TransactionData.json", transactions, id);
@@ -163,8 +169,9 @@ module.exports = {
 
     return updatedTransactions;
   },
-  async setBillInfo(client, id, plaidAccessToken, selected_account_id) {
-    if (!selected_account_id) return null;
+  async setRecurringInfo(client, id, plaidAccessToken, selected_account_id) {
+    console.log("Setting Recurring Info...");
+    if (!selected_account_id) throw new Error("No selected_account_id found");
 
     try {
       const request = {
@@ -173,61 +180,59 @@ module.exports = {
       };
 
       //#################  PRODUCTION API CALL #####################
-      // const response = await client.transactionsRecurringGet(request);
+      const response = await client.transactionsRecurringGet(request);
+      const resData = response?.data;
 
-      // if (!response?.data?.outflow_streams) {
-      //   console.log("No recurring bills found");
-      //   return null;
-      // }
+      if (!resData.outflow_streams || !resData.inflow_streams) {
+        throw new Error(
+          "Recurring response did not give inflow/outflow streams",
+        );
+      }
 
       // TEST API DATA INJECTION
-      const response = {};
-      response.data = TEST_BILL_DATA;
-
+      // const response = {};
+      // response.data = TEST_BILL_DATA;
       //**
       // writeToJSONFile("../ufBills.json", response.data);
       //**
 
-      const bills = response.data.outflow_streams.map((bd) => ({
-        name: bd.merchant_name,
-        amount: Number(bd.average_amount.amount.toFixed(2)),
-        last_paid: bd.last_date,
-        next_due: bd.predicted_next_date,
-        frequency: bd.frequency,
-        charged_to: bd.account_id,
-      }));
+      const flowStreams = [
+        ...resData.inflow_streams,
+        ...resData.outflow_streams,
+      ];
 
-      const income = await Promise.all(
-        response.data.inflow_streams.map(async (inc) => {
-          if (!inc.predicted_next_date) {
-            const pd = await predictNextDate(inc.transaction_ids);
-            inc.predicted_next_date = pd;
+      const recurringTx = await Promise.all(
+        flowStreams.map(async (fs) => {
+          if (!fs?.predicted_next_date) {
+            const pd = await predictNextDate(fs.transaction_ids);
+            fs.predicted_next_date = pd;
           }
           return {
-            name: inc.description,
-            amount: Math.abs(inc.average_amount.amount.toFixed(2)),
-            last_paid: inc.last_date,
-            predicted_next_pay: inc.predicted_next_date,
-            frequency: inc.frequency,
-            deposited_to: inc.account_id,
+            account_id: selected_account_id,
+            name: fs.merchant_name,
+            amount: Math.abs(fs.average_amount.amount.toFixed(2)),
+            last_paid: fs.last_date,
+            type: "BILL",
+            predicted_next_date: fs.predicted_next_date,
+            frequency: fs.frequency,
+            charged_to: fs.account_id,
           };
-        })
+        }),
       );
 
       //**
-      // writeToJSONFile("../Bills.json", bills);
+      // writeToJSONFile("../Bills.json", recurringTx);
       //**
 
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: id },
-        {
-          $set: { bills: bills, income: income },
-        },
-        { new: true, runValidators: true }
-      );
-      //   console.log(updatedUser.accounts[0].bills);
+      const [updated] = await Recurring.bulkCreate(recurringTx, {
+        ignoreDuplicates: true,
+      });
 
-      return updatedUser;
+      if (!updated) {
+        throw new Error("Failed to update recurring table");
+      }
+
+      return updated;
     } catch (error) {
       error.response ? console.log(error.response.data) : console.error(error);
     }
