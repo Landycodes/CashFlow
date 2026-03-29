@@ -2,7 +2,11 @@ import { useEffect, useState, useContext } from "react";
 // import { usePlaidLink } from "react-plaid-link";
 // import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
-import { deleteUserTransactions, updateUser } from "../../utils/API";
+import {
+  deleteUserTransactions,
+  removeAccount,
+  updateUser,
+} from "../../utils/API";
 import { PlaidPopUp } from "../../utils/Plaid";
 import auth from "../../utils/auth";
 export default function Settings() {
@@ -30,17 +34,24 @@ export default function Settings() {
 
   const handleRemovePlaidLink = async () => {
     try {
-      const [updatedAccount, updatedTransactions] = await Promise.all([
-        updateUser(token, {
-          last_updated: "",
-          selected_account_id: "",
-          plaidAccessToken: "",
-          accounts: [],
-        }),
-        deleteUserTransactions(token),
-      ]);
+      // const [updatedAccount, updatedTransactions] = await Promise.all([
+      // updateUser(token, {
+      //   last_updated: "",
+      //   selected_account_id: "",
+      //   plaidAccessToken: "",
+      //   accounts: [],
+      // }),
+      // deleteUserTransactions(token),
+      // ]);
+      const clearUserObj = {
+        last_updated: "",
+        selected_account_id: "",
+        plaidAccessToken: "",
+      };
 
-      if (updatedAccount && updatedTransactions) {
+      const updatedAccount = removeAccount(token, clearUserObj);
+
+      if (updatedAccount) {
         setUser(updatedAccount);
       }
     } catch (error) {

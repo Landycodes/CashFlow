@@ -132,7 +132,7 @@ function App() {
           auth.logout();
           return;
         }
-        console.log(userData);
+        // console.log(userData);
         setUser(userData);
         setToken(authToken);
 

@@ -61,7 +61,7 @@ export default function CalendarCard() {
           }}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
           dayCellDidMount={(arg) => {
-            console.log(arg.date);
+            // console.log(arg.date);
             const dayEvents = events.filter(
               (e) =>
                 e.date.split("T")[0] === arg.date.toLocaleDateString("en-CA"),

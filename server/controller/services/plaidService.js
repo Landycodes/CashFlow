@@ -6,6 +6,8 @@ require("dotenv").config();
 const TEST_ACCOUNT_DATA = require("../../__Tests__/ufAccountData.json");
 const TEST_TRANSACTION_DATA = require("../../__Tests__/ufTransactionData.json");
 const TEST_BILL_DATA = require("../../__Tests__/ufBills.json");
+const TESTING = false;
+const GATHERING_DATA = false;
 //###################
 
 // ########### USED TO CAPTURE DATA FOR TEST #################
@@ -58,20 +60,23 @@ const predictNextDate = async (tx_ids) => {
 
 module.exports = {
   async setAccountInfo(client, id, plaidAccessToken) {
-    //#################  PRODUCTION API CALL #####################
     console.log("Setting Account Info...");
+
+    let balanceRes;
+
     try {
-      const balanceRes = await client.accountsBalanceGet({
-        access_token: plaidAccessToken,
-      });
+      if (TESTING) {
+        balanceRes = {};
+        balanceRes.data = TEST_ACCOUNT_DATA;
+      } else {
+        balanceRes = await client.accountsBalanceGet({
+          access_token: plaidAccessToken,
+        }); // make const in prod
+      } // TEMP
 
-      // TEST API DATA INJECTION
-      // const balanceRes = {};
-      // balanceRes.data = TEST_ACCOUNT_DATA;
-
-      // **
-      // writeToJSONFile("ufAccountData.json", balanceRes.data);
-      // **
+      if (GATHERING_DATA) {
+        writeToJSONFile("ufAccountData.json", balanceRes.data);
+      } // TEMP
 
       const balanceData = balanceRes.data.accounts;
       const accountValues = balanceData.map((bd) => ({
@@ -104,9 +109,9 @@ module.exports = {
         include: [{ model: Accounts, as: "accounts" }],
       });
 
-      //**
-      // writeToJSONFile("AccountData.json", updatedUser);
-      //**
+      if (GATHERING_DATA) {
+        writeToJSONFile("AccountData.json", updatedUser);
+      }
 
       return updatedUser;
     } catch (error) {
@@ -115,39 +120,41 @@ module.exports = {
   },
   async setTransactionInfo(client, id, plaidAccessToken) {
     console.log("Setting Transaction Info...");
-    //#################  PRODUCTION API METHOD #####################
-    const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
-    const today = new Date().toISOString().split("T")[0];
 
-    const transactions = [];
+    let transactions;
+    if (TESTING) {
+      transactions = TEST_TRANSACTION_DATA;
+    } else {
+      const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0];
+      const today = new Date().toISOString().split("T")[0];
 
-    let offset = 0;
-    const pageSize = 100;
+      transactions = []; // Make const in prod
 
-    while (true) {
-      const transactionRes = await client.transactionsGet({
-        access_token: plaidAccessToken,
-        start_date: lastYear,
-        end_date: today,
-        options: { count: pageSize, offset: offset },
-      });
+      let offset = 0;
+      const pageSize = 100;
 
-      const transactionpage = transactionRes.data.transactions;
-      transactions.push(...transactionpage);
+      while (true) {
+        const transactionRes = await client.transactionsGet({
+          access_token: plaidAccessToken,
+          start_date: lastYear,
+          end_date: today,
+          options: { count: pageSize, offset: offset },
+        });
 
-      if (transactionpage.length < pageSize) break;
+        const transactionpage = transactionRes.data.transactions;
+        transactions.push(...transactionpage);
 
-      offset += pageSize;
-    }
+        if (transactionpage.length < pageSize) break;
 
-    // TEST API DATA INJECTION
-    // const transactions = TEST_TRANSACTION_DATA;
+        offset += pageSize;
+      }
+    } // TEMP
 
-    //**
-    // writeToJSONFile("../ufTransactionData.json", transactions);
-    //**
+    if (GATHERING_DATA) {
+      writeToJSONFile("../ufTransactionData.json", transactions);
+    } // TEMP
 
     const txInsert = transactions.map((tx) => ({
       user_id: id,
@@ -155,7 +162,7 @@ module.exports = {
       transaction_id: tx.transaction_id,
       name: tx.merchant_name ?? tx.name,
       date: new Date(tx.date),
-      amount: Math.abs(tx.amount),
+      amount: tx.amount,
       type: tx.amount < 0 ? "INCOME" : "EXPENSE",
     }));
 
@@ -163,14 +170,15 @@ module.exports = {
       ignoreDuplicates: true,
     });
 
-    //**
-    // writeToJSONFile("../TransactionData.json", transactions, id);
-    //**
+    if (GATHERING_DATA) {
+      writeToJSONFile("../TransactionData.json", transactions, id);
+    } // TEMP
 
     return updatedTransactions;
   },
   async setRecurringInfo(client, id, plaidAccessToken, selected_account_id) {
     console.log("Setting Recurring Info...");
+
     if (!selected_account_id) throw new Error("No selected_account_id found");
 
     try {
@@ -180,21 +188,23 @@ module.exports = {
       };
 
       //#################  PRODUCTION API CALL #####################
-      const response = await client.transactionsRecurringGet(request);
-      const resData = response?.data;
+      let resData;
+      if (TESTING) {
+        resData = { TEST_BILL_DATA };
+      } else {
+        const response = await client.transactionsRecurringGet(request);
+        resData = response?.data; // make const in prod
 
-      if (!resData.outflow_streams || !resData.inflow_streams) {
-        throw new Error(
-          "Recurring response did not give inflow/outflow streams",
-        );
-      }
+        if (!resData.outflow_streams || !resData.inflow_streams) {
+          throw new Error(
+            "Recurring response did not give inflow/outflow streams",
+          );
+        }
+      } // TEMP
 
-      // TEST API DATA INJECTION
-      // const response = {};
-      // response.data = TEST_BILL_DATA;
-      //**
-      // writeToJSONFile("../ufBills.json", response.data);
-      //**
+      if (GATHERING_DATA) {
+        writeToJSONFile("../ufBills.json", response.data);
+      } // TEMP
 
       const flowStreams = [
         ...resData.inflow_streams,
@@ -220,9 +230,9 @@ module.exports = {
         }),
       );
 
-      //**
-      // writeToJSONFile("../Bills.json", recurringTx);
-      //**
+      if (GATHERING_DATA) {
+        writeToJSONFile("../Bills.json", recurringTx);
+      } // TEMP
 
       const [updated] = await Recurring.bulkCreate(recurringTx, {
         ignoreDuplicates: true,

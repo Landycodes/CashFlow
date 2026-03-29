@@ -137,7 +137,7 @@ export const deleteUserTransactions = async (token) => {
 
 // ****************** ACCOUNT ROUTES *******************
 export const getBills = async (token) => {
-  return fetch("/api/account/getBills", {
+  return fetch("/api/recurring/getRecurringBills", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -161,3 +161,13 @@ export const removeBill = async (user_id, account_id, billName) => {
     body: JSON.stringify({ billName: billName }),
   }).then((response) => response.json());
 };
+
+export const removeAccount = async (token) => {
+  return fetch("/api/account/removeAccount", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+}; // Make it delete specific accounts later

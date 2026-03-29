@@ -26,22 +26,26 @@ module.exports = {
     res.json({ token, user });
   },
   async getSingleUser({ user = null, params }, res) {
-    const foundUser = await User.findOne({
-      where: {
-        [Op.or]: [
-          {
-            id: {
-              [Op.eq]: user ? user.id : params.id,
-            },
-          },
-          {
-            username: {
-              [Op.eq]: params.username?.trim(),
-            },
-          },
-        ],
-      },
-    });
+    if (!user) return res.status(404).json({ message: "Invalid Web Token" });
+
+    const foundUser = await User.findByPk(user.id);
+
+    // const foundUser = await User.findOne({
+    //   where: {
+    //     [Op.or]: [
+    //       {
+    //         id: {
+    //           [Op.eq]: user ? user.id : params.id,
+    //         },
+    //       },
+    //       {
+    //         username: {
+    //           [Op.eq]: params.username?.trim(),
+    //         },
+    //       },
+    //     ],
+    //   },
+    // });
 
     if (!foundUser) {
       return res
@@ -75,7 +79,7 @@ module.exports = {
 
   async updateUser({ user = null, body }, res) {
     // console.log(user);
-    if (!user) return res.status(400).json({ message: "Something is wrong!" });
+    if (!user) return res.status(400).json({ message: "Invalid Web Token" });
 
     try {
       const [updated] = await User.update(body, {
@@ -84,7 +88,7 @@ module.exports = {
       });
 
       if (!updated) {
-        return res.status(404).json({ message: "Unable to find user" });
+        return res.status(404).json({ message: "Unable to update user" });
       }
 
       const updatedUser = await User.findByPk(user.id);

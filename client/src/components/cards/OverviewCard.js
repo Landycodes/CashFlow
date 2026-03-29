@@ -16,7 +16,7 @@ export default function OverviewCard({ range }) {
 
     getTransactionGroups(token, range).then((res) => {
       if (!Array.isArray(res)) return;
-      console.log("RESPONSE: ", res);
+      // console.log("RESPONSE: ", res);
       const expenseTx = res.filter((tx) => tx.type === "EXPENSE");
 
       setChartData({

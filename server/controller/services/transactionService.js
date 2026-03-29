@@ -1,5 +1,4 @@
-const Transaction = require("../../models/Transactions");
-const User = require("../../models/Users");
+const { Users, Transactions } = require("../../models");
 const { Op } = require("sequelize");
 const { sequelize } = require("../../config/connection");
 const dayjs = require("dayjs");
@@ -14,11 +13,12 @@ const formatters = {
   totals: (transactions, { days }) => {
     days = days * 1000 * 60 * 60 * 24;
     const currentDate = new Date().getTime();
+    console.log(transactions);
 
     const income = transactions
       .filter(
         (t) =>
-          t.type === "income" &&
+          t.type === "INCOME" &&
           currentDate - new Date(t.date).getTime() <= days,
       )
       .reduce((sum, tx) => sum + tx.amount, 0)
@@ -27,7 +27,7 @@ const formatters = {
     const expense = transactions
       .filter(
         (t) =>
-          t.type === "expense" &&
+          t.type === "EXPENSE" &&
           currentDate - new Date(t.date).getTime() <= days,
       )
       .reduce((sum, tx) => sum + tx.amount, 0)
@@ -40,7 +40,7 @@ const formatters = {
 const getTransactions = async (user = null, type = "list", options = {}) => {
   if (!user) return null;
 
-  const foundUser = await User.findByPk(user.id, { raw: true });
+  const foundUser = await Users.findByPk(user.id, { raw: true });
   // console.log(foundUser);
   const { selected_account_id } = foundUser;
 
@@ -54,7 +54,7 @@ const getTransactions = async (user = null, type = "list", options = {}) => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
 
-    const groupedTx = await Transaction.findAll({
+    const groupedTx = await Transactions.findAll({
       where: {
         user_id: user.id,
         account_id: selected_account_id,
@@ -76,11 +76,12 @@ const getTransactions = async (user = null, type = "list", options = {}) => {
     return groupedTx;
   }
 
-  const transactions = await Transaction.findAll({
+  const transactions = await Transactions.findAll({
     where: {
       user_id: user.id,
       account_id: selected_account_id,
     },
+    raw: true,
   });
 
   const format = formatters[type];

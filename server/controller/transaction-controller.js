@@ -1,12 +1,47 @@
-const Transaction = require("../models/Transactions");
+// const Transactions = require("../models/Transactions");
 
+const { Op } = require("sequelize");
+const { Transactions, sequelize } = require("../models");
 const { getTransactions } = require("./services/transactionService");
 
+// MOVE HELPER FUNCTION INTO SERVICES
+const getGrouped = async (type, days) => {
+  return await Transactions.findAll({
+    where: {
+      user_id: user.id,
+      type: type,
+      date: { [Op.gte]: days },
+    },
+    attributes: [
+      "name",
+      [sequelize.fn("SUM", sequelize.col("amount")), "total"],
+    ],
+    group: ["name"],
+    raw: true,
+  });
+};
+
+getTotal = async (type, userId, days) => {
+  return await Transactions.sum("amount", {
+    where: {
+      user_id: userId,
+      type: type,
+      date: { [Op.gte]: days },
+    },
+  });
+};
 module.exports = {
   async getTransactionTotals({ user = null, body }, res) {
+    const { days } = body;
+
     try {
-      const { days } = body;
-      const transactions = await getTransactions(user, "totals", { days });
+      const expense = await getTotal("EXPENSE", user.id, days);
+      const income = await getTotal("INCOME", user.id, days);
+
+      const transactions = {
+        income,
+        expense,
+      };
 
       if (transactions.length <= 0) {
         res
@@ -22,28 +57,28 @@ module.exports = {
         .json({ getTransactionTotals: "Failed to retrieve transactions" });
     }
   },
-  async deleteUserTransactions({ user = null }, res) {
-    if (!user)
-      res.status(404).json({ deleteUserTransactions: "Unable to find user" });
-    console.log(user);
+  // async deleteUserTransactions({ user = null }, res) {
+  //   if (!user)
+  //     res.status(404).json({ deleteUserTransactions: "Unable to find user" });
+  //   console.log(user);
 
-    try {
-      const deletedTransactions = await Transaction.destroy({
-        where: { userId: user.id },
-      });
+  //   try {
+  //     const deletedTransactions = await Transaction.destroy({
+  //       where: { userId: user.id },
+  //     });
 
-      if (!deletedTransactions) {
-        res
-          .status(404)
-          .json("Did not find any transactions associated with user");
-      }
+  //     if (!deletedTransactions) {
+  //       res
+  //         .status(404)
+  //         .json("Did not find any transactions associated with user");
+  //     }
 
-      res.json(deletedTransactions);
-    } catch (error) {
-      console.error("Failed to delete transactions", error);
-      res.status(500);
-    }
-  },
+  //     res.json(deletedTransactions);
+  //   } catch (error) {
+  //     console.error("Failed to delete transactions", error);
+  //     res.status(500);
+  //   }
+  // },
   async getTransactionList({ user = null }, res) {
     try {
       const transactions = await getTransactions(user, "list");

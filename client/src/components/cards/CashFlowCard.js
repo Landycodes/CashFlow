@@ -15,13 +15,15 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
   });
 
   useEffect(() => {
-    if (token && user?.plaidAccessToken && user?.selectedAccount) {
+    if (token && user?.plaidAccessToken && user?.selected_account_id) {
       getTransactionAmounts(token, range);
     }
   }, [user, range, token]);
 
   const getTransactionAmounts = async (token, days) => {
     const { income, expense } = await getTransactionTotals(token, days);
+    console.log("INCOME: ", income);
+    console.log("EXPENSES: ", expense);
 
     setTransactions({
       income: income,
