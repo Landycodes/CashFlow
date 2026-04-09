@@ -14,6 +14,7 @@ export default function BillsCard() {
     // getBills(token).then((data) => setBills(data));
     // getRecurringTransactions(token)
     // console.log(user);
+    // CHANGE THIS TO MAKE API CALL TO RECURRING FOR ALL THAT BELONG TO USER/ACCOUNT WITH TYPE BILLS
     setBills(user.bills);
   }, []);
 

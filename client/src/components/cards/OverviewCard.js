@@ -14,7 +14,7 @@ export default function OverviewCard({ range }) {
   useEffect(() => {
     if (!token) return;
 
-    getTransactionGroups(token, range).then((res) => {
+    getTransactionGroups(token, { days: range, limit: 10 }).then((res) => {
       if (!Array.isArray(res)) return;
       // console.log("RESPONSE: ", res);
       const expenseTx = res.filter((tx) => tx.type === "EXPENSE");

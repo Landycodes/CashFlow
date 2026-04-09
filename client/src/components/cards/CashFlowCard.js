@@ -21,9 +21,9 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
   }, [user, range, token]);
 
   const getTransactionAmounts = async (token, days) => {
-    const { income, expense } = await getTransactionTotals(token, days);
-    console.log("INCOME: ", income);
-    console.log("EXPENSES: ", expense);
+    let { income, expense } = await getTransactionTotals(token, days);
+    income = income ?? 0;
+    expense = expense ?? 0;
 
     setTransactions({
       income: income,

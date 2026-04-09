@@ -114,14 +114,14 @@ export const getTransactionList = async (token) => {
   }).then((response) => response.json());
 };
 
-export const getTransactionGroups = async (token, days) => {
+export const getTransactionGroups = async (token, options = {}) => {
   return fetch("/api/transaction/getTransactions/Groups", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ days: days }),
+    body: JSON.stringify(options),
   }).then((response) => response.json());
 };
 
@@ -136,6 +136,15 @@ export const deleteUserTransactions = async (token) => {
 };
 
 // ****************** ACCOUNT ROUTES *******************
+export const getSingleAccount = async (token) => {
+  return fetch("/api/account/getAccount", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+};
 export const getBills = async (token) => {
   return fetch("/api/recurring/getRecurringBills", {
     method: "GET",
@@ -171,3 +180,14 @@ export const removeAccount = async (token) => {
     },
   }).then((response) => response.json());
 }; // Make it delete specific accounts later
+
+// ****************** ACCOUNT ROUTES *******************
+export const getNextRecurring = async (token) => {
+  return fetch("/api/recurring/getNextRecurring", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+};

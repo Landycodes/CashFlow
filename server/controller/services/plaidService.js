@@ -1,12 +1,13 @@
 const { Users, Transactions, Accounts, Recurring } = require("../../models");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
+const { Op } = require("sequelize");
 require("dotenv").config();
 
 //###################
 const TEST_ACCOUNT_DATA = require("../../__Tests__/ufAccountData.json");
 const TEST_TRANSACTION_DATA = require("../../__Tests__/ufTransactionData.json");
 const TEST_BILL_DATA = require("../../__Tests__/ufBills.json");
-const TESTING = false;
+const TESTING = true;
 const GATHERING_DATA = false;
 //###################
 
@@ -190,7 +191,7 @@ module.exports = {
       //#################  PRODUCTION API CALL #####################
       let resData;
       if (TESTING) {
-        resData = { TEST_BILL_DATA };
+        resData = TEST_BILL_DATA;
       } else {
         const response = await client.transactionsRecurringGet(request);
         resData = response?.data; // make const in prod
@@ -203,7 +204,7 @@ module.exports = {
       } // TEMP
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../ufBills.json", response.data);
+        writeToJSONFile("../ufBills.json", resData.data);
       } // TEMP
 
       const flowStreams = [
@@ -217,15 +218,19 @@ module.exports = {
             const pd = await predictNextDate(fs.transaction_ids);
             fs.predicted_next_date = pd;
           }
+          const type = fs.average_amount.amount > 0 ? "BILL" : "PAYMENT";
+
           return {
             account_id: selected_account_id,
+            user_id: id,
             name: fs.merchant_name,
             amount: Math.abs(fs.average_amount.amount.toFixed(2)),
             last_paid: fs.last_date,
-            type: "BILL",
+            type: type,
             predicted_next_date: fs.predicted_next_date,
             frequency: fs.frequency,
-            charged_to: fs.account_id,
+            transactions: fs.transaction_ids,
+            plaid_stream_id: fs.stream_id,
           };
         }),
       );
@@ -234,8 +239,13 @@ module.exports = {
         writeToJSONFile("../Bills.json", recurringTx);
       } // TEMP
 
-      const [updated] = await Recurring.bulkCreate(recurringTx, {
-        ignoreDuplicates: true,
+      const updated = await Recurring.bulkCreate(recurringTx, {
+        updateOnDuplicate: [
+          "amount",
+          "last_paid",
+          "predicted_next_date",
+          "transactions",
+        ],
       });
 
       if (!updated) {

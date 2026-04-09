@@ -1,52 +1,55 @@
-// const Transactions = require("../models/Transactions");
-
 const { Op } = require("sequelize");
-const { Transactions, sequelize } = require("../models");
-const { getTransactions } = require("./services/transactionService");
+const { Users, Transactions, sequelize } = require("../models");
+const { getSelectedAccountId } = require("../controller/services/userService");
 
-// MOVE HELPER FUNCTION INTO SERVICES
-const getGrouped = async (type, days) => {
-  return await Transactions.findAll({
-    where: {
-      user_id: user.id,
-      type: type,
-      date: { [Op.gte]: days },
-    },
-    attributes: [
-      "name",
-      [sequelize.fn("SUM", sequelize.col("amount")), "total"],
-    ],
-    group: ["name"],
-    raw: true,
-  });
+const getCutOff = (days) => {
+  const today = new Date();
+  return today.setDate(today.getDate() - days);
 };
 
-getTotal = async (type, userId, days) => {
-  return await Transactions.sum("amount", {
-    where: {
-      user_id: userId,
-      type: type,
-      date: { [Op.gte]: days },
-    },
-  });
-};
+// const getSelectedAccountId = async (userId) => {
+//   const account = await Users.findByPk(userId, {
+//     attributes: ["selected_account_id"],
+//     raw: true,
+//   });
+//   if (!account) throw new Error("Failed to get user account Id");
+
+//   return account.selected_account_id;
+// };
+
 module.exports = {
   async getTransactionTotals({ user = null, body }, res) {
+    if (!user)
+      return res.status(400).json({ getTransactionTotals: "Missing user Id" });
     const { days } = body;
 
     try {
-      const expense = await getTotal("EXPENSE", user.id, days);
-      const income = await getTotal("INCOME", user.id, days);
+      const cutoff = getCutOff(days);
+      const accountId = await getSelectedAccountId(user.id);
 
-      const transactions = {
-        income,
-        expense,
-      };
+      let transactions = await Transactions.findAll({
+        where: {
+          user_id: user.id,
+          account_id: accountId,
+          date: { [Op.between]: [cutoff, new Date()] },
+        },
+        attributes: [
+          [sequelize.fn("SUM", sequelize.col("amount")), "total"],
+          "type",
+        ],
+        group: ["type"],
+        raw: true,
+      });
 
-      if (transactions.length <= 0) {
+      transactions = transactions.reduce((acc, item) => {
+        acc[item.type.toLowerCase()] = item.total;
+        return acc;
+      }, {});
+
+      if (!transactions) {
         res
           .status(404)
-          .json({ getTransactionTotals: "Unable to find transactions" });
+          .json({ getTransactionTotals: "Unable to get transactions" });
       }
 
       return res.json(transactions);
@@ -57,32 +60,30 @@ module.exports = {
         .json({ getTransactionTotals: "Failed to retrieve transactions" });
     }
   },
-  // async deleteUserTransactions({ user = null }, res) {
-  //   if (!user)
-  //     res.status(404).json({ deleteUserTransactions: "Unable to find user" });
-  //   console.log(user);
-
-  //   try {
-  //     const deletedTransactions = await Transaction.destroy({
-  //       where: { userId: user.id },
-  //     });
-
-  //     if (!deletedTransactions) {
-  //       res
-  //         .status(404)
-  //         .json("Did not find any transactions associated with user");
-  //     }
-
-  //     res.json(deletedTransactions);
-  //   } catch (error) {
-  //     console.error("Failed to delete transactions", error);
-  //     res.status(500);
-  //   }
-  // },
   async getTransactionList({ user = null }, res) {
+    if (!user)
+      return res.status(400).json({ getTransactionTotals: "Missing user Id" });
     try {
-      const transactions = await getTransactions(user, "list");
+      const accountId = await getSelectedAccountId(user.id);
 
+      const transactions = await Transactions.findAll({
+        where: {
+          user_id: user.id,
+          account_id: accountId,
+        },
+        attributes: [
+          "transaction_id",
+          [
+            sequelize.fn("TO_CHAR", sequelize.col("date"), "MM/DD/YYYY"),
+            "date",
+          ],
+          "amount",
+          "name",
+          "type",
+          "category",
+        ],
+        raw: true,
+      });
       if (transactions.length <= 0) {
         res.status(404).json({ getTransactionList: "No transactions found" });
       }
@@ -96,16 +97,33 @@ module.exports = {
     }
   },
   async getTransactionGroups({ user = null, body }, res) {
+    if (!user)
+      return res.status(400).json({ getTransactionGroups: "Missing user Id" });
+
+    const { days, limit = null, type = "EXPENSE" } = body;
     try {
-      const { days } = body;
-      const transactions = await getTransactions(user, "group", { days });
+      const cutoff = getCutOff(days);
+      const accountId = await getSelectedAccountId(user.id);
 
-      // if (transactions.length <= 0) {
-      //   return res
-      //     .status(404)
-      //     .json({ getTransactionGroups: "No transactions found" });
-      // }
+      const transactions = await Transactions.findAll({
+        where: {
+          user_id: user.id,
+          account_id: accountId,
+          date: { [Op.between]: [cutoff, new Date()] },
+          type: type,
+        },
+        attributes: [
+          "name",
+          [sequelize.fn("SUM", sequelize.col("amount")), "total"],
+          "type",
+        ],
+        group: ["name", "type"],
+        order: [[sequelize.fn("SUM", sequelize.col("amount")), "DESC"]],
+        limit: limit,
+        raw: true,
+      });
 
+      // console.log(transactions);
       res.json(transactions);
     } catch (error) {
       console.error(error);
@@ -114,40 +132,6 @@ module.exports = {
         .json({ getTransactionGroups: "Failed to get transaction groups" });
     }
   },
-
-  // async getTransactionGroups({ params, body }, res) {
-  //   const { user_id, account_id } = params;
-  //   const { days } = body;
-
-  //   const cutoff = new Date();
-  //   cutoff.setDate(cutoff.getDate() - days);
-  //   try {
-  //     const txResponse = await Transaction.aggregate([
-  //       {
-  //         $match: {
-  //           user_id: new Types.ObjectId(user_id),
-  //           account_id: account_id,
-  //           date: { $gte: cutoff },
-  //           type: "expense",
-  //         },
-  //       },
-  //       {
-  //         $group: {
-  //           _id: { name: "$name", type: "$type" },
-  //           total: { $sum: "$amount" },
-  //           count: { $sum: 1 },
-  //         },
-  //       },
-  //     ])
-  //       .sort({ total: -1 })
-  //       .limit(10);
-
-  //     res.json(txResponse);
-  //   } catch (error) {
-  //     console.error(error);
-  //     res.status(500);
-  //   }
-  // },
 
   //delete income by id
   //delete expense by id

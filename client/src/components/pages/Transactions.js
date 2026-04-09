@@ -7,7 +7,7 @@ export default function Transactions() {
   //create function to iterate through expenses and incomes and add a row
   //ability to edit each row and relay that to database
   const { user, setUser, token } = useContext(userContext);
-  const [checked, setCheck] = useState(user.selectedAccount.bills || []);
+  // const [checked, setCheck] = useState(user.selectedAccount.bills || []);
   const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
@@ -16,33 +16,19 @@ export default function Transactions() {
     }
 
     getTransactionList(token).then((data) => {
-      // console.log(data);
-      const txArr = [];
-
-      data.forEach((tx) => {
-        txArr.push({
-          id: tx.transaction_id,
-          date: tx.date,
-          amount: tx.amount,
-          name: tx.name,
-          type: tx.type,
-          category: null,
-        });
-      });
-
-      setTransactions(txArr);
+      setTransactions(data);
     });
   }, [token, user]);
 
-  const handleCheck = async (event, rowName) => {
-    if (event.target.checked) {
-      setCheck((prev) => [...prev, rowName]);
-      await addBill(user._id, user.selected_account_id, rowName);
-    } else {
-      setCheck((prev) => prev.filter((name) => name !== rowName));
-      await removeBill(user._id, user.selected_account_id, rowName);
-    }
-  };
+  // const handleCheck = async (event, rowName) => {
+  //   if (event.target.checked) {
+  //     setCheck((prev) => [...prev, rowName]);
+  //     await addBill(user._id, user.selected_account_id, rowName);
+  //   } else {
+  //     setCheck((prev) => prev.filter((name) => name !== rowName));
+  //     await removeBill(user._id, user.selected_account_id, rowName);
+  //   }
+  // };
 
   return (
     <div className="d-flex flex-column align-items-center">
@@ -64,14 +50,14 @@ export default function Transactions() {
           {transactions.map((row) => {
             // console.log(row.amount);
             return (
-              <tr key={row.id}>
+              <tr key={row.transaction_id}>
                 <td>{row.name}</td>
                 <td
                   className={
-                    row.type === "income" ? "table-success" : "table-danger"
+                    row.type === "INCOME" ? "table-success" : "table-danger"
                   }
                 >
-                  ${Math.abs(row.amount)}
+                  {row.type === "INCOME" ? "+" : "-"} ${row.amount}
                 </td>
                 <td>{row.date}</td>
 
@@ -83,8 +69,8 @@ export default function Transactions() {
                         type="checkbox"
                         className={`btn ${row.name}`}
                         autoComplete="off"
-                        checked={checked.includes(row.name) ? true : false}
-                        onChange={(event) => handleCheck(event, row.name)}
+                        // checked={checked.includes(row.name) ? true : false}
+                        // onChange={(event) => handleCheck(event, row.name)}
                       />
                     ) : (
                       ""

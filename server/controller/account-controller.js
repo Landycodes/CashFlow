@@ -1,12 +1,52 @@
 const { Types } = require("mongoose");
 const { Users, Transactions, Accounts } = require("../models");
-const { updateUserService } = require("../controller/services/userService");
+const { getSelectedAccountId } = require("../controller/services/userService");
 const dayjs = require("dayjs");
-const { raw } = require("express");
+
+// const getSelectedAccountId = async (userId) => {
+//   const account = await Users.findByPk(userId, {
+//     attributes: ["selected_account_id"],
+//     raw: true,
+//   });
+//   if (!account) throw new Error("Failed to get user account Id");
+
+//   return account.selected_account_id;
+// };
 
 module.exports = {
+  async getSingleAccount({ user = null }, res) {
+    if (!user)
+      return res.status(404).json({ getAccountData: "Token user not found" });
+
+    try {
+      const accountId = await getSelectedAccountId(user.id);
+
+      if (!accountId)
+        return res
+          .status(404)
+          .json({ getAccountData: "Failed to get selected account id" });
+
+      const account = await Accounts.findOne({
+        where: {
+          user_id: user.id,
+          account_id: accountId,
+        },
+        attributes: ["name", "available_balance", "account_id"],
+      });
+
+      if (!account)
+        return res
+          .status(404)
+          .json({ getAccountData: "Failed to get account" });
+
+      res.status(200).json(account);
+    } catch (error) {
+      res.status(500).json({ getAccountData: "Failed to get account Id" });
+    }
+  },
   async removeAccount({ user = null }, res) {
-    if (!user) res.status(404).json({ removeAccount: "Token user not found" });
+    if (!user)
+      return res.status(404).json({ removeAccount: "Token user not found" });
 
     try {
       const updatedUser = Users.update(
