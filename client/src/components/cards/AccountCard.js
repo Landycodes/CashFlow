@@ -2,12 +2,8 @@ import { useContext } from "react";
 import { userContext } from "../../App";
 import { useState } from "react";
 import { useEffect } from "react";
-import {
-  updateUser,
-  getSingleAccount,
-  getNextRecurring,
-} from "../../utils/API";
-import formatDate from "../../utils/dateFormatter";
+import { getNextRecurring } from "../../utils/API/recurring";
+import { getSingleAccount } from "../../utils/API/account";
 
 export default function CurrentAccountInfo() {
   // TODO: CHANGE BACK AFTER TESTING
@@ -24,45 +20,6 @@ export default function CurrentAccountInfo() {
   useEffect(() => {
     if (!user?.selected_account_id) return;
     setAccount(token);
-    // TODO: THROW THIS LOGIC IN THE BACKEND
-    // if (
-    //   user?.bills.filter((b) => b.charged_to === user.selected_account_id)
-    //     .length > 0
-    // ) {
-    //   const nextPayCheck = user.income
-    //     .filter((i) => i.deposited_to === user.selected_account_id)
-    //     .reduce((acc, cv) => {
-    //       if (!acc) return cv;
-
-    //       const closetDate = Math.abs(Date.parse(acc.predicted_next_pay) - now);
-    //       const currentDate = Math.abs(Date.parse(cv.predicted_next_pay) - now);
-
-    //       return currentDate < closetDate ? cv : acc;
-    //     }, null);
-
-    //   const dueBefore_Payday = user.bills
-    //     .filter(
-    //       (b) =>
-    //         b.charged_to === user.selected_account_id &&
-    //         Date.parse(b.next_due) <
-    //           Date.parse(nextPayCheck.predicted_next_pay),
-    //     )
-    //     .reduce((sum, b) => sum + b.amount, 0);
-
-    //   setAccountDetails({
-    //     name: user.selectedAccount.name,
-    //     balance: user.selectedAccount.available_balance,
-    //     next_pay: formatDate(nextPayCheck.predicted_next_pay),
-    //     due_before_payday: dueBefore_Payday,
-    //     id: user.selectedAccount.account_id,
-    //   });
-    // } else {
-    //   setAccountDetails({
-    //     name: user.selectedAccount.name,
-    //     balance: user.selectedAccount.available_balance,
-    //     id: user.selectedAccount.account_id,
-    //   });
-    // }
   }, [user]);
 
   const setAccount = async (token) => {

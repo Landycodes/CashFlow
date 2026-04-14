@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../App";
-import { createUser, loginUser, googleLogin } from "../../utils/API";
+import { createUser, loginUser } from "../../utils/API/user";
+import { googleLogin } from "../../utils/API/firebase";
 import {
   fireAuth,
   provider,

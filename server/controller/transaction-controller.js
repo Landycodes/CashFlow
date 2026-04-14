@@ -7,16 +7,6 @@ const getCutOff = (days) => {
   return today.setDate(today.getDate() - days);
 };
 
-// const getSelectedAccountId = async (userId) => {
-//   const account = await Users.findByPk(userId, {
-//     attributes: ["selected_account_id"],
-//     raw: true,
-//   });
-//   if (!account) throw new Error("Failed to get user account Id");
-
-//   return account.selected_account_id;
-// };
-
 module.exports = {
   async getTransactionTotals({ user = null, body }, res) {
     if (!user)
@@ -101,6 +91,7 @@ module.exports = {
       return res.status(400).json({ getTransactionGroups: "Missing user Id" });
 
     const { days, limit = null, type = "EXPENSE" } = body;
+
     try {
       const cutoff = getCutOff(days);
       const accountId = await getSelectedAccountId(user.id);
@@ -115,7 +106,7 @@ module.exports = {
         attributes: [
           "name",
           [sequelize.fn("SUM", sequelize.col("amount")), "total"],
-          "type",
+          // "type",
         ],
         group: ["name", "type"],
         order: [[sequelize.fn("SUM", sequelize.col("amount")), "DESC"]],

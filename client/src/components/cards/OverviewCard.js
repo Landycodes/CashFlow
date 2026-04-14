@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
 import { userContext } from "../../App";
-import { getTransactionGroups } from "../../utils/API";
+import { getTransactionGroups } from "../../utils/API/transaction";
 import BarChart from "../../utils/Barchart";
 
 export default function OverviewCard({ range }) {
@@ -14,15 +14,17 @@ export default function OverviewCard({ range }) {
   useEffect(() => {
     if (!token) return;
 
-    getTransactionGroups(token, { days: range, limit: 10 }).then((res) => {
+    getTransactionGroups(token, {
+      days: range,
+      type: "EXPENSE",
+      limit: 10,
+    }).then((res) => {
       if (!Array.isArray(res)) return;
-      // console.log("RESPONSE: ", res);
-      const expenseTx = res.filter((tx) => tx.type === "EXPENSE");
 
       setChartData({
         expense: {
-          labels: expenseTx.map((tx) => tx.name),
-          values: expenseTx.map((tx) => Number(tx.total).toLocaleString()),
+          labels: res.map((tx) => tx.name),
+          values: res.map((tx) => tx.total),
         },
       });
     });

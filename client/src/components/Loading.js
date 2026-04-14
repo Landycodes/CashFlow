@@ -17,9 +17,9 @@ const Loading = ({ message }) => {
         className="d-flex align-items-center justify-content-center"
         style={{ marginTop: "20vh" }}
       >
-        <div className="d-flex flex-row align-items-center justify-content-between bg-light bg-gradient p-3 rounded border border-primary">
+        <div className="d-flex flex-row align-items-center justify-content-between bg-gradient p-3 rounded border border-secondary">
           <h4>{message || "Loading..."}</h4>
-          <div className="spinner-border text-primary ms-3" role="status">
+          <div className="spinner-border text-secondary ms-3" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>

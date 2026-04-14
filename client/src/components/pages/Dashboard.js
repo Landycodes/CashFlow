@@ -9,7 +9,6 @@ import CalendarCard from "../cards/CalenderCard";
 import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";
-import { getRecurringTransactions } from "../../utils/API";
 
 export default function Dashboard() {
   const { user, token, plaidAuthExpired } = useContext(userContext);

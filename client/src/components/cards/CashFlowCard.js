@@ -2,8 +2,7 @@ import { useState, useContext } from "react";
 import PieChart from "../../utils/Piechart";
 import { useEffect } from "react";
 import { userContext } from "../../App";
-import { getTransactionTotals } from "../../utils/API";
-import Transactions from "../pages/Transactions";
+import { getTransactionTotals } from "../../utils/API/transaction";
 
 export default function CashflowCard({ range, setRange, rangeSelection }) {
   const { user, setUser, token } = useContext(userContext);
@@ -58,21 +57,6 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
           ) : (
             ""
           )}
-
-          {/* <select
-            className="form-select text-center border-primary py-1"
-            id="floatingSelect"
-            value={range}
-            onChange={(event) => setRange(event.target.value)}
-            style={{ fontSize: "1.25rem", fontWeight: "500" }} // mimic h3
-          >
-            <option value={rangeSelection.ONE_YEAR}>1 Year</option>
-            <option value={rangeSelection.SIX_MONTH}>6 Months</option>
-            <option value={rangeSelection.THREE_MONTH}>3 Months</option>
-            <option value={rangeSelection.ONE_MONTH}>1 Month</option>
-            <option value={rangeSelection.TWO_WEEKS}>2 Weeks</option>
-            <option value={rangeSelection.ONE_WEEK}>1 Week</option>
-          </select> */}
         </div>
         <div className="info-text d-flex flex-column justify-content-evenly align-items-start">
           <div className="d-flex">

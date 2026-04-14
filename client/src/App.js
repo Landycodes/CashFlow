@@ -1,11 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import "./App.css";
-import {
-  createPlaidLinkToken,
-  exchangeAndSavePlaidToken,
-  fetchAccountData,
-  getMe,
-} from "./utils/API";
+import { getMe } from "./utils/API/user";
+import { fetchAccountData } from "./utils/API/plaid";
 import {
   BrowserRouter as Router,
   Routes,

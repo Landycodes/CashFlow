@@ -21,7 +21,7 @@ Chart.register(
   Tooltip,
   Legend,
   ChartDataLabels,
-  Colors
+  Colors,
 );
 
 export default function BarChart({ data }) {

@@ -163,7 +163,7 @@ module.exports = {
       transaction_id: tx.transaction_id,
       name: tx.merchant_name ?? tx.name,
       date: new Date(tx.date),
-      amount: tx.amount,
+      amount: Math.abs(tx.amount),
       type: tx.amount < 0 ? "INCOME" : "EXPENSE",
     }));
 
@@ -224,7 +224,7 @@ module.exports = {
             account_id: selected_account_id,
             user_id: id,
             name: fs.merchant_name,
-            amount: Math.abs(fs.average_amount.amount.toFixed(2)),
+            amount: Math.abs(fs.average_amount.amount),
             last_paid: fs.last_date,
             type: type,
             predicted_next_date: fs.predicted_next_date,

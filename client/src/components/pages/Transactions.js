@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { getTransactionList, removeBill } from "../../utils/API";
+import { getTransactionList } from "../../utils/API/transaction";
 import { userContext } from "../../App";
-import { addBill } from "../../utils/API";
 
 export default function Transactions() {
   //create function to iterate through expenses and incomes and add a row

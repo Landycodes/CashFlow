@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { userContext } from "../../App";
-import { getBills, getRecurringTransactions } from "../../utils/API";
+import { getAllRecurring } from "../../utils/API/recurring";
 import formatDate from "../../utils/dateFormatter";
 
 export default function BillsCard() {
@@ -11,12 +11,10 @@ export default function BillsCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // getBills(token).then((data) => setBills(data));
-    // getRecurringTransactions(token)
-    // console.log(user);
-    // CHANGE THIS TO MAKE API CALL TO RECURRING FOR ALL THAT BELONG TO USER/ACCOUNT WITH TYPE BILLS
-    setBills(user.bills);
-  }, []);
+    getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) =>
+      setBills(data),
+    );
+  }, [user]);
 
   return (
     <div
@@ -37,7 +35,7 @@ export default function BillsCard() {
         {bills?.length > 0 ? (
           bills.map((bill) => (
             <ul
-              key={bill._id}
+              key={bill.id}
               className="info-text list-group list-group-flush list-unstyled w-100 border border-2 border-secondary rounded p-2 m-1 mt-2"
             >
               <li className="d-flex justify-content start">

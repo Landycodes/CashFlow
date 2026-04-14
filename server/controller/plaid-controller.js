@@ -7,6 +7,7 @@ const {
   setRecurringInfo,
 } = require("./services/plaidService");
 const { PlaidApi, PlaidEnvironments } = require("plaid");
+const { getSelectedAccountId } = require("./services/userService");
 require("dotenv").config();
 
 const SIX_HOURS = 1000 * 60 * 60 * 6;
@@ -121,10 +122,7 @@ module.exports = {
       ]);
 
       // Retrieving user after selected_account_id has been set
-      const { selected_account_id } = await Users.findByPk(user.id, {
-        attributes: ["selected_account_id"],
-        raw: true,
-      });
+      const selected_account_id = await getSelectedAccountId(user.id);
 
       const recurring = await setRecurringInfo(
         client,
@@ -132,14 +130,6 @@ module.exports = {
         plaidAccessToken,
         selected_account_id,
       );
-
-      // console.log("setting bill info");
-      // const bills = await setBillInfo(
-      //   client,
-      //   id,
-      //   plaidAccessToken,
-      //   selected_account_id,
-      // );
 
       if (!accountInfo || !transactions || !recurring) {
         return res.status(400).json({

@@ -1,21 +1,21 @@
-const { Users, Transactions, Recurring } = require("../models");
+const { Users, Transactions, Recurring, sequelize } = require("../models");
 const { getSelectedAccountId } = require("../controller/services/userService");
-const dayjs = require("dayjs");
 const { Op } = require("sequelize");
 
 module.exports = {
-  async getRecurringBills({ user = null }, res) {
+  async getAllRecurring({ user = null, body }, res) {
     if (!user)
-      res.status(404).json({ getRecurringBills: "Token user not found" });
+      res.status(404).json({ getAllRecurring: "Token user not found" });
 
     const selected_account_id = await getSelectedAccountId(user.id);
+    const { type = "BILL", limit = null } = body;
 
     try {
-      const recurringBills = await Recurring.findAll({
+      const recurring = await Recurring.findAll({
         where: {
           user_id: user.id,
-          charged_to: selected_account_id,
-          type: "BILL",
+          account_id: selected_account_id,
+          type: type,
         },
         attributes: [
           "name",
@@ -35,12 +35,14 @@ module.exports = {
             "next_due",
           ],
         ],
+        order: [[sequelize.col("predicted_next_date"), "ASC"]],
+        limit: limit,
         raw: true,
       });
 
-      if (recurringBills.length <= 0) return;
+      if (recurring.length <= 0) res.status(200).end();
 
-      res.json(recurringBills);
+      res.status(200).json(recurring);
     } catch (error) {
       console.error(error);
       res.status(500).json(error);
@@ -70,8 +72,6 @@ module.exports = {
 
       const { predicted_next_date } = nextPayment;
       const nextPaymentAmount = parseFloat(nextPayment.amount);
-
-      // find all bills due before next payment date and get the sum of amounts
 
       let nextBillsDue = await Recurring.sum("amount", {
         where: {

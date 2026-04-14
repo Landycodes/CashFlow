@@ -2,13 +2,11 @@ import { useEffect, useState, useContext } from "react";
 // import { usePlaidLink } from "react-plaid-link";
 // import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
-import {
-  deleteUserTransactions,
-  removeAccount,
-  updateUser,
-} from "../../utils/API";
+import { updateUser } from "../../utils/API/user";
+import { removeAccount } from "../../utils/API/account";
 import { PlaidPopUp } from "../../utils/Plaid";
 import auth from "../../utils/auth";
+
 export default function Settings() {
   const { user, setUser, token } = useContext(userContext);
   const [loading, setLoading] = useState(false);
@@ -132,7 +130,7 @@ export default function Settings() {
   return (
     <>
       <div className="d-flex align-items-center justify-content-center mt-5">
-        <div className="bg-light bg-gradient p-3 rounded border border-primary">
+        <div className=" bg-gradient p-3 rounded border border-secondary">
           <div>
             <h2 className="text-center">Settings</h2>
           </div>
