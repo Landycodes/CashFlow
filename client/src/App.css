@@ -3,10 +3,14 @@
     background-image: var(--bs-gradient);
 }
 
-.info-text * {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+.style-text {
+  /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    sans-serif; */
+  font-size: xx-large;
+  color: var(--txt-color);
+  opacity: .75;
+  font-family: "VT323", monospace;
 }
 
   .v-align {

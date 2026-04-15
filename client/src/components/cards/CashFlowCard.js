@@ -33,10 +33,10 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 rounded border border-secondary"
+      className="d-flex flex-column align-items-center bg-gradient p-3 mx-3 rounded border border-secondary"
       style={{ minWidth: "535px", maxHeight: "100%" }}
     >
-      <h3 className="text-light text-opacity-75">CashFlow</h3>
+      <h3 className="style-text">CashFlow</h3>
 
       <div className="d-flex flex-row justify-content-between align-items-between w-100">
         <div>
@@ -58,7 +58,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
             ""
           )}
         </div>
-        <div className="info-text d-flex flex-column justify-content-evenly align-items-start">
+        <div className="d-flex flex-column justify-content-evenly align-items-start">
           <div className="d-flex">
             <div className="bg-dark rounded p-3 m-1">
               <h5>Deposited</h5>

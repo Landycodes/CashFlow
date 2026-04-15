@@ -32,10 +32,10 @@ export default function OverviewCard({ range }) {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-3 m-5 h-auto rounded border border-secondary"
+      className="d-flex flex-column align-items-center bg-gradient p-3 m-3 h-auto rounded border border-secondary"
       // style={{ width: "400px", height: "auto" }}
     >
-      <h3 className="text-light text-opacity-75">Spending Overview</h3>
+      <h3 className="style-text">Spending Overview</h3>
 
       {chartData.expense.labels.length > 0 ? (
         <BarChart

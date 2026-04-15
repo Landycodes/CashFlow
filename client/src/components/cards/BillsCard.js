@@ -11,9 +11,10 @@ export default function BillsCard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) =>
-      setBills(data),
-    );
+    getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) => {
+      console.log(data);
+      setBills(data);
+    });
   }, [user]);
 
   return (
@@ -21,63 +22,49 @@ export default function BillsCard() {
       className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 mt-2 rounded border border-secondary"
       style={{
         width: "500px",
-        height: "400px",
+        height: "500px",
       }}
     >
-      <h3 className="text-light text-opacity-75">Upcoming Bills</h3>
+      <h3 className="style-text">Upcoming Bills</h3>
 
-      <div
-        style={{
-          overflow: "scroll",
-          overflowX: "hidden",
-        }}
-      >
+      <div>
         {bills?.length > 0 ? (
-          bills.map((bill) => (
-            <ul
-              key={bill.id}
-              className="info-text list-group list-group-flush list-unstyled w-100 border border-2 border-secondary rounded p-2 m-1 mt-2"
-            >
-              <li className="d-flex justify-content start">
-                <h5 className="border border-secondary rounded bg-dark p-2 px-3 my-2 mx-3">
-                  {bill.name}
-                </h5>
-              </li>
-              <ul className="d-flex justify-content-between list-unstyled mx-5">
-                <div className="d-flex flex-column justify-content-between gap-2">
-                  <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
-                    Amount
-                    <h4 className="mx-4">
-                      ${Number(bill.amount).toLocaleString()}
-                    </h4>
-                  </li>
-
-                  <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
-                    Last Paid
-                    <h4 className="mx-4 text-nowrap">
-                      {formatDate(bill.last_paid)}
-                    </h4>
-                  </li>
-                </div>
-
-                <div className="d-flex flex-column justify-content-between gap-2">
-                  <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
-                    Due
-                    <h4 className="mx-4 text-nowrap">
-                      {bill.frequency.charAt(0) +
-                        bill.frequency.slice(1).toLowerCase()}
-                    </h4>
-                  </li>
-                  <li className="d-flex flex-column bg-dark border border-secondary rounded p-2">
-                    Next Payment
-                    <h4 className="mx-4 text-nowrap">
-                      {formatDate(bill.next_due)}
-                    </h4>
-                  </li>
-                </div>
-              </ul>
-            </ul>
-          ))
+          <table className="table table-dark table-bordered table-hover table-sm mb-0">
+            <thead>
+              <tr className="border-secondary">
+                <th className="text-secondary fw-normal py-2 px-3">Name</th>
+                <th className="text-secondary fw-normal py-2 px-3">Amount</th>
+                <th className="text-secondary fw-normal py-2 px-3">Due</th>
+                <th className="text-secondary fw-normal py-2 px-3">
+                  Days Away
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {bills.map((bill) => (
+                <tr key={bill.id}>
+                  <td className="py-2 px-3">{bill.name}</td>
+                  <td className="py-2 px-3">
+                    ${Number(bill.amount).toLocaleString()}
+                  </td>
+                  <td className="py-2 px-3 text-nowrap">
+                    {formatDate(bill.next_due)}
+                  </td>
+                  <td
+                    className={`py-2 px-3 text-nowrap ${
+                      bill.days_away <= 3
+                        ? "text-danger"
+                        : bill.days_away <= 7
+                          ? "text-warning"
+                          : "text-secondary"
+                    }`}
+                  >
+                    {bill.days_away}d
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         ) : (
           <h3>No Upcoming Bills 🎉</h3>
         )}

@@ -34,6 +34,12 @@ module.exports = {
             ),
             "next_due",
           ],
+          [
+            sequelize.literal(
+              `ROUND(EXTRACT(EPOCH FROM (predicted_next_date - NOW())) / 86400)`,
+            ),
+            "days_away",
+          ],
         ],
         order: [[sequelize.col("predicted_next_date"), "ASC"]],
         limit: limit,

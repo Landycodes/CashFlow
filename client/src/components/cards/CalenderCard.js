@@ -39,10 +39,10 @@ export default function CalendarCard() {
   // console.log(user.bills);
   return (
     <div className="bg-gradient rounded border border-secondary p-3">
-      <h3 className="text-center text-light text-opacity-75">
+      <h3 className="style-text text-center text-opacity-75">
         Finance Calendar
       </h3>
-      <div id="calendar" className="calendar info-text">
+      <div id="calendar" className="calendar">
         <FullCalendar
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"

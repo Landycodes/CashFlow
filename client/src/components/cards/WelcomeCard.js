@@ -1,7 +1,7 @@
 export default function WelcomeCard() {
   return (
     <div
-      className="info-text bg-gradient p-3 rounded border border-secondary my-5"
+      className="bg-gradient p-3 rounded border border-secondary my-5"
       style={{ width: "500px" }}
     >
       <h3 className="text-center fst-italic">

@@ -46,14 +46,16 @@ export default function Navbar() {
   return (
     <nav className="w-100 d-flex bg-gradient justify-content-between">
       <span className="mx-2 d-flex flex-row align-items-center justify-content-start w-auto">
-        <h6 className="p-2 pt-3 mx-1 fs-4 text-nowrap">Welcome, {name}!</h6>
-        <h6 className="p-2 pt-3 mx-1 fs-5 text-nowrap">{date}</h6>
-        <h6 className="p-2 pt-3 mx-1 fs-5 text-nowrap">{time}</h6>
+        <h6 className="style-text p-2 pt-3 mx-1 fs-4 text-nowrap">
+          Welcome, {name}!
+        </h6>
+        <h6 className="style-text p-2 pt-3 mx-1 fs-5 text-nowrap">{date}</h6>
+        <h6 className="style-text p-2 pt-3 mx-1 fs-5 text-nowrap">{time}</h6>
         {user?.selected_account_id && user.accounts?.length > 1 ? (
           <select
             value={user.selected_account_id}
             onChange={handleAccountSelect}
-            className="form-select ms-3 pe-5 ps-1 fs-5"
+            className="style-text form-select ms-3 pe-5 ps-1 fs-5"
           >
             {user?.accounts ? (
               user.accounts.map((acct) => {
@@ -72,26 +74,23 @@ export default function Navbar() {
         )}
       </span>
       <span className="d-flex flex-row mx-2">
-        <h6
-          className="menu-btn p-3 pt-3 fs-5"
-          onClick={() => navigate("/expenses")}
-        >
+        <h6 className="menu-btn p-3 pt-3" onClick={() => navigate("/expenses")}>
           Expenses
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
+          className="menu-btn p-3 pt-3 border-start border-secondary"
           onClick={() => navigate("/Transactions")}
         >
           Transactions
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
+          className="menu-btn p-3 pt-3 border-start border-secondary"
           onClick={() => navigate("/")}
         >
           Dashboard
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 fs-5 border-start border-secondary"
+          className="menu-btn p-3 pt-3 border-start border-secondary"
           onClick={() => {
             navigate("/settings");
           }}
@@ -99,7 +98,7 @@ export default function Navbar() {
           Settings
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 fs-5 border-start border-end border-secondary"
+          className="menu-btn p-3 pt-3 border-start border-end border-secondary"
           onClick={() => {
             Auth.logout() && setUser(null);
           }}

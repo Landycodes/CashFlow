@@ -37,45 +37,54 @@ export default function CurrentAccountInfo() {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-2 rounded border border-secondary"
+      className="p-3 rounded border border-secondary bg-gradient"
       style={{ minWidth: "500px" }}
     >
-      <h3 className="text-light text-opacity-75">Account</h3>
-      <div className="d-flex flex-column align-items-start">
-        <span className="info-text fs-5">
-          <div className="bg-dark rounded p-3 m-2">
-            <h5>Current Balance</h5>
-            <h3 className="ms-3">${accountDetails.balance}</h3>
+      <h3 className="style-text text-center">Account</h3>
+
+      <div className="row g-2 mb-2">
+        <div className="col">
+          <div className="bg-dark rounded p-3">
+            <p className="text-secondary small mb-1">Current balance</p>
+            <p className="fs-4 fw-medium mb-0">${accountDetails.balance}</p>
           </div>
-          {!accountDetails.next_pay || !accountDetails.due_before_payday ? (
-            ""
-          ) : (
-            <>
-              <div className="d-flex m-2">
-                <div className="bg-dark rounded p-3 m-2">
-                  <h6>Next Paycheck</h6>
-                  <h5>{accountDetails.next_pay}</h5>
-                </div>
-                <div className="bg-dark rounded p-3 m-2">
-                  <h6>Due Before Payday</h6>
-                  <h5 className="text-danger ms-3">
-                    ${accountDetails.due_before_payday}
-                  </h5>
-                </div>
+        </div>
+        {accountDetails.next_pay && (
+          <div className="col">
+            <div className="bg-dark rounded p-3">
+              <p className="text-secondary small mb-1">Next paycheck</p>
+              <p className="fs-4 fw-medium mb-0">${accountDetails.next_pay}</p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {accountDetails.due_before_payday && (
+        <>
+          <hr className="border-secondary opacity-25 my-2" />
+          <div className="row g-2">
+            <div className="col">
+              <div className="bg-dark rounded p-3">
+                <p className="text-secondary small mb-1">Due before payday</p>
+                <p className="fs-4 fw-medium mb-0 text-danger">
+                  ${accountDetails.due_before_payday}
+                </p>
               </div>
-              <div className="bg-dark rounded p-3 m-2">
-                <h5>Leftover</h5>
-                <h3 className="text-success ms-3">
+            </div>
+            <div className="col">
+              <div className="bg-dark rounded p-3">
+                <p className="text-secondary small mb-1">Leftover</p>
+                <p className="fs-4 fw-medium mb-0 text-success">
                   $
                   {(
                     accountDetails.balance - accountDetails.due_before_payday
                   ).toFixed(2)}
-                </h3>
+                </p>
               </div>
-            </>
-          )}
-        </span>
-      </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

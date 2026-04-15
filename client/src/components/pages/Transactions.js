@@ -32,7 +32,7 @@ export default function Transactions() {
   return (
     <div className="d-flex flex-column align-items-center">
       <table
-        className="info-text table table-sm align-middle table-striped table-bordered border-secondary table-dark table-hover my-4"
+        className="table table-sm align-middle table-striped table-bordered border-secondary table-dark table-hover my-4"
         style={{ width: "60vw" }}
       >
         <thead className="text-center">

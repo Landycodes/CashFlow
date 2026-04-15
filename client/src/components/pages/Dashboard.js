@@ -36,21 +36,12 @@ export default function Dashboard() {
     });
   }, []);
 
-  // const token = auth.getToken();
-  // console.log(token);
-
   useEffect(() => {
     if (!user?.plaidAccessToken || plaidAuthExpired) {
       openPlaidPopUp();
     }
   }, [user]);
 
-  // useEffect(() => {
-  //   if (token) {
-  //     console.log(token);
-  //     getRecurringTransactions(token).then((data) => console.log(data));
-  //   }
-  // }, [token]);
   const handleRangeChange = (rangeVal) => {
     setRange(rangeVal);
   };
@@ -62,7 +53,7 @@ export default function Dashboard() {
         type="button"
         value={rangeVal}
         onClick={() => handleRangeChange(rangeVal)}
-        className={`btn btn-outline-secondary border-0 ${
+        className={`style-text fs-5 btn btn-outline-secondary border-0 ${
           isActive ? "active bg-light text-dark" : "text-light opacity-75"
         }`}
       >
@@ -77,8 +68,8 @@ export default function Dashboard() {
         {accountInfoReady ? (
           <>
             <div className="d-flex flex-row justify-content-center align-items-center m-4 gap-3">
-              <div className="d-flex flex-column justify-content-center align-items-start gap-3">
-                <div className="d-flex mx-5 gap-2 bg-gradient rounded border border-secondary">
+              <div className="d-flex flex-column justify-content-center align-items-end gap-3">
+                <div className="d-flex align-self-start mx-5 gap-2 bg-gradient rounded border border-secondary">
                   {rangeBtn(rangeSelection.ONE_WEEK, "1W")}
                   {rangeBtn(rangeSelection.TWO_WEEKS, "2W")}
                   {rangeBtn(rangeSelection.ONE_MONTH, "1M")}
@@ -93,7 +84,7 @@ export default function Dashboard() {
                 />
                 <OverviewCard range={range} />
               </div>
-              <div className="d-flex flex-column justify-content-center align-items-center gap-3">
+              <div className="d-flex flex-column align-self-start justify-content-center align-items-center gap-3">
                 <AccountCard />
                 <BillsCard />
               </div>
