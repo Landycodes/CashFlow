@@ -70,6 +70,18 @@ module.exports = {
           //   [Op.gte]: new Date(),
           // }, // REMOVE COMMENTS WHEN TESTING LIVE DATA
         },
+        attributes: [
+          "amount",
+          "predicted_next_date",
+          [
+            sequelize.fn(
+              "TO_CHAR",
+              sequelize.col("predicted_next_date"),
+              "Mon DDth",
+            ),
+            "formatted_date",
+          ],
+        ],
         order: [["predicted_next_date", "ASC"]],
         raw: true,
       });
@@ -79,7 +91,19 @@ module.exports = {
       const { predicted_next_date } = nextPayment;
       const nextPaymentAmount = parseFloat(nextPayment.amount);
 
-      let nextBillsDue = await Recurring.sum("amount", {
+      // let nextBillsDue = await Recurring.sum("amount", {
+      //   where: {
+      //     user_id: user.id,
+      //     account_id: selected_account_id,
+      //     type: "BILL",
+      //     predicted_next_date: {
+      //       [Op.lte]: nextPaymentDate,
+      //     },
+      //   },
+      //   raw: true,
+      // });
+
+      const nextBillsDue = await Recurring.findAll({
         where: {
           user_id: user.id,
           account_id: selected_account_id,
@@ -88,14 +112,33 @@ module.exports = {
             [Op.lte]: predicted_next_date,
           },
         },
+        attributes: [
+          "name",
+          "amount",
+          [
+            sequelize.fn(
+              "TO_CHAR",
+              sequelize.col("predicted_next_date"),
+              "MM/DD/YYYY",
+            ),
+            "next_due",
+          ],
+        ],
         raw: true,
       });
 
-      if (!nextBillsDue) nextBillsDue = 0;
+      const billTotal = nextBillsDue.reduce(
+        (acc, cur) => acc + parseFloat(cur.amount),
+        0,
+      );
 
-      res
-        .status(200)
-        .json({ nextPayment: nextPaymentAmount, nextBillsDue: nextBillsDue });
+      res.status(200).json({
+        nextPayment: {
+          amount: nextPaymentAmount,
+          date: nextPayment?.formatted_date,
+        },
+        nextBillsDue: { total: billTotal, bills: nextBillsDue },
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json(error);

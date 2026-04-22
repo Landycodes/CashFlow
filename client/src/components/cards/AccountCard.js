@@ -25,12 +25,14 @@ export default function CurrentAccountInfo() {
   const setAccount = async (token) => {
     const account = await getSingleAccount(token);
     const upcoming = await getNextRecurring(token);
+    console.log(upcoming);
 
     setAccountDetails({
       name: account.name,
       balance: account.available_balance,
-      next_pay: upcoming?.nextPayment,
-      due_before_payday: upcoming?.nextBillsDue,
+      next_pay_amount: upcoming?.nextPayment?.amount,
+      next_pay_date: upcoming?.nextPayment?.date,
+      due_before_payday: upcoming?.nextBillsDue?.total,
       id: account.account_id,
     });
   };
@@ -49,11 +51,18 @@ export default function CurrentAccountInfo() {
             <p className="fs-4 fw-medium mb-0">${accountDetails.balance}</p>
           </div>
         </div>
-        {accountDetails.next_pay && (
+        {accountDetails.next_pay_amount && (
           <div className="col">
             <div className="bg-dark rounded p-3">
-              <p className="text-secondary small mb-1">Next paycheck</p>
-              <p className="fs-4 fw-medium mb-0">${accountDetails.next_pay}</p>
+              <p className="text-secondary small mb-1">
+                Next paycheck on{" "}
+                <span className="text-end mb-0">
+                  {accountDetails.next_pay_date}
+                </span>
+              </p>
+              <p className="fs-4 fw-medium mb-0">
+                ${accountDetails.next_pay_amount}
+              </p>
             </div>
           </div>
         )}
@@ -65,7 +74,9 @@ export default function CurrentAccountInfo() {
           <div className="row g-2">
             <div className="col">
               <div className="bg-dark rounded p-3">
-                <p className="text-secondary small mb-1">Due before payday</p>
+                <p className="text-secondary small mb-1">
+                  Due before {accountDetails.next_pay_date}
+                </p>
                 <p className="fs-4 fw-medium mb-0 text-danger">
                   ${accountDetails.due_before_payday}
                 </p>

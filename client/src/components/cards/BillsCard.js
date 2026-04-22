@@ -12,7 +12,7 @@ export default function BillsCard() {
 
   useEffect(() => {
     getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) => {
-      console.log(data);
+      // console.log(data);
       setBills(data);
     });
   }, [user]);
