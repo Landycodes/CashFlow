@@ -1,9 +1,6 @@
 export default function WelcomeCard() {
   return (
-    <div
-      className="bg-gradient p-3 rounded border border-secondary my-5"
-      style={{ width: "500px" }}
-    >
+    <div className="window-style my-5" style={{ width: "500px" }}>
       <h3 className="text-center fst-italic">
         <b>Welcome to CashFlow</b>
       </h3>

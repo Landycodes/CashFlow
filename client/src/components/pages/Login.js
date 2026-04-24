@@ -149,7 +149,7 @@ export default function Login() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100 w-100">
       <form
         className="form d-flex flex-column justify-content-center align-items-center p-5 rounded border border-black"
         id="loginForm"

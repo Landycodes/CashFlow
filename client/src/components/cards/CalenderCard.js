@@ -3,42 +3,76 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../App";
+import { getAllRecurring } from "../../utils/API/recurring";
 // import interactionPlugin from "@fullcalendar/interaction";
 // import "./PayCalendar.css"; // optional for extra styles
 
 export default function CalendarCard() {
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser, token } = useContext(userContext);
   const [events, setEvents] = useState([]);
 
+  // TODO fix how calendar get recurring, should get all dates and predict future dates. Bonus: adhock predict dates on next button click on calander
+
+  const getRecurring = async (token) => {
+    return await getAllRecurring(token);
+  };
+
   useEffect(() => {
-    if (!user) return;
+    if (!user || !token || !user.selected_account_id) return;
+    const paydays = [];
+    const bills = [];
+    getRecurring(token).then((events) => {
+      console.log(events);
+      events.forEach((e) => {
+        if (e.type === "PAYMENT") {
+          paydays.push({
+            title: `+$${Number(e.amount).toLocaleString()}`,
+            date: e.next_due,
+            extendedProps: {
+              type: e.type.toLowerCase(),
+              amount: e.amount,
+            },
+          });
+        }
+        if (e.type === "BILL") {
+          paydays.push({
+            title: `-$${Number(e.amount).toLocaleString()}`,
+            date: e.next_due,
+            extendedProps: {
+              type: e.type.toLowerCase(),
+              amount: e.amount,
+            },
+          });
+        }
+      });
 
-    const paydays =
-      user.income?.map((i) => ({
-        title: /* i.name */ `+$${Number(i.amount).toLocaleString()}`,
-        date: i.predicted_next_pay.split("T")[0],
-        extendedProps: {
-          type: "payday",
-          amount: i.amount,
-        },
-      })) ?? [];
+      setEvents([...paydays, ...bills]);
+    });
 
-    const bills =
-      user.bills?.map((b) => ({
-        title: /* b.name */ `-$${Number(b.amount).toLocaleString()}`,
-        date: b.next_due.split("T")[0],
-        extendedProps: {
-          type: "bill",
-          amount: b.amount,
-        },
-      })) ?? [];
+    // const paydays =
+    //   user.income?.map((i) => ({
+    //     title: /* i.name */ `+$${Number(i.amount).toLocaleString()}`,
+    //     date: i.predicted_next_pay.split("T")[0],
+    //     extendedProps: {
+    //       type: "payday",
+    //       amount: i.amount,
+    //     },
+    //   })) ?? [];
 
-    setEvents([...paydays, ...bills]);
+    // const bills =
+    //   user.bills?.map((b) => ({
+    //     title: /* b.name */ `-$${Number(b.amount).toLocaleString()}`,
+    //     date: b.next_due.split("T")[0],
+    //     extendedProps: {
+    //       type: "bill",
+    //       amount: b.amount,
+    //     },
+    //   })) ?? [];
   }, [user]);
 
   // console.log(user.bills);
   return (
-    <div className="bg-gradient rounded border border-secondary p-3">
+    <div className="window-style">
       <h3 className="style-text text-center text-opacity-75">
         Finance Calendar
       </h3>

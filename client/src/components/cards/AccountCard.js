@@ -25,7 +25,6 @@ export default function CurrentAccountInfo() {
   const setAccount = async (token) => {
     const account = await getSingleAccount(token);
     const upcoming = await getNextRecurring(token);
-    console.log(upcoming);
 
     setAccountDetails({
       name: account.name,
@@ -38,23 +37,20 @@ export default function CurrentAccountInfo() {
   };
 
   return (
-    <div
-      className="p-3 rounded border border-secondary bg-gradient"
-      style={{ minWidth: "500px" }}
-    >
+    <div className="window-style" style={{ minWidth: "500px" }}>
       <h3 className="style-text text-center">Account</h3>
 
       <div className="row g-2 mb-2">
         <div className="col">
           <div className="bg-dark rounded p-3">
-            <p className="text-secondary small mb-1">Current balance</p>
+            <p className="style-subtext small mb-1">Current balance</p>
             <p className="fs-4 fw-medium mb-0">${accountDetails.balance}</p>
           </div>
         </div>
         {accountDetails.next_pay_amount && (
           <div className="col">
             <div className="bg-dark rounded p-3">
-              <p className="text-secondary small mb-1">
+              <p className="style-subtext small mb-1">
                 Next paycheck on{" "}
                 <span className="text-end mb-0">
                   {accountDetails.next_pay_date}
@@ -74,7 +70,7 @@ export default function CurrentAccountInfo() {
           <div className="row g-2">
             <div className="col">
               <div className="bg-dark rounded p-3">
-                <p className="text-secondary small mb-1">
+                <p className="style-subtext small mb-1">
                   Due before {accountDetails.next_pay_date}
                 </p>
                 <p className="fs-4 fw-medium mb-0 text-danger">
@@ -84,7 +80,7 @@ export default function CurrentAccountInfo() {
             </div>
             <div className="col">
               <div className="bg-dark rounded p-3">
-                <p className="text-secondary small mb-1">Leftover</p>
+                <p className="style-subtext small mb-1">Leftover</p>
                 <p className="fs-4 fw-medium mb-0 text-success">
                   $
                   {(

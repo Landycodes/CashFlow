@@ -55,7 +55,7 @@ function AppRouter({
   return (
     <div className="d-flex flex-column min-vh-100">
       {loggedIn && <Navbar />}
-      <main className="flex-grow-1">
+      <main className="flex-grow-1 d-flex flex-column align-items-center">
         <Routes>
           <Route
             path="/"

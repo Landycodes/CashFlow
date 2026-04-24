@@ -19,7 +19,7 @@ export default function BillsCard() {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-3 mx-5 mt-2 rounded border border-secondary"
+      className="window-style d-flex flex-column align-items-center mx-5 mt-2"
       style={{
         width: "500px",
         height: "500px",
@@ -29,42 +29,42 @@ export default function BillsCard() {
 
       <div>
         {bills?.length > 0 ? (
-          <table className="table table-dark table-bordered table-hover table-sm mb-0">
-            <thead>
-              <tr className="border-secondary">
-                <th className="text-secondary fw-normal py-2 px-3">Name</th>
-                <th className="text-secondary fw-normal py-2 px-3">Amount</th>
-                <th className="text-secondary fw-normal py-2 px-3">Due</th>
-                <th className="text-secondary fw-normal py-2 px-3">
-                  Days Away
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {bills.map((bill) => (
-                <tr key={bill.id}>
-                  <td className="py-2 px-3">{bill.name}</td>
-                  <td className="py-2 px-3">
-                    ${Number(bill.amount).toLocaleString()}
-                  </td>
-                  <td className="py-2 px-3 text-nowrap">
-                    {formatDate(bill.next_due)}
-                  </td>
-                  <td
-                    className={`py-2 px-3 text-nowrap ${
-                      bill.days_away <= 3
-                        ? "text-danger"
-                        : bill.days_away <= 7
-                          ? "text-warning"
-                          : "text-secondary"
-                    }`}
-                  >
-                    {bill.days_away}d
-                  </td>
+          <div className="tx-table-wrap">
+            <table className="tx-table table table-dark table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th className="tx-th">Name</th>
+                  <th className="tx-th">Amount</th>
+                  <th className="tx-th">Due</th>
+                  <th className="tx-th">Days Away</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bills.map((bill) => (
+                  <tr className="tx-row" key={bill.id}>
+                    <td className="tx-td tx-name py-2 px-3">{bill.name}</td>
+                    <td className="border border-0 py-2 px-3">
+                      ${Number(bill.amount).toLocaleString()}
+                    </td>
+                    <td className="border border-0 fw-medium py-2 px-3 text-nowrap">
+                      {formatDate(bill.next_due)}
+                    </td>
+                    <td
+                      className={`border border-0 py-2 px-3 text-nowrap ${
+                        bill.days_away <= 3
+                          ? "text-danger"
+                          : bill.days_away <= 7
+                            ? "text-warning"
+                            : "text-secondary"
+                      }`}
+                    >
+                      {bill.days_away}d
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <h3>No Upcoming Bills 🎉</h3>
         )}

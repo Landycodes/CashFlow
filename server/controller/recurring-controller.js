@@ -8,19 +8,20 @@ module.exports = {
       res.status(404).json({ getAllRecurring: "Token user not found" });
 
     const selected_account_id = await getSelectedAccountId(user.id);
-    const { type = "BILL", limit = null } = body;
+    const { type = null, limit = null } = body;
 
     try {
       const recurring = await Recurring.findAll({
         where: {
           user_id: user.id,
           account_id: selected_account_id,
-          type: type,
+          ...(type && { type }),
         },
         attributes: [
           "name",
           "amount",
           "frequency",
+          "type",
           "id",
           [
             sequelize.fn("TO_CHAR", sequelize.col("last_paid"), "MM/DD/YYYY"),

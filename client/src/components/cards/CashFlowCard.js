@@ -33,7 +33,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
 
   return (
     <div
-      className="d-flex flex-column align-items-center bg-gradient p-3 mx-3 rounded border border-secondary"
+      className="window-style d-flex flex-column align-items-center p-3 mx-3"
       style={{ minWidth: "535px", maxHeight: "100%" }}
     >
       <h3 className="style-text">CashFlow</h3>
@@ -61,28 +61,30 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
         <div className="d-flex flex-column justify-content-evenly align-items-start">
           <div className="d-flex">
             <div className="bg-dark rounded p-3 m-1">
-              <h5>Deposited</h5>
+              <p className="style-subtext small mb-1">Deposited</p>
               <h4 className="text-success ms-2">
                 ${Number(transactions.income).toLocaleString()}
               </h4>
             </div>
             <div className="bg-dark rounded p-3 m-1">
-              <h5>Withdrawn</h5>
+              <p className="style-subtext small mb-1">Withdrawn</p>
               <h4 className="text-danger ms-2">
                 ${Number(transactions.expense).toLocaleString()}
               </h4>
             </div>
           </div>
-          <div className="d-flex flex-column align-items-center bg-dark rounded p-3 w-100">
-            <h5>CashFlow</h5>
-            <h4
-              className={
-                transactions.total < 0 ? "text-danger" : "text-success"
-              }
-            >
-              {transactions.total < 0 ? "-" : ""}$
-              {Math.abs(transactions.total).toFixed(2)}
-            </h4>
+          <div className="d-flex align-items-center justify-content-center w-100">
+            <div className="d-flex flex-column align-items-center bg-dark p-3 rounded w-50">
+              <p className="style-subtext small mb-1">CashFlow</p>
+              <h4
+                className={
+                  transactions.total < 0 ? "text-danger" : "text-success"
+                }
+              >
+                {transactions.total < 0 ? "-" : ""}$
+                {Math.abs(transactions.total).toFixed(2)}
+              </h4>
+            </div>
           </div>
         </div>
       </div>
