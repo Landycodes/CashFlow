@@ -13,7 +13,7 @@ router.use("/account", accountRoutes);
 router.use("/plaid", plaidRoutes);
 router.use("/firebase", fireRoutes);
 router.get("*", (req, res) => {
-  res.json({ Msg: "You are on the wrong path" });
+  res.status(404).json({ Msg: "You are on the wrong path" });
 });
 
 module.exports = router;

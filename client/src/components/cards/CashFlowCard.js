@@ -3,6 +3,7 @@ import PieChart from "../../utils/Piechart";
 import { useEffect } from "react";
 import { userContext } from "../../App";
 import { getTransactionTotals } from "../../utils/API/transaction";
+import { formatNum } from "../../utils/numberFormatter";
 
 export default function CashflowCard({ range, setRange, rangeSelection }) {
   const { user, setUser, token } = useContext(userContext);
@@ -63,13 +64,13 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
             <div className="bg-dark rounded p-3 m-1">
               <p className="style-subtext small mb-1">Deposited</p>
               <h4 className="text-success ms-2">
-                ${Number(transactions.income).toLocaleString()}
+                ${formatNum(transactions.income)}
               </h4>
             </div>
             <div className="bg-dark rounded p-3 m-1">
               <p className="style-subtext small mb-1">Withdrawn</p>
               <h4 className="text-danger ms-2">
-                ${Number(transactions.expense).toLocaleString()}
+                ${formatNum(transactions.expense)}
               </h4>
             </div>
           </div>
@@ -82,7 +83,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
                 }
               >
                 {transactions.total < 0 ? "-" : ""}$
-                {Math.abs(transactions.total).toFixed(2)}
+                {formatNum(Math.abs(transactions.total).toFixed(2))}
               </h4>
             </div>
           </div>

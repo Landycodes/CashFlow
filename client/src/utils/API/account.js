@@ -33,8 +33,8 @@ export const removeBill = async (user_id, account_id, billName) => {
   }).then((response) => response.json());
 };
 
-export const removeAccount = async (token) => {
-  return fetch("/api/account/removeAccount", {
+export const removeAllAccounts = async (token) => {
+  return fetch("/api/account/removeAllAccounts", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

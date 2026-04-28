@@ -11,6 +11,7 @@ import {
   Colors,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { formatNum } from "./numberFormatter";
 
 // register Chart.js components and plugin
 Chart.register(
@@ -70,7 +71,7 @@ export default function BarChart({ data }) {
         align: "end",
         font: { size: 14 },
         color: "white",
-        formatter: (value) => `$${Number(value).toLocaleString()}`,
+        formatter: (value) => `$${formatNum(value)}`,
         clamp: true,
       },
     },

@@ -1,5 +1,6 @@
-// const Transaction = require("../models/Transactions");
-// const User = require("../models/Users");
+// ##################################
+const PRODUCTION = true;
+// ##################################
 const { Transactions, Users } = require("../models");
 const {
   setAccountInfo,
@@ -12,13 +13,16 @@ require("dotenv").config();
 
 const SIX_HOURS = 1000 * 60 * 60 * 6;
 
-// PLAID PRODUCTION AND SANDBOX CHANGE HERE
 const client = new PlaidApi({
-  basePath: PlaidEnvironments.sandbox,
+  basePath: PRODUCTION
+    ? PlaidEnvironments.production
+    : PlaidEnvironments.sandbox,
   baseOptions: {
     headers: {
       "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-      "PLAID-SECRET": process.env.PLAID_SECRET_SANDBOX,
+      "PLAID-SECRET": PRODUCTION
+        ? process.env.PLAID_SECRET
+        : process.env.PLAID_SECRET_SANDBOX,
       "Plaid-Version": "2020-09-14",
     },
   },

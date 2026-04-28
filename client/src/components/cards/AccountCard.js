@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { getNextRecurring } from "../../utils/API/recurring";
 import { getSingleAccount } from "../../utils/API/account";
+import { formatNum } from "../../utils/numberFormatter";
 
 export default function CurrentAccountInfo() {
   // TODO: CHANGE BACK AFTER TESTING
@@ -44,20 +45,22 @@ export default function CurrentAccountInfo() {
         <div className="col">
           <div className="bg-dark rounded p-3">
             <p className="style-subtext small mb-1">Current balance</p>
-            <p className="fs-4 fw-medium mb-0">${accountDetails.balance}</p>
+            <p className="fs-4 fw-medium mb-0">
+              ${formatNum(accountDetails.balance)}
+            </p>
           </div>
         </div>
         {accountDetails.next_pay_amount && (
           <div className="col">
             <div className="bg-dark rounded p-3">
-              <p className="style-subtext small mb-1">
+              <p className="style-subtext small mb-1 text-nowrap">
                 Next paycheck on{" "}
                 <span className="text-end mb-0">
                   {accountDetails.next_pay_date}
                 </span>
               </p>
-              <p className="fs-4 fw-medium mb-0">
-                ${accountDetails.next_pay_amount}
+              <p className="fs-4 fw-medium opacity-75 mb-0">
+                ${formatNum(accountDetails.next_pay_amount)}
               </p>
             </div>
           </div>
@@ -74,7 +77,7 @@ export default function CurrentAccountInfo() {
                   Due before {accountDetails.next_pay_date}
                 </p>
                 <p className="fs-4 fw-medium mb-0 text-danger">
-                  ${accountDetails.due_before_payday}
+                  ${formatNum(accountDetails.due_before_payday)}
                 </p>
               </div>
             </div>
@@ -83,9 +86,11 @@ export default function CurrentAccountInfo() {
                 <p className="style-subtext small mb-1">Leftover</p>
                 <p className="fs-4 fw-medium mb-0 text-success">
                   $
-                  {(
-                    accountDetails.balance - accountDetails.due_before_payday
-                  ).toFixed(2)}
+                  {formatNum(
+                    (
+                      accountDetails.balance - accountDetails.due_before_payday
+                    ).toFixed(2),
+                  )}
                 </p>
               </div>
             </div>

@@ -1,15 +1,14 @@
-const { Users, Transactions, Accounts, Recurring } = require("../../models");
-const { PlaidApi, PlaidEnvironments } = require("plaid");
-const { Op } = require("sequelize");
-require("dotenv").config();
-
 //###################
 const TEST_ACCOUNT_DATA = require("../../__Tests__/ufAccountData.json");
 const TEST_TRANSACTION_DATA = require("../../__Tests__/ufTransactionData.json");
 const TEST_BILL_DATA = require("../../__Tests__/ufBills.json");
-const TESTING = true;
-const GATHERING_DATA = false;
+const TESTING = false;
+const GATHERING_DATA = true;
 //###################
+
+const { Users, Transactions, Accounts, Recurring } = require("../../models");
+const { Op } = require("sequelize");
+require("dotenv").config();
 
 // ########### USED TO CAPTURE DATA FOR TEST #################
 const fs = require("fs");
@@ -27,6 +26,8 @@ const writeToJSONFile = async (filename, data, id = null) => {
       },
     });
   }
+
+  // if (!data) return;
 
   const result = JSON.stringify(data, null, 2);
   fs.writeFileSync(filepath, result);
@@ -76,9 +77,8 @@ module.exports = {
       } // TEMP
 
       if (GATHERING_DATA) {
-        writeToJSONFile("ufAccountData.json", balanceRes.data);
+        writeToJSONFile("../ufAccountData.json", balanceRes.data);
       } // TEMP
-
       const balanceData = balanceRes.data.accounts;
       const accountValues = balanceData.map((bd) => ({
         name: bd.name,
@@ -111,11 +111,12 @@ module.exports = {
       });
 
       if (GATHERING_DATA) {
-        writeToJSONFile("AccountData.json", updatedUser);
+        writeToJSONFile("../AccountData.json", updatedUser);
       }
 
       return updatedUser;
     } catch (error) {
+      console.error(error);
       throw new Error(`Failed to set account info: ${error}`);
     }
   },
@@ -204,7 +205,7 @@ module.exports = {
       } // TEMP
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../ufBills.json", resData.data);
+        writeToJSONFile("../ufBills.json", resData);
       } // TEMP
 
       const flowStreams = [

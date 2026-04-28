@@ -1,5 +1,6 @@
 const { Types } = require("mongoose");
 const { Users, Transactions, Accounts } = require("../models");
+
 const { getSelectedAccountId } = require("../controller/services/userService");
 
 module.exports = {
@@ -33,7 +34,7 @@ module.exports = {
       res.status(500).json({ getAccountData: "Failed to get account Id" });
     }
   },
-  async removeAccount({ user = null }, res) {
+  async removeAllAccounts({ user = null }, res) {
     if (!user)
       return res.status(404).json({ removeAccount: "Token user not found" });
 
@@ -44,7 +45,7 @@ module.exports = {
           selected_account_id: "",
           plaidAccessToken: "",
         },
-        { where: { user_id: user.id } },
+        { where: { id: user.id } },
       );
       if (!updatedUser) throw new Error("removeAccount: Failed to update user");
 

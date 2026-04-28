@@ -6,7 +6,7 @@ import {
   createPlaidLinkToken,
   exchangeAndSavePlaidToken,
   fetchAccountData,
-} from "./API";
+} from "./API/plaid";
 
 export function PlaidPopUp(
   ACCESS_TOKEN = null,
@@ -15,7 +15,7 @@ export function PlaidPopUp(
   },
   onErrorCallback = (E) => {
     console.log(E);
-  }
+  },
 ) {
   const [linkToken, setLinkToken] = useState(null);
   const { user, setUser, token } = useContext(userContext);

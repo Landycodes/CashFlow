@@ -34,7 +34,7 @@ const Recurring = sequelize.define(
       allowNull: false,
     },
     last_paid: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
       defaultValue: null,
     },
@@ -42,17 +42,18 @@ const Recurring = sequelize.define(
       type: DataTypes.ENUM("PAYMENT", "BILL"),
     },
     predicted_next_date: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       allowNull: true,
       defaultValue: null,
     },
     frequency: {
       type: DataTypes.ENUM(
+        "UNKNOWN",
         "MONTHLY",
         "WEEKLY",
         "BIWEEKLY",
         "SEMIMONTHLY",
-        "YEARLY",
+        "ANNUALLY",
         "QUARTERLY",
       ),
       defaultValue: "MONTHLY",

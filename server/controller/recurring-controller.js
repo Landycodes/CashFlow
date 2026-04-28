@@ -5,7 +5,7 @@ const { Op } = require("sequelize");
 module.exports = {
   async getAllRecurring({ user = null, body }, res) {
     if (!user)
-      res.status(404).json({ getAllRecurring: "Token user not found" });
+      return res.status(404).json({ getAllRecurring: "Token user not found" });
 
     const selected_account_id = await getSelectedAccountId(user.id);
     const { type = null, limit = null } = body;
@@ -47,7 +47,7 @@ module.exports = {
         raw: true,
       });
 
-      if (recurring.length <= 0) res.status(200).end();
+      if (recurring.length <= 0) return res.status(200).end();
 
       res.status(200).json(recurring);
     } catch (error) {
@@ -57,7 +57,7 @@ module.exports = {
   },
   async getNextRecurring({ user = null }, res) {
     if (!user)
-      res.status(404).json({ getNextRecurring: "User Token Not Found" });
+      return res.status(404).json({ getNextRecurring: "User Token Not Found" });
 
     try {
       const selected_account_id = await getSelectedAccountId(user.id);
@@ -67,9 +67,9 @@ module.exports = {
           user_id: user.id,
           account_id: selected_account_id,
           type: "PAYMENT",
-          // predicted_next_date: {
-          //   [Op.gte]: new Date(),
-          // }, // REMOVE COMMENTS WHEN TESTING LIVE DATA
+          predicted_next_date: {
+            [Op.gte]: new Date(),
+          }, // REMOVE COMMENTS WHEN TESTING LIVE DATA
         },
         attributes: [
           "amount",
@@ -87,7 +87,7 @@ module.exports = {
         raw: true,
       });
 
-      if (!nextPayment) res.status(200).end();
+      if (!nextPayment) return res.status(200).end();
 
       const { predicted_next_date } = nextPayment;
       const nextPaymentAmount = parseFloat(nextPayment.amount);
@@ -140,6 +140,56 @@ module.exports = {
         },
         nextBillsDue: { total: billTotal, bills: nextBillsDue },
       });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json(error);
+    }
+  },
+  async getRecurringCalEvents({ user = null }, res) {
+    if (!user)
+      return res.status(404).json({ getNextRecurring: "User Token Not Found" });
+
+    try {
+      const selected_account_id = await getSelectedAccountId(user.id);
+
+      const upcomingCalEvents = await Recurring.findAll({
+        where: {
+          user_id: user.id,
+          account_id: selected_account_id,
+        },
+        attributes: [
+          ["name", "title"],
+          "amount",
+          [
+            sequelize.fn(
+              "LOWER",
+              sequelize.cast(sequelize.col("type"), "text"),
+            ),
+            "type",
+          ],
+          ["predicted_next_date", "date"],
+          // "frequency",
+        ],
+        raw: true,
+      });
+
+      // const previousCalEvents = Recurring.findAll({
+      //   where: {
+      //     user_id: user.id,
+      //     account_id: selected_account_id,
+      //   },
+      // });
+      const calEvents = upcomingCalEvents.map((e) => ({
+        title: e.title,
+        date: e.date,
+        extendedProps: {
+          type: e.type,
+          amount: e.amount,
+        },
+      }));
+
+      // console.log(calEvents);
+      return res.status(200).json(calEvents);
     } catch (error) {
       console.error(error);
       res.status(500).json(error);

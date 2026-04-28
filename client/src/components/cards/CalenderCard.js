@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../App";
-import { getAllRecurring } from "../../utils/API/recurring";
+import { getRecurringCalEvents } from "../../utils/API/recurring";
 // import interactionPlugin from "@fullcalendar/interaction";
 // import "./PayCalendar.css"; // optional for extra styles
 
@@ -13,61 +13,17 @@ export default function CalendarCard() {
 
   // TODO fix how calendar get recurring, should get all dates and predict future dates. Bonus: adhock predict dates on next button click on calander
 
-  const getRecurring = async (token) => {
-    return await getAllRecurring(token);
+  const getCalEvents = async (token) => {
+    return await getRecurringCalEvents(token);
+    // return await getAllRecurring(token);
   };
 
   useEffect(() => {
     if (!user || !token || !user.selected_account_id) return;
-    const paydays = [];
-    const bills = [];
-    getRecurring(token).then((events) => {
-      console.log(events);
-      events.forEach((e) => {
-        if (e.type === "PAYMENT") {
-          paydays.push({
-            title: `+$${Number(e.amount).toLocaleString()}`,
-            date: e.next_due,
-            extendedProps: {
-              type: e.type.toLowerCase(),
-              amount: e.amount,
-            },
-          });
-        }
-        if (e.type === "BILL") {
-          paydays.push({
-            title: `-$${Number(e.amount).toLocaleString()}`,
-            date: e.next_due,
-            extendedProps: {
-              type: e.type.toLowerCase(),
-              amount: e.amount,
-            },
-          });
-        }
-      });
-
-      setEvents([...paydays, ...bills]);
+    getCalEvents(token).then((events) => {
+      if (!events) return;
+      setEvents(events);
     });
-
-    // const paydays =
-    //   user.income?.map((i) => ({
-    //     title: /* i.name */ `+$${Number(i.amount).toLocaleString()}`,
-    //     date: i.predicted_next_pay.split("T")[0],
-    //     extendedProps: {
-    //       type: "payday",
-    //       amount: i.amount,
-    //     },
-    //   })) ?? [];
-
-    // const bills =
-    //   user.bills?.map((b) => ({
-    //     title: /* b.name */ `-$${Number(b.amount).toLocaleString()}`,
-    //     date: b.next_due.split("T")[0],
-    //     extendedProps: {
-    //       type: "bill",
-    //       amount: b.amount,
-    //     },
-    //   })) ?? [];
   }, [user]);
 
   // console.log(user.bills);
@@ -78,6 +34,7 @@ export default function CalendarCard() {
       </h3>
       <div id="calendar" className="calendar">
         <FullCalendar
+          key={events.length}
           plugins={[dayGridPlugin]}
           initialView="dayGridMonth"
           events={events}
@@ -95,15 +52,17 @@ export default function CalendarCard() {
           }}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
           dayCellDidMount={(arg) => {
+            if (!events || Object.keys(events).length === 0) return;
+
             // console.log(arg.date);
+            // console.log(events);
             const dayEvents = events.filter(
-              (e) =>
-                e.date.split("T")[0] === arg.date.toLocaleDateString("en-CA"),
+              (e) => e?.date === arg.date.toLocaleDateString("en-CA"),
             );
             // console.log(dayEvents);
 
             const hasPayday = dayEvents.some(
-              (e) => e.extendedProps.type === "payday",
+              (e) => e.extendedProps.type === "payment",
             );
             const hasBill = dayEvents.some(
               (e) => e.extendedProps.type === "bill",

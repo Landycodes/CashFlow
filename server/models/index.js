@@ -4,10 +4,6 @@ const Accounts = require("./Accounts");
 const Transactions = require("./Transactions");
 const Recurring = require("./Recurring");
 
-// ----------------------------------------
-// Associations
-// ----------------------------------------
-
 // Users <-> Accounts
 Users.hasMany(Accounts, {
   foreignKey: "user_id",

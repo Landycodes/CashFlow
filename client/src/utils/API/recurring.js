@@ -8,6 +8,15 @@ export const getNextRecurring = async (token) => {
   }).then((response) => response.json());
 };
 
+export const getRecurringCalEvents = async (token) => {
+  return fetch("/api/recurring/getRecurringCalEvents", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+  }).then((response) => response.json());
+};
 export const getAllRecurring = async (token, options = {}) => {
   return fetch("/api/recurring/getAllRecurring", {
     method: "POST",

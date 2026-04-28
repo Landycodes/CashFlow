@@ -3,7 +3,7 @@ import { useEffect, useState, useContext } from "react";
 // import { useNavigate } from "react-router-dom";
 import { userContext } from "../../App";
 import { updateUser } from "../../utils/API/user";
-import { removeAccount } from "../../utils/API/account";
+import { removeAllAccounts } from "../../utils/API/account";
 import { PlaidPopUp } from "../../utils/Plaid";
 import auth from "../../utils/auth";
 
@@ -47,7 +47,7 @@ export default function Settings() {
         plaidAccessToken: "",
       };
 
-      const updatedAccount = removeAccount(token, clearUserObj);
+      const updatedAccount = await removeAllAccounts(token);
 
       if (updatedAccount) {
         setUser(updatedAccount);
