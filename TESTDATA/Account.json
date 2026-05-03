@@ -1,0 +1,66 @@
+{
+  "id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+  "username": "Andrew",
+  "email": "landryandrewsk8@gmail.com",
+  "password": "$2b$10$mB0lICh7tSl.t5TV1qQn/ucHEqFdU5XofQs.9fB8Vxgx4cPridVee",
+  "uid": null,
+  "plaidAccessToken": "43cdfe8fbba537257aade911c8941da3:224e3e580eb8fd56b58d7d8e0399b11762bb570c7b36091624bf7ceab355ee5b3e7e2f6826fa3dde019449f0234cda090fe96f07be7f015f79a26454e461170f",
+  "selected_account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+  "last_updated": "2026-05-03T04:41:29.532Z",
+  "accounts": [
+    {
+      "id": "4c67f725-5d0b-4b72-bc7f-d05408724d80",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "1dqXNKekrySm8dx7dg98tKnb8Pmo7YIYzOwRv",
+      "name": "CHECKING",
+      "available_balance": "1331.06",
+      "createdAt": "2026-05-01T04:58:19.739Z",
+      "updatedAt": "2026-05-01T05:20:09.908Z"
+    },
+    {
+      "id": "3b61c661-c4eb-4cb5-954b-7badc11f7813",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "DabpvVNq09ha4N8VNo54CNqYaDA3mosXxyPn4",
+      "name": "SAVINGS",
+      "available_balance": "0.01",
+      "createdAt": "2026-05-01T04:58:19.740Z",
+      "updatedAt": "2026-05-01T05:20:09.908Z"
+    },
+    {
+      "id": "5504fd6c-4c1c-4cde-a584-3d1d633884f6",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "6ZxeaykomwhgQ3bjM3MyFn7WrJoxXgi1K69a1",
+      "name": "Plaid Checking",
+      "available_balance": "100.00",
+      "createdAt": "2026-05-03T04:07:00.832Z",
+      "updatedAt": "2026-05-03T04:38:20.255Z"
+    },
+    {
+      "id": "a3eedb7b-d4c8-42ba-b979-0c155beb8f05",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "XZqg4K3z1NhoMlAXalaKFQg87lV4MZu1jQ6MP",
+      "name": "Plaid Saving",
+      "available_balance": "200.00",
+      "createdAt": "2026-05-03T04:07:00.832Z",
+      "updatedAt": "2026-05-03T04:38:20.255Z"
+    },
+    {
+      "id": "e14c15f3-a53c-4844-850f-7381d0d113f8",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+      "name": "CHECKING",
+      "available_balance": "1441.09",
+      "createdAt": "2026-05-03T04:41:22.262Z",
+      "updatedAt": "2026-05-03T04:41:29.530Z"
+    },
+    {
+      "id": "4fbe2193-9c90-42eb-bf16-4153499045fb",
+      "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+      "account_id": "JEqYQjAZzZFJnd87JbQRIpYVp65wJbCb54JRv",
+      "name": "SAVINGS",
+      "available_balance": "0.01",
+      "createdAt": "2026-05-03T04:41:22.262Z",
+      "updatedAt": "2026-05-03T04:41:29.530Z"
+    }
+  ]
+}

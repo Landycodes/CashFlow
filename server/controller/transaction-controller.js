@@ -50,16 +50,22 @@ module.exports = {
         .json({ getTransactionTotals: "Failed to retrieve transactions" });
     }
   },
-  async getTransactionList({ user = null }, res) {
+  async getTransactionList({ user = null, query = {} }, res) {
     if (!user)
       return res.status(400).json({ getTransactionTotals: "Missing user Id" });
     try {
       const accountId = await getSelectedAccountId(user.id);
 
-      const transactions = await Transactions.findAll({
+      const page = parseInt(query.page) || 1;
+      const limit = parseInt(query.limit) || 20;
+      const offset = (page - 1) * limit;
+      const search = query.search || "";
+
+      const { count, rows: transactions } = await Transactions.findAndCountAll({
         where: {
           user_id: user.id,
           account_id: accountId,
+          ...(search && { name: { [Op.iLike]: `%${search}%` } }),
         },
         attributes: [
           "transaction_id",
@@ -72,13 +78,25 @@ module.exports = {
           "type",
           "category",
         ],
+        limit,
+        offset,
         raw: true,
       });
-      if (transactions.length <= 0) {
-        res.status(404).json({ getTransactionList: "No transactions found" });
-      }
 
-      res.json(transactions);
+      if (transactions.length <= 0)
+        return res.json({
+          transactions: [],
+          totalCount: 0,
+          totalPages: 0,
+          currentPage: page,
+        });
+
+      res.json({
+        transactions,
+        totalCount: count,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+      });
     } catch (error) {
       console.error(error);
       res

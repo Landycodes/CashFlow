@@ -1,0 +1,69 @@
+{
+  "accounts": [
+    {
+      "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+      "balances": {
+        "available": 1441.09,
+        "current": 1480.74,
+        "iso_currency_code": "USD",
+        "limit": null,
+        "unofficial_currency_code": null
+      },
+      "mask": "0717",
+      "name": "CHECKING",
+      "official_name": "CHECKING",
+      "subtype": "checking",
+      "type": "depository"
+    },
+    {
+      "account_id": "JEqYQjAZzZFJnd87JbQRIpYVp65wJbCb54JRv",
+      "balances": {
+        "available": 0.01,
+        "current": 5.01,
+        "iso_currency_code": "USD",
+        "limit": null,
+        "unofficial_currency_code": null
+      },
+      "mask": "5300",
+      "name": "SAVINGS",
+      "official_name": "SAVINGS",
+      "subtype": "savings",
+      "type": "depository"
+    }
+  ],
+  "item": {
+    "auth_method": "INSTANT_AUTH",
+    "available_products": [
+      "assets",
+      "balance",
+      "income_verification",
+      "investments",
+      "liabilities",
+      "signal",
+      "transactions_refresh"
+    ],
+    "billed_products": [
+      "auth",
+      "recurring_transactions",
+      "transactions"
+    ],
+    "consent_expiration_time": null,
+    "consented_products": [
+      "assets",
+      "auth",
+      "income_verification",
+      "transactions"
+    ],
+    "error": null,
+    "institution_id": "ins_116784",
+    "institution_name": "Vantage West Credit Union",
+    "item_id": "E76nVKAQzQt47pg14EXRHMQmE489rDc6vK7JN",
+    "products": [
+      "auth",
+      "transactions"
+    ],
+    "update_type": "background",
+    "webhook": ""
+  },
+  "request_id": "7f27f6d443954d5"
+}

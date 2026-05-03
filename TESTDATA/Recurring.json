@@ -1,0 +1,150 @@
+[
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "",
+    "amount": 1395.0416666666667,
+    "last_paid": "2026-04-23",
+    "type": "PAYMENT",
+    "predicted_next_date": "2026-05-08",
+    "frequency": "SEMI_MONTHLY",
+    "transactions": [
+      "R108D5P3z3CoXLb3oeQ9FZM8VNEBYKFBra8JP",
+      "qd3BQ0Y9A9F6Ow976YBkczpYLXV4mAUk59ayq",
+      "yBrjDZoVJVtyqE5oy6gLUKXY93AeB1hMPqLjP",
+      "Bon4gBE0z0tEj4m0E9NeFLXo5BaqxEILRnx0w",
+      "R108D5P3z3CoXLb3oeQ9FZMpgJVgzLURpXwE4",
+      "XKJQyV0kzkiLz39bLRxdFNPZvnevALt8DYEb1"
+    ],
+    "plaid_stream_id": "kVL6930oqoU8w7QY89AMfq5BBjM0jBFRMboR9"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Webull Financial",
+    "amount": 125,
+    "last_paid": "2026-04-23",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-07",
+    "frequency": "BIWEEKLY",
+    "transactions": [
+      "Mdy8XawjzjFRpqjOR604tKZoYRnL05hRg6Q4w",
+      "Dgw89yvDzDsXp0MQXqjRIJrOKd07A3f6Q4o7p",
+      "KRB8nr5KzKU3YXqE3dxNH5aLXnxgvzfXK4Zx3",
+      "yBrjDZoVJVtyqE5oy6gLUKXY93AeB1hMPqLdP",
+      "QDvbLZ1rzrFp86xJpPeVTPYp3xV3Z6Ij5A8Bw",
+      "NwK8dx6ZzZC8pYqP8O6Ef6nKNayNQVfrgmjwN"
+    ],
+    "plaid_stream_id": "PLAm68DqzqCgOwdKgQ1mFq5aaDNmDaFmXOoOD"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "",
+    "amount": 104.2,
+    "last_paid": "2026-04-15",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-15",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "j96w7B0aPatJ8YN9JzOnI7JbM9Xp4LUwk5Vyy",
+      "Yk8ZKOxAzAhDQy1xDrBwcMm5V38eXQcd7orPw",
+      "qd3BQ0Y9A9F6Ow976YBkczp5gQLgOqFvzRdy9"
+    ],
+    "plaid_stream_id": "axV7aNXQzQfkp4Jmkny3t6bggAz5AgtZnK71x"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Visible Service LLC",
+    "amount": 25,
+    "last_paid": "2026-04-19",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-19",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "1BawyONxpxtRAzL0RM4ktZB3EQzqmoF4ry1MX",
+      "Mdy8XawjzjFRpqjOR604tKZoYRnL05hRg6QEv",
+      "LQ38p4dnznTjNgzYjwbXhKbpD4PDrJu4v5qrJ"
+    ],
+    "plaid_stream_id": "Bon4gBE0z0tEj4m0E9NeFLXkkw8EwkH96v37o"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Apple",
+    "amount": 20.15,
+    "last_paid": "2026-04-05",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-05",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "0q4d3V5NpNhDNZ5vDMeacz1B9dZMoEUjBOM6n",
+      "5kZ1vQegpghxJ9RbxEOvFa5AQn9KpyfAmMLP8",
+      "3yJLkEvzpzCwxdN4wzekIkbmL6qLEOfBrX16N"
+    ],
+    "plaid_stream_id": "kVL6930oqoU8w7QY89AMfq5BBjM0jBFRMboo6"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Apple",
+    "amount": 10.6,
+    "last_paid": "2026-04-19",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-19",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "PLAm68DqzqCgOwdKgQ1mFq5nVOYgQmHK5RMvV",
+      "E76nVKAQzQt47pg14EXRHMQYqwp4VvcLq4wzV",
+      "Dgw89yvDzDsXp0MQXqjRIJrwj1Kj69U3ye5BR"
+    ],
+    "plaid_stream_id": "yBrjDZoVJVtyqE5oy6gLUKXkkDr1DktO0RppY"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Crunchyroll",
+    "amount": 9.893333333333333,
+    "last_paid": "2026-04-16",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-16",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "0q4d3V5NpNhDNZ5vDMeacz1B9dZMoEUjBOM0n",
+      "e5R9ZLvowoURN80eR64ptMB5vRA83Xc79Rjrb",
+      "kVL6930oqoU8w7QY89AMfq5rykgyx9UBrk5Jd"
+    ],
+    "plaid_stream_id": "0q4d3V5NpNhDNZ5vDMeacz1AAD5EDAtrg9AvB"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "HBO Max",
+    "amount": 3.17,
+    "last_paid": "2026-04-30",
+    "type": "BILL",
+    "predicted_next_date": "2026-05-30",
+    "frequency": "MONTHLY",
+    "transactions": [
+      "pQBqRvYXkXTwYPkewqOnIA846Q7BgkT6LROMJ",
+      "kVL6930oqoU8w7QY89AMfq5JgYN8E0HjZN4A3",
+      "A5QrbqB9z9UD10LgDk8OcpOKdRLdXkC0vmVE5"
+    ],
+    "plaid_stream_id": "A5QrbqB9z9UD10LgDk8OcpOoozxmzoU6dwMny"
+  },
+  {
+    "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+    "user_id": "063cb7ea-7402-4507-9b4b-e81d78f4f455",
+    "name": "Free Tax USA",
+    "amount": 16.97,
+    "last_paid": "2026-02-05",
+    "type": "BILL",
+    "predicted_next_date": null,
+    "frequency": "ANNUALLY",
+    "transactions": [
+      "KRB8nr5KzKU3YXqE3dxNH5aLXnxgvzfXK4ZOg"
+    ],
+    "plaid_stream_id": "kVL6930oqoU8w7QY89AMfq5BBjM0jBFRMbo35"
+  }
+]

@@ -9,14 +9,22 @@ export const getTransactionTotals = async (token, days) => {
   }).then((response) => response.json());
 };
 
-export const getTransactionList = async (token) => {
-  return fetch("/api/transaction/getTransactions/List", {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      authorization: `Bearer ${token}`,
+export const getTransactionList = async (
+  token,
+  page = 1,
+  PAGE_SIZE,
+  search,
+) => {
+  return fetch(
+    `/api/transaction/getTransactions/List?page=${page}&limit=${PAGE_SIZE}&search=${search}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
     },
-  }).then((response) => response.json());
+  ).then((response) => response.json());
 };
 
 export const getTransactionGroups = async (token, options = {}) => {

@@ -28,6 +28,10 @@ const Transactions = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    plaid_entity_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     type: {
       type: DataTypes.ENUM("INCOME", "EXPENSE"),
       allowNull: false,
@@ -37,7 +41,7 @@ const Transactions = sequelize.define(
       allowNull: false,
     },
     amount: {
-      type: DataTypes.DECIMAL(10, 2), // more appropriate than FLOAT for money
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
     },
     date: {
@@ -50,7 +54,7 @@ const Transactions = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
     tableName: "transactions",
   },
 );

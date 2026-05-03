@@ -1,37 +1,45 @@
 //###################
-const TEST_ACCOUNT_DATA = require("../../__Tests__/ufAccountData.json");
-const TEST_TRANSACTION_DATA = require("../../__Tests__/ufTransactionData.json");
-const TEST_BILL_DATA = require("../../__Tests__/ufBills.json");
-const TESTING = false;
-const GATHERING_DATA = true;
+const TEST_ACCOUNT_DATA = require("../../../TESTDATA/_Raw_Account.json");
+const TEST_TRANSACTION_DATA = require("../../../TESTDATA/_Raw_Transactions.json");
+const TEST_RECURRING_DATA = require("../../../TESTDATA/_Raw_Recurring.json");
+const TESTING = true;
+const GATHERING_DATA = false;
 //###################
 
 const { Users, Transactions, Accounts, Recurring } = require("../../models");
+const { getSelectedAccountId } = require("../services/userService");
 const { Op } = require("sequelize");
 require("dotenv").config();
 
 // ########### USED TO CAPTURE DATA FOR TEST #################
-const fs = require("fs");
+const fs = require("fs").promises;
+const path = require("path");
+
 const writeToJSONFile = async (filename, data, id = null) => {
-  const filepath = `../../__Tests__/${filename}`;
-  if (id != null) {
-    const affectedTransactionIds = data.map((t) => t.transaction_id);
-    const affectedAccountIds = data.map((t) => t.account_id);
+  const filepath = path.join(__dirname, "../../../TESTDATA", filename);
 
-    data = await Transactions.findAll({
-      where: {
-        user_id: id,
-        account_id: { [Op.in]: affectedAccountIds },
-        transaction_id: { [Op.in]: affectedTransactionIds },
-      },
-    });
+  try {
+    if (id !== null) {
+      const affectedTransactionIds = data.map((t) => t.transaction_id);
+      const affectedAccountIds = data.map((t) => t.account_id);
+
+      data = await Transactions.findAll({
+        where: {
+          user_id: id,
+          account_id: { [Op.in]: affectedAccountIds },
+          transaction_id: { [Op.in]: affectedTransactionIds },
+        },
+      });
+    }
+
+    if (!data) return;
+
+    const result = JSON.stringify(data, null, 2);
+    await fs.writeFile(filepath, result);
+    console.log(`Data written to ${filename}`);
+  } catch (err) {
+    console.error(`Failed to write ${filepath}:`, err);
   }
-
-  // if (!data) return;
-
-  const result = JSON.stringify(data, null, 2);
-  fs.writeFileSync(filepath, result);
-  console.log(`Data written to ${filepath}`);
 };
 
 const predictNextDate = async (tx_ids) => {
@@ -60,6 +68,31 @@ const predictNextDate = async (tx_ids) => {
   return new Date(lastDate.getTime() + avg);
 };
 
+// TODO fix this function
+const parsePlaidName = (plaidName, isKey = true) => {
+  let parsedName = plaidName
+    .toLowerCase()
+    // strip MCC codes
+    .replace(/\bmcc\s*\d{4}\b/g, "")
+    // strip card numbers
+    .replace(/#\d+/g, "")
+    // strip "card 15", "card xx", etc
+    .replace(/\bcard\s+\w+\b/g, "")
+    // strip "date x xx x" patterns
+    .replace(/\bdate(\s+x)+\b/g, "")
+    // strip 4-digit codes that look like category IDs
+    .replace(/\b\d{4}\b/g, "")
+    // strip state abbreviations like "AZ"
+    .replace(/\b[A-Z]{2}\b/g, "");
+
+  if (isKey) {
+    parsedName = parsedName.replace(/\s+/g, " ").trim().replace(/\s/g, "-");
+  } else {
+    parsedName = parsedName.replace(/\s+/g, " ").trim();
+  }
+  return parsedName;
+};
+
 module.exports = {
   async setAccountInfo(client, id, plaidAccessToken) {
     console.log("Setting Account Info...");
@@ -74,11 +107,11 @@ module.exports = {
         balanceRes = await client.accountsBalanceGet({
           access_token: plaidAccessToken,
         }); // make const in prod
-      } // TEMP
+      } // TEST CONFIG
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../ufAccountData.json", balanceRes.data);
-      } // TEMP
+        writeToJSONFile("_Raw_Account.json", balanceRes.data);
+      } // TEST CONFIG
       const balanceData = balanceRes.data.accounts;
       const accountValues = balanceData.map((bd) => ({
         name: bd.name,
@@ -111,75 +144,93 @@ module.exports = {
       });
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../AccountData.json", updatedUser);
+        writeToJSONFile("Account.json", updatedUser);
       }
 
       return updatedUser;
     } catch (error) {
-      console.error(error);
-      throw new Error(`Failed to set account info: ${error}`);
+      // console.error(error);
+      if (error?.response?.data) {
+        throw error;
+      } else {
+        throw new error({ setRecurringInfo: error });
+      }
     }
   },
   async setTransactionInfo(client, id, plaidAccessToken) {
     console.log("Setting Transaction Info...");
 
-    let transactions;
-    if (TESTING) {
-      transactions = TEST_TRANSACTION_DATA;
-    } else {
-      const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-        .toISOString()
-        .split("T")[0];
-      const today = new Date().toISOString().split("T")[0];
+    try {
+      let transactions;
+      if (TESTING) {
+        transactions = TEST_TRANSACTION_DATA;
+      } else {
+        const lastYear = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0];
+        const today = new Date().toISOString().split("T")[0];
 
-      transactions = []; // Make const in prod
+        transactions = []; // Make const in prod
 
-      let offset = 0;
-      const pageSize = 100;
+        let offset = 0;
+        const pageSize = 100;
 
-      while (true) {
-        const transactionRes = await client.transactionsGet({
-          access_token: plaidAccessToken,
-          start_date: lastYear,
-          end_date: today,
-          options: { count: pageSize, offset: offset },
-        });
+        while (true) {
+          const transactionRes = await client.transactionsGet({
+            access_token: plaidAccessToken,
+            start_date: lastYear,
+            end_date: today,
+            options: { count: pageSize, offset: offset },
+          });
 
-        const transactionpage = transactionRes.data.transactions;
-        transactions.push(...transactionpage);
+          const transactionpage = transactionRes.data.transactions;
+          transactions.push(...transactionpage);
 
-        if (transactionpage.length < pageSize) break;
+          if (transactionpage.length < pageSize) break;
 
-        offset += pageSize;
+          offset += pageSize;
+        }
+      } // TEST CONFIG
+
+      if (GATHERING_DATA) {
+        writeToJSONFile("_Raw_Transactions.json", transactions);
+      } // TEST CONFIG
+
+      // TODO function to clean name in map
+
+      const txInsert = transactions.map((tx) => ({
+        user_id: id,
+        account_id: tx.account_id,
+        transaction_id: tx.transaction_id,
+        plaid_entity_id: tx.merchant_entity_id ?? parsePlaidName(tx.name),
+        name: tx.merchant_name ?? parsePlaidName(tx.name, false),
+        date: new Date(tx.date),
+        amount: Math.abs(tx.amount),
+        type: tx.amount < 0 ? "INCOME" : "EXPENSE",
+      }));
+
+      const updatedTransactions = await Transactions.bulkCreate(txInsert, {
+        ignoreDuplicates: true,
+      });
+
+      if (GATHERING_DATA) {
+        writeToJSONFile("Transactions.json", transactions, id);
+      } // TEST CONFIG
+
+      return updatedTransactions;
+    } catch (error) {
+      if (error?.response?.data) {
+        throw error;
+      } else {
+        throw new error({ setRecurringInfo: error });
       }
-    } // TEMP
-
-    if (GATHERING_DATA) {
-      writeToJSONFile("../ufTransactionData.json", transactions);
-    } // TEMP
-
-    const txInsert = transactions.map((tx) => ({
-      user_id: id,
-      account_id: tx.account_id,
-      transaction_id: tx.transaction_id,
-      name: tx.merchant_name ?? tx.name,
-      date: new Date(tx.date),
-      amount: Math.abs(tx.amount),
-      type: tx.amount < 0 ? "INCOME" : "EXPENSE",
-    }));
-
-    const updatedTransactions = await Transactions.bulkCreate(txInsert, {
-      ignoreDuplicates: true,
-    });
-
-    if (GATHERING_DATA) {
-      writeToJSONFile("../TransactionData.json", transactions, id);
-    } // TEMP
-
-    return updatedTransactions;
+    }
   },
-  async setRecurringInfo(client, id, plaidAccessToken, selected_account_id) {
+  async setRecurringInfo(client, id, plaidAccessToken) {
     console.log("Setting Recurring Info...");
+
+    // Get refreshed selected account id for initial setup
+    const selected_account_id = await getSelectedAccountId(id);
 
     if (!selected_account_id) throw new Error("No selected_account_id found");
 
@@ -189,10 +240,9 @@ module.exports = {
         account_ids: [selected_account_id],
       };
 
-      //#################  PRODUCTION API CALL #####################
       let resData;
       if (TESTING) {
-        resData = TEST_BILL_DATA;
+        resData = TEST_RECURRING_DATA;
       } else {
         const response = await client.transactionsRecurringGet(request);
         resData = response?.data; // make const in prod
@@ -202,11 +252,13 @@ module.exports = {
             "Recurring response did not give inflow/outflow streams",
           );
         }
-      } // TEMP
+      } // TEST CONFIG
+
+      // console.log(resData);
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../ufBills.json", resData);
-      } // TEMP
+        writeToJSONFile("_Raw_Recurring.json", resData);
+      } // TEST CONFIG
 
       const flowStreams = [
         ...resData.inflow_streams,
@@ -237,8 +289,8 @@ module.exports = {
       );
 
       if (GATHERING_DATA) {
-        writeToJSONFile("../Bills.json", recurringTx);
-      } // TEMP
+        writeToJSONFile("Recurring.json", recurringTx);
+      } // TEST CONFIG
 
       const updated = await Recurring.bulkCreate(recurringTx, {
         updateOnDuplicate: [
@@ -255,7 +307,11 @@ module.exports = {
 
       return updated;
     } catch (error) {
-      error.response ? console.log(error.response.data) : console.error(error);
+      if (error?.response?.data) {
+        throw error;
+      } else {
+        throw new error({ setRecurringInfo: error });
+      }
     }
   },
 };

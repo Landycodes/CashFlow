@@ -52,7 +52,7 @@ const Recurring = sequelize.define(
         "MONTHLY",
         "WEEKLY",
         "BIWEEKLY",
-        "SEMIMONTHLY",
+        "SEMI_MONTHLY",
         "ANNUALLY",
         "QUARTERLY",
       ),

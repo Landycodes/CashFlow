@@ -87,22 +87,13 @@ module.exports = {
         raw: true,
       });
 
-      if (!nextPayment) return res.status(200).end();
+      if (!nextPayment)
+        return res
+          .status(200)
+          .json({ getNextRecurring: "No upcoming payments found" });
 
       const { predicted_next_date } = nextPayment;
       const nextPaymentAmount = parseFloat(nextPayment.amount);
-
-      // let nextBillsDue = await Recurring.sum("amount", {
-      //   where: {
-      //     user_id: user.id,
-      //     account_id: selected_account_id,
-      //     type: "BILL",
-      //     predicted_next_date: {
-      //       [Op.lte]: nextPaymentDate,
-      //     },
-      //   },
-      //   raw: true,
-      // });
 
       const nextBillsDue = await Recurring.findAll({
         where: {

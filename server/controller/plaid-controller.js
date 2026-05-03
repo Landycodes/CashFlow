@@ -1,5 +1,5 @@
 // ##################################
-const PRODUCTION = true;
+const PLAID_PRODUCTION = false;
 // ##################################
 const { Transactions, Users } = require("../models");
 const {
@@ -14,13 +14,13 @@ require("dotenv").config();
 const SIX_HOURS = 1000 * 60 * 60 * 6;
 
 const client = new PlaidApi({
-  basePath: PRODUCTION
+  basePath: PLAID_PRODUCTION
     ? PlaidEnvironments.production
     : PlaidEnvironments.sandbox,
   baseOptions: {
     headers: {
       "PLAID-CLIENT-ID": process.env.PLAID_CLIENT_ID,
-      "PLAID-SECRET": PRODUCTION
+      "PLAID-SECRET": PLAID_PRODUCTION
         ? process.env.PLAID_SECRET
         : process.env.PLAID_SECRET_SANDBOX,
       "Plaid-Version": "2020-09-14",
@@ -67,7 +67,7 @@ module.exports = {
     try {
       const id = user.id;
       const { public_token } = body;
-      console.log(id, public_token);
+      // console.log(id, public_token);
       const response = await client.itemPublicTokenExchange({ public_token });
       const accessToken = response.data.access_token;
 
@@ -113,27 +113,20 @@ module.exports = {
         !foundUser.last_updated ||
         Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
-      // if (!readyToUpdate) {
-      //   console.log("Not ready to update");
-      //   return res.status(200).json(foundUser);
-      // }
+      if (!readyToUpdate) {
+        console.log("Not ready to update");
+        return res.status(200).json(foundUser);
+      }
 
       console.log("Updating now");
 
-      const [accountInfo, transactions] = await Promise.all([
-        setAccountInfo(client, id, plaidAccessToken),
-        setTransactionInfo(client, id, plaidAccessToken),
-      ]);
-
-      // Retrieving user after selected_account_id has been set
-      const selected_account_id = await getSelectedAccountId(user.id);
-
-      const recurring = await setRecurringInfo(
+      const accountInfo = await setAccountInfo(client, id, plaidAccessToken);
+      const transactions = await setTransactionInfo(
         client,
         id,
         plaidAccessToken,
-        selected_account_id,
       );
+      const recurring = await setRecurringInfo(client, id, plaidAccessToken);
 
       if (!accountInfo || !transactions || !recurring) {
         return res.status(400).json({
@@ -147,10 +140,22 @@ module.exports = {
       console.log("Account Update Successfull!");
       return res.status(200).end();
     } catch (error) {
-      console.error(error);
-      if (error?.response?.data?.error_code === "ITEM_LOGIN_REQUIRED") {
-        return res.status(401).json({ API_error: "LOGIN_REQUIRED" });
+      if (error?.response?.data) {
+        const { error_code, error_message } = error.response.data;
+        const parsedError = {
+          fetchAccountData: {
+            Plaid_Error: {
+              error_code: error_code,
+              error_message: error_message,
+              status: error.status,
+            },
+          },
+        };
+        console.error(parsedError);
+        return res.status(401).json({ fetchAccountData: parsedError });
       }
+
+      console.error(error);
       return res.status(500).json({
         fetchAccountData: "Failed to store updated account information",
         API_error: String(error),

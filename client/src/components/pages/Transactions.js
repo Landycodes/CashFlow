@@ -3,6 +3,8 @@ import { getTransactionList } from "../../utils/API/transaction";
 import { userContext } from "../../App";
 import Loading from "../Loading";
 
+const PAGE_SIZE = 20;
+
 export default function Transactions() {
   //create function to iterate through expenses and incomes and add a row
   //ability to edit each row and relay that to database
@@ -10,17 +12,34 @@ export default function Transactions() {
   // const [checked, setCheck] = useState(user.selectedAccount.bills || []);
   const [loadState, setLoadState] = useState(true);
   const [transactions, setTransactions] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     if (!token || !user || !user?.selected_account_id) {
       return;
     }
 
-    getTransactionList(token).then((data) => {
-      setTransactions(data);
+    console.log(search);
+
+    getTransactionList(token, page, PAGE_SIZE, search).then((data) => {
+      console.log(data);
+      setTransactions(data.transactions);
+      setTotalPages(data.totalPages);
       setLoadState(false);
     });
-  }, [token, user]);
+  }, [token, user, page, search]);
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      setSearch(searchInput);
+      setPage(1);
+    }, 400);
+
+    return () => clearTimeout(debounce);
+  }, [searchInput]);
 
   // const handleCheck = async (event, rowName) => {
   //   if (event.target.checked) {
@@ -32,11 +51,55 @@ export default function Transactions() {
   //   }
   // };
 
+  // const filtered = transactions.filter((t) =>
+  //   t.name?.toLowerCase().includes(search.toLowerCase()),
+  // );
+
+  // const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  // const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const handleSearch = (e) => setSearchInput(e.target.value);
+
   if (loadState) return <Loading />;
 
   return (
-    <div className="w-75 d-flex flex-column align-items-center">
+    <div className="w-75 mb-5 d-flex flex-column align-items-center">
       <h3 className="style-text mb-4">Transaction Overview</h3>
+      <div
+        className="d-flex align-items-center justify-content-end w-75 mb-3"
+        style={{ gap: "1rem" }}
+      >
+        <input
+          type="text"
+          className="form-control form-control-sm bg-gradient text-light border-secondary"
+          placeholder="Search transactions..."
+          value={searchInput}
+          onChange={handleSearch}
+          style={{ maxWidth: "260px" }}
+        />
+        <div className="d-flex align-items-center" style={{ gap: "0.5rem" }}>
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            &#8592;
+          </button>
+          <span
+            className="text-secondary"
+            style={{ fontSize: "13px", whiteSpace: "nowrap" }}
+          >
+            Page {page} of {totalPages || 1}
+          </span>
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages || totalPages === 0}
+          >
+            &#8594;
+          </button>
+        </div>
+      </div>
       <div className="tx-table-wrap" style={{ width: "60vw" }}>
         <table className="table table-dark table-striped table-sm align-middle mb-0 tx-table">
           <thead>
