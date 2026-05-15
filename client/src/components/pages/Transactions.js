@@ -2,12 +2,44 @@ import React, { useContext, useEffect, useState } from "react";
 import { getTransactionList } from "../../utils/API/transaction";
 import { userContext } from "../../App";
 import Loading from "../Loading";
+import { setReferenceName } from "../../utils/API/xRef";
 
 const PAGE_SIZE = 20;
 
+// Helper component
+const EditableCell = ({ value, onSave }) => {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(value);
+
+  useEffect(() => {
+    setVal(value);
+  }, [value]);
+
+  const handleBlur = () => {
+    setEditing(false);
+    if (val !== value) onSave(val);
+  };
+
+  return editing ? (
+    <input
+      autoFocus
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={(e) => e.key === "Enter" && handleBlur()}
+      className="form-control form-control-sm bg-dark text-light border-secondary"
+    />
+  ) : (
+    <span onClick={() => setEditing(true)} style={{ cursor: "pointer" }}>
+      {val}
+    </span>
+  );
+};
+
 export default function Transactions() {
-  //create function to iterate through expenses and incomes and add a row
-  //ability to edit each row and relay that to database
+  // TODO: Create cross ref object before sending to server
+
+  // ability to edit each row and relay that to database
   const { user, setUser, token } = useContext(userContext);
   // const [checked, setCheck] = useState(user.selectedAccount.bills || []);
   const [loadState, setLoadState] = useState(true);
@@ -17,19 +49,19 @@ export default function Transactions() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const importTransactionList = async () => {
+    const tx = await getTransactionList(token, page, PAGE_SIZE, search);
+    setTransactions(tx.transactions);
+    setTotalPages(tx.totalPages);
+    setLoadState(false);
+  };
+
   useEffect(() => {
     if (!token || !user || !user?.selected_account_id) {
       return;
     }
 
-    console.log(search);
-
-    getTransactionList(token, page, PAGE_SIZE, search).then((data) => {
-      console.log(data);
-      setTransactions(data.transactions);
-      setTotalPages(data.totalPages);
-      setLoadState(false);
-    });
+    importTransactionList();
   }, [token, user, page, search]);
 
   useEffect(() => {
@@ -59,6 +91,17 @@ export default function Transactions() {
   // const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const handleSearch = (e) => setSearchInput(e.target.value);
+
+  const handleSaveCell = async (cell, newName) => {
+    setLoadState(true);
+
+    await setReferenceName(token, {
+      ...cell,
+      xref_name: newName,
+    });
+
+    importTransactionList();
+  };
 
   if (loadState) return <Loading />;
 
@@ -114,7 +157,12 @@ export default function Transactions() {
           <tbody>
             {transactions.map((row) => (
               <tr className="tx-row" key={row.transaction_id}>
-                <td className="tx-td tx-name">{row.name}</td>
+                <td className="tx-td tx-name">
+                  <EditableCell
+                    value={row["xref.given_name"] ?? row.name}
+                    onSave={(newName) => handleSaveCell(row, newName)}
+                  />
+                </td>
                 <td
                   className={`tx-td ${row.type === "INCOME" ? "tx-income" : "tx-expense"}`}
                 >

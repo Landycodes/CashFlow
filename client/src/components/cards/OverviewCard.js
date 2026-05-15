@@ -20,10 +20,11 @@ export default function OverviewCard({ range }) {
       limit: 10,
     }).then((res) => {
       if (!Array.isArray(res)) return;
+      console.log(res);
 
       setChartData({
         expense: {
-          labels: res.map((tx) => tx.name),
+          labels: res.map((tx) => tx["xref.given_name"] ?? tx.name),
           values: res.map((tx) => tx.total),
         },
       });

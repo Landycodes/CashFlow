@@ -9,15 +9,7 @@ const XRef = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    transactionId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "transactions",
-        key: "id",
-      },
-    },
-    userId: {
+    user_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
@@ -25,16 +17,22 @@ const XRef = sequelize.define(
         key: "id",
       },
     },
-    defaultName: {
+    plaid_entity_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    default_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    givenName: {
+    given_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
   },
   {
+    timestamps: false,
     tableName: "xref",
   },
 );

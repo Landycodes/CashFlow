@@ -1,5 +1,5 @@
 const { Op } = require("sequelize");
-const { Users, Transactions, sequelize } = require("../models");
+const { Users, Transactions, sequelize, Xref } = require("../models");
 const { getSelectedAccountId } = require("../controller/services/userService");
 
 const getCutOff = (days) => {
@@ -23,11 +23,18 @@ module.exports = {
           account_id: accountId,
           date: { [Op.between]: [cutoff, new Date()] },
         },
+        include: [
+          {
+            model: Xref,
+            as: "xref",
+            required: false,
+          },
+        ],
         attributes: [
           [sequelize.fn("SUM", sequelize.col("amount")), "total"],
           "type",
         ],
-        group: ["type"],
+        group: ["type", "xref.id"],
         raw: true,
       });
 
@@ -67,6 +74,13 @@ module.exports = {
           account_id: accountId,
           ...(search && { name: { [Op.iLike]: `%${search}%` } }),
         },
+        include: [
+          {
+            model: Xref,
+            as: "xref",
+            required: false,
+          },
+        ],
         attributes: [
           "transaction_id",
           [
@@ -77,6 +91,8 @@ module.exports = {
           "name",
           "type",
           "category",
+          "plaid_entity_id",
+          "user_id",
         ],
         limit,
         offset,
@@ -121,12 +137,19 @@ module.exports = {
           date: { [Op.between]: [cutoff, new Date()] },
           type: type,
         },
+        include: [
+          {
+            model: Xref,
+            as: "xref",
+            required: false,
+          },
+        ],
         attributes: [
           "name",
           [sequelize.fn("SUM", sequelize.col("amount")), "total"],
           // "type",
         ],
-        group: ["name", "type"],
+        group: ["name", "type", "xref.id"],
         order: [[sequelize.fn("SUM", sequelize.col("amount")), "DESC"]],
         limit: limit,
         raw: true,

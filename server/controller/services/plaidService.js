@@ -222,7 +222,7 @@ module.exports = {
       if (error?.response?.data) {
         throw error;
       } else {
-        throw new error({ setRecurringInfo: error });
+        throw new Error(error);
       }
     }
   },

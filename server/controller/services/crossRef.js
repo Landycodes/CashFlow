@@ -1,4 +1,4 @@
-const { Users } = require("../../models");
+const { Xref } = require("../../models");
 
 module.exports = {
   async getSelectedAccountId(userId) {
