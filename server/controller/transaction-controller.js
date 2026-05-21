@@ -72,7 +72,12 @@ module.exports = {
         where: {
           user_id: user.id,
           account_id: accountId,
-          ...(search && { name: { [Op.iLike]: `%${search}%` } }),
+          ...(search && {
+            [Op.or]: [
+              { name: { [Op.iLike]: `%${search}%` } },
+              { "$xref.given_name$": { [Op.iLike]: `%${search}%` } },
+            ],
+          }),
         },
         include: [
           {
@@ -146,6 +151,7 @@ module.exports = {
         ],
         attributes: [
           "name",
+          [sequelize.col("xref.given_name"), "given_name"],
           [sequelize.fn("SUM", sequelize.col("amount")), "total"],
           // "type",
         ],

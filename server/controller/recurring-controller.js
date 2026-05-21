@@ -16,6 +16,9 @@ module.exports = {
           user_id: user.id,
           account_id: selected_account_id,
           ...(type && { type }),
+          predicted_next_date: {
+            [Op.ne]: null,
+          },
         },
         attributes: [
           "name",

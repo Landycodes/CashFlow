@@ -202,8 +202,14 @@ module.exports = {
         user_id: id,
         account_id: tx.account_id,
         transaction_id: tx.transaction_id,
-        plaid_entity_id: tx.merchant_entity_id ?? parsePlaidName(tx.name),
-        name: tx.merchant_name ?? parsePlaidName(tx.name, false),
+        plaid_entity_id:
+          tx.merchant_entity_id ??
+          tx.counterparties[0]?.entity_id ??
+          parsePlaidName(tx.name),
+        name:
+          tx.merchant_name ??
+          tx.counterparties[0]?.name ??
+          parsePlaidName(tx.name, false),
         date: new Date(tx.date),
         amount: Math.abs(tx.amount),
         type: tx.amount < 0 ? "INCOME" : "EXPENSE",
@@ -272,11 +278,11 @@ module.exports = {
             fs.predicted_next_date = pd;
           }
           const type = fs.average_amount.amount > 0 ? "BILL" : "PAYMENT";
-
           return {
             account_id: selected_account_id,
             user_id: id,
-            name: fs.merchant_name,
+            name:
+              fs.merchant_name.length > 0 ? fs.merchant_name : fs.description,
             amount: Math.abs(fs.average_amount.amount),
             last_paid: fs.last_date,
             type: type,

@@ -4,7 +4,7 @@ import { userContext } from "../../App";
 import Loading from "../Loading";
 import { setReferenceName } from "../../utils/API/xRef";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 50;
 
 // Helper component
 const EditableCell = ({ value, onSave }) => {
@@ -181,6 +181,11 @@ export default function Transactions() {
             ))}
           </tbody>
         </table>
+        <a href="#top">
+          <button className="btn bg-gradient text-white w-100">
+            Back To Top
+          </button>
+        </a>
       </div>
     </div>
 

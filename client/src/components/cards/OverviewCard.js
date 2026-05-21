@@ -20,7 +20,6 @@ export default function OverviewCard({ range }) {
       limit: 10,
     }).then((res) => {
       if (!Array.isArray(res)) return;
-      console.log(res);
 
       setChartData({
         expense: {
