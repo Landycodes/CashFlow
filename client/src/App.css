@@ -37,17 +37,17 @@
 #loginForm {
   transform: translateY(-25%);
   background-image: var(--box-color);
-  width: 25%;
+  width: 50vw;
+  height: 80vh;
 }
 
 .title {
   font-family: "VT323", monospace;
-  font-weight: 400;
+  font-weight: 600;
   font-style: normal;
-  font-size: 2.5rem;
-  letter-spacing: 0.01em;
+  font-size: 4.5rem;
+  letter-spacing: 0.1em;
   line-height: 1;
-  text-transform: uppercase;
 }
 
 .subtitle {
@@ -293,6 +293,7 @@ nav .form-select:focus {
     font-size: 11px;
   }
   #loginForm {
-    width: 80%;
+    width: 100vw;
+    height: 100vh;
   }
 }

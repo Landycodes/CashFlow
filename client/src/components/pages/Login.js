@@ -149,83 +149,80 @@ export default function Login() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 w-100">
+    <div className="d-flex justify-content-center align-items-center vh-100 w-100">
       <form
-        className="form d-flex flex-column justify-content-center align-items-center p-5 rounded border border-black"
+        className="form d-flex flex-column align-items-stretch p-5 rounded border border-secondary gap-5"
+        style={{ minWidth: "360px" }}
         id="loginForm"
         onSubmit={handleSubmit}
       >
-        <header className="text-light w-100 d-flex m-1 flex-column align-items-center">
+        <header className="text-light d-flex flex-column align-items-start align-self-center mb-2">
           <h2 className="title m-0">BALNCE</h2>
-          <h5 className="subtitle">Track your spending</h5>
+          <h6 className="subtitle text-secondary m-0">Track your spending</h6>
         </header>
 
-        <br></br>
-
-        {login ? (
-          ""
-        ) : (
-          <input
-            className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
-            type="text"
-            placeholder="username"
-            onChange={handleInputChange}
-            name="username"
-            defaultValue={form.username}
-          />
-        )}
-        {/* TODO: HANDLE AUTOFILL TO NOT CHANGE THE BACKGROUND */}
-        <input
-          className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
-          type="text"
-          placeholder="Email"
-          name="email"
-          onChange={handleInputChange}
-          defaultValue={form.email}
-        />
-        <input
-          className="form-control bg-gradient w-75 m-2 p-2 text-nowrap"
-          type="password"
-          placeholder="Password"
-          onChange={handleInputChange}
-          name="password"
-          defaultValue={form.password}
-        />
-
-        {throwError(error)}
-
-        <div className="d-flex flex-column justify-content-center align-items-center mt-2">
-          <button
-            className="btn btn-outline-success w-50 m-1 my-2 fs-5 text-nowrap"
-            type="submit"
-          >
-            Submit
-          </button>
-          <button
-            className="btn btn-outline-primary m-1 my-2 fs-5 text-nowrap"
-            type="button"
-            onClick={() => setlogin(!login)}
-          >
-            {login ? "Create Account" : "Log in instead"}
-          </button>
-
-          <h3 className="rounded text-light w-25 text-center text-nowrap">
-            -Or-
-          </h3>
-          <button
-            className="text-light text-opacity-75 btn text-nowrap m-1 fs-5 bg-gradient"
-            type="button"
-            onClick={handleGoogle}
-          >
-            <img
-              src="/google-logo.png"
-              alt=""
-              height={25}
-              width={25}
-              style={{ marginRight: "10px" }}
+        <div className="col-12 col-lg-6 m-auto d-flex flex-column gap-5 align-self-center">
+          <div className="d-flex flex-column gap-3">
+            {!login && (
+              <input
+                className="form-control bg-gradient p-2"
+                type="text"
+                placeholder="Username"
+                onChange={handleInputChange}
+                name="username"
+                defaultValue={form.username}
+              />
+            )}
+            <input
+              className="form-control bg-gradient p-2"
+              type="text"
+              placeholder="Email"
+              name="email"
+              onChange={handleInputChange}
+              defaultValue={form.email}
             />
-            sign in with Google
-          </button>
+            <input
+              className="form-control bg-gradient p-2"
+              type="password"
+              placeholder="Password"
+              onChange={handleInputChange}
+              name="password"
+              defaultValue={form.password}
+            />
+          </div>
+
+          {throwError(error)}
+
+          <div className="d-flex flex-column gap-2">
+            <button
+              className="btn btn-outline-success w-100 fs-5"
+              type="submit"
+            >
+              Submit
+            </button>
+            <button
+              className="btn btn-outline-primary w-100 fs-5"
+              type="button"
+              onClick={() => setlogin(!login)}
+            >
+              {login ? "Create Account" : "Log in instead"}
+            </button>
+
+            <div className="d-flex align-items-center gap-2 my-1">
+              <hr className="flex-grow-1 border-secondary m-0" />
+              <span className="text-secondary small">or</span>
+              <hr className="flex-grow-1 border-secondary m-0" />
+            </div>
+
+            <button
+              className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 fs-5"
+              type="button"
+              onClick={handleGoogle}
+            >
+              <img src="/google-logo.png" alt="" height={22} width={22} />
+              Sign in with Google
+            </button>
+          </div>
         </div>
       </form>
     </div>
