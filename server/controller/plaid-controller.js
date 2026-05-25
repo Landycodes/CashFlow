@@ -137,6 +137,10 @@ module.exports = {
         });
       }
 
+      await foundUser.update({
+        last_updated: new Date(),
+      });
+
       console.log("Account Update Successfull!");
       return res.status(200).end();
     } catch (error) {

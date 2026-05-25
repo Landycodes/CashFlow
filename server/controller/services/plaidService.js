@@ -8,7 +8,7 @@ const GATHERING_DATA = false;
 
 const { Users, Transactions, Accounts, Recurring } = require("../../models");
 const { getSelectedAccountId } = require("../services/userService");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 require("dotenv").config();
 
 // ########### USED TO CAPTURE DATA FOR TEST #################
@@ -126,8 +126,9 @@ module.exports = {
 
       const [updated] = await Users.update(
         {
-          selected_account_id: accountValues[0].account_id,
-          last_updated: new Date(),
+          selected_account_id: Sequelize.literal(
+            `COALESCE(selected_account_id, '${accountValues[0].account_id}')`,
+          ),
         },
         {
           where: { id },

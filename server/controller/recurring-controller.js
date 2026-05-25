@@ -50,7 +50,10 @@ module.exports = {
         raw: true,
       });
 
-      if (recurring.length <= 0) return res.status(200).end();
+      if (recurring.length <= 0)
+        return res
+          .status(200)
+          .json({ response: "No recurring payments found." });
 
       res.status(200).json(recurring);
     } catch (error) {

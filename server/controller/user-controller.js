@@ -4,7 +4,6 @@ const { signToken } = require("../utils/auth");
 
 module.exports = {
   // login a user, sign a token, and send it back (to client/src/components/LoginForm.js)
-  // {body} is destructured req.body
   async login({ body }, res) {
     const user = await User.findOne({ where: { email: body.email } });
     if (!user) {
@@ -29,23 +28,6 @@ module.exports = {
     if (!user) return res.status(404).json({ message: "Invalid Web Token" });
 
     const foundUser = await User.findByPk(user.id);
-
-    // const foundUser = await User.findOne({
-    //   where: {
-    //     [Op.or]: [
-    //       {
-    //         id: {
-    //           [Op.eq]: user ? user.id : params.id,
-    //         },
-    //       },
-    //       {
-    //         username: {
-    //           [Op.eq]: params.username?.trim(),
-    //         },
-    //       },
-    //     ],
-    //   },
-    // });
 
     if (!foundUser) {
       return res

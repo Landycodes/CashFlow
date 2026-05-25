@@ -34,6 +34,30 @@ module.exports = {
       res.status(500).json({ getAccountData: "Failed to get account Id" });
     }
   },
+  async getAllAccounts({ user = null }, res) {
+    if (!user)
+      return res.status(404).json({ removeAccount: "Token user not found" });
+
+    try {
+      const accounts = await Accounts.findAll({
+        where: {
+          user_id: user.id,
+        },
+        attributes: ["name", "account_id"],
+        raw: true,
+      });
+
+      if (!accounts)
+        return res
+          .status(404)
+          .json({ getAllAccounts: "No accounts found for this user" });
+
+      return res.json(accounts);
+    } catch (error) {
+      1;
+      res.status(500).json({ getAllAccounts: "Failed to retrieve accounts" });
+    }
+  },
   async removeAllAccounts({ user = null }, res) {
     if (!user)
       return res.status(404).json({ removeAccount: "Token user not found" });

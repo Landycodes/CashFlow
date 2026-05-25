@@ -2,13 +2,15 @@ import { useContext, useEffect, useState } from "react";
 import Auth from "../utils/auth";
 import { userContext } from "../App";
 import { useLocation, useNavigate } from "react-router-dom";
-import { updateUser } from "../utils/API";
+import { updateUser } from "../utils/API/user";
+import { getAccounts } from "../utils/API/account";
 
 export default function Navbar() {
-  const { user, setUser } = useContext(userContext);
+  const { user, setUser, token } = useContext(userContext);
   const name = user?.username;
   const [time, setTime] = useState("Time");
   const [date, setDate] = useState("Date");
+  const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,6 +18,10 @@ export default function Navbar() {
     clock();
     getDate();
   }, []);
+
+  useEffect(() => {
+    getAccounts(token).then((data) => setAccounts(data));
+  }, [user]);
 
   const clock = () => {
     let time = new Date().toLocaleTimeString([], {
@@ -37,7 +43,7 @@ export default function Navbar() {
   };
 
   const handleAccountSelect = async (event) => {
-    const updatedUser = await updateUser(user._id, {
+    const updatedUser = await updateUser(token, {
       selected_account_id: event.target.value,
     });
     setUser(updatedUser);
@@ -51,23 +57,25 @@ export default function Navbar() {
         </h6>
         <h6 className="style-text p-2 pt-3 mx-1 fs-5 text-nowrap">{date}</h6>
         <h6 className="style-text p-2 pt-3 mx-1 fs-5 text-nowrap">{time}</h6>
-        {user?.selected_account_id && user.accounts?.length > 1 ? (
+
+        {accounts?.length > 1 ? (
           <select
             value={user.selected_account_id}
             onChange={handleAccountSelect}
-            className="style-text form-select ms-3 pe-5 ps-1 fs-5"
+            style={{ cursor: "pointer" }}
+            className="style-text form-select ms-3 ps-3 ps-1 fs-5"
           >
-            {user?.accounts ? (
-              user.accounts.map((acct) => {
-                return (
-                  <option key={acct.account_id} value={acct.account_id}>
-                    {acct.name}
-                  </option>
-                );
-              })
-            ) : (
-              <option selected>No Account To Select From</option>
-            )}
+            {accounts.map((acct) => {
+              return (
+                <option
+                  className="fs-6 text-nowrap"
+                  key={acct.account_id}
+                  value={acct.account_id}
+                >
+                  {acct.name}
+                </option>
+              );
+            })}
           </select>
         ) : (
           ""
@@ -100,7 +108,8 @@ export default function Navbar() {
         <h6
           className="menu-btn p-3 pt-3 border-start border-end border-secondary"
           onClick={() => {
-            Auth.logout() && setUser(null);
+            Auth.logout();
+            setUser(null);
           }}
         >
           Logout

@@ -22,7 +22,7 @@ export default function BillsCard() {
       className="window-style d-flex flex-column align-items-center mx-5 mt-2"
       style={{
         width: "500px",
-        height: "500px",
+        height: "450px",
       }}
     >
       <h3 className="style-text">Upcoming Bills</h3>
@@ -70,12 +70,12 @@ export default function BillsCard() {
         )}
       </div>
 
-      <button
+      {/* <button
         className="btn btn-light mt-2 border"
         onClick={() => navigate("/transactions")}
       >
         Edit Bills
-      </button>
+      </button> */}
     </div>
   );
 }
