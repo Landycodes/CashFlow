@@ -182,7 +182,7 @@ export default function Transactions() {
           </tbody>
         </table>
         <a href="#top">
-          <button className="btn bg-gradient text-white w-100">
+          <button className="btn bg-gradient btn-dark text-white w-100">
             Back To Top
           </button>
         </a>

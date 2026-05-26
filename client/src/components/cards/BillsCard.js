@@ -30,7 +30,7 @@ export default function BillsCard() {
       <div>
         {bills?.length > 0 ? (
           <div className="tx-table-wrap">
-            <table className="tx-table table table-dark table-hover align-middle mb-0">
+            <table className="tx-table window-style-dark table-hover align-middle mb-0">
               <thead>
                 <tr>
                   <th className="tx-th">Name</th>

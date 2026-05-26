@@ -3,7 +3,7 @@ import PieChart from "../../utils/Piechart";
 import { useEffect } from "react";
 import { userContext } from "../../App";
 import { getTransactionTotals } from "../../utils/API/transaction";
-import { formatNum } from "../../utils/numberFormatter";
+import { formatCurrency } from "../../utils/numberFormatter";
 
 export default function CashflowCard({ range, setRange, rangeSelection }) {
   const { user, setUser, token } = useContext(userContext);
@@ -61,29 +61,29 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
         </div>
         <div className="d-flex flex-column justify-content-evenly align-items-start">
           <div className="d-flex">
-            <div className="bg-dark rounded p-3 m-1">
+            <div className="window-style-dark rounded p-3 m-1">
               <p className="style-subtext small mb-1">Deposited</p>
               <h4 className="text-success ms-2">
-                ${formatNum(transactions.income)}
+                {formatCurrency(transactions.income)}
               </h4>
             </div>
-            <div className="bg-dark rounded p-3 m-1">
+            <div className="window-style-dark rounded p-3 m-1">
               <p className="style-subtext small mb-1">Withdrawn</p>
               <h4 className="text-danger ms-2">
-                ${formatNum(transactions.expense)}
+                {formatCurrency(transactions.expense)}
               </h4>
             </div>
           </div>
           <div className="d-flex align-items-center justify-content-center w-100">
-            <div className="d-flex flex-column align-items-center bg-dark p-3 rounded w-50">
+            <div className="d-flex flex-column align-items-center window-style-dark p-3 rounded w-50">
               <p className="style-subtext small mb-1">CashFlow</p>
               <h4
                 className={
                   transactions.total < 0 ? "text-danger" : "text-success"
                 }
               >
-                {transactions.total < 0 ? "-" : ""}$
-                {formatNum(Math.abs(transactions.total).toFixed(2))}
+                {transactions.total < 0 ? "-" : ""}
+                {formatCurrency(Math.abs(transactions.total).toFixed(2))}
               </h4>
             </div>
           </div>

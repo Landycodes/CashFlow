@@ -46,7 +46,7 @@ export default function CalendarCard() {
           showNonCurrentDates={true}
           expandRows={true}
           headerToolbar={{
-            left: "prev,next today",
+            left: "prev next today",
             center: "",
             right: "title",
           }}
