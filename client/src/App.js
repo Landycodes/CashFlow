@@ -10,12 +10,12 @@ import {
   useLocation,
 } from "react-router-dom";
 import auth from "./utils/auth";
-import Login from "./components/pages/Login";
-import Navbar from "./components/Navbar";
+import Login from "./components/pages/Login/Login";
+import Navbar from "./components/Navbar/Navbar";
 import Settings from "./components/pages/Settings";
 import Loading from "./components/Loading";
 import Expenses from "./components/pages/Expenses";
-import Transactions from "./components/pages/Transactions";
+import Transactions from "./components/pages/Transactions/Transactions";
 import Footer from "./components/Footer";
 import Dashboard from "./components/pages/Dashboard";
 import { PlaidPopUp } from "./utils/Plaid";

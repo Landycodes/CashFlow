@@ -1,9 +1,10 @@
+import style from "./Navbar.module.css";
 import { useContext, useEffect, useState } from "react";
-import Auth from "../utils/auth";
-import { userContext } from "../App";
+import Auth from "../../utils/auth";
+import { userContext } from "../../App";
 import { useLocation, useNavigate } from "react-router-dom";
-import { updateUser } from "../utils/API/user";
-import { getAccounts } from "../utils/API/account";
+import { updateUser } from "../../utils/API/user";
+import { getAccounts } from "../../utils/API/account";
 
 export default function Navbar() {
   const { user, setUser, token } = useContext(userContext);
@@ -63,7 +64,7 @@ export default function Navbar() {
             value={user.selected_account_id}
             onChange={handleAccountSelect}
             style={{ cursor: "pointer" }}
-            className="style-text form-select ms-3 ps-3 ps-1 fs-5"
+            className={`${style.selectBox} style-text form-select ms-3 ps-3 ps-1 fs-5`}
           >
             {accounts.map((acct) => {
               return (
@@ -82,23 +83,26 @@ export default function Navbar() {
         )}
       </span>
       <span className="d-flex flex-row mx-2">
-        <h6 className="menu-btn p-3 pt-3" onClick={() => navigate("/expenses")}>
+        <h6
+          className={`${style.menuBtn} rounded p-3 pt-3`}
+          onClick={() => navigate("/expenses")}
+        >
           Expenses
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className={`${style.menuBtn} rounded p-3 pt-3`}
           onClick={() => navigate("/Transactions")}
         >
           Transactions
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className={`${style.menuBtn} rounded p-3 pt-3`}
           onClick={() => navigate("/")}
         >
           Dashboard
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-secondary"
+          className={`${style.menuBtn} rounded p-3 pt-3`}
           onClick={() => {
             navigate("/settings");
           }}
@@ -106,7 +110,7 @@ export default function Navbar() {
           Settings
         </h6>
         <h6
-          className="menu-btn p-3 pt-3 border-start border-end border-secondary"
+          className={`${style.menuBtn} ${style.logOut} log-out rounded p-3 pt-3`}
           onClick={() => {
             Auth.logout();
             setUser(null);

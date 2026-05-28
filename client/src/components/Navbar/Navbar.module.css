@@ -1,0 +1,28 @@
+.menuBtn { 
+  margin: 0;
+  cursor: pointer;
+  color: var(--txt-color);
+}
+.menuBtn:hover {
+  background-color: #476b4a7a;
+  /* color:rgba(255, 255, 255, 0.7); */
+}
+
+.logOut:hover { 
+  background-color: rgba(155, 0, 0, 0.26);
+}
+
+.selectBox {
+  background-color: rgba(56, 45, 56, 0.658);
+  background-image:
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3E%3C/svg%3E");  
+  color: var(--txt-color);
+  max-width: fit-content;
+  border-color: gray;
+}
+
+.selectBox:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: gray;
+}

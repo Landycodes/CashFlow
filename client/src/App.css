@@ -43,7 +43,7 @@
   
 
 /* ############ LOGIN PAGE ################## */
-#loginForm {
+/* #loginForm {
   transform: translateY(-25%);
   background-image: var(--box-color);
   width: 50vw;
@@ -84,13 +84,13 @@ input.form-control.bg-gradient:-webkit-autofill,
 input.form-control.bg-gradient:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0px 1000px var(--bs-gradient) inset;
   -webkit-text-fill-color: #fff;
-  transition: background-color 5000s ease-in-out 0s;  /* prevents flash */
-}
+  transition: background-color 5000s ease-in-out 0s;
+} */
 
 /* Placeholder text and secondary text */
-.form-control.bg-gradient::placeholder {
+/* .form-control.bg-gradient::placeholder {
   color: rgba(255, 255, 255, 0.7);
-}
+} */
 
 /* ############## END LOGIN STYLES ######################### */
 
@@ -113,13 +113,12 @@ input.form-control.bg-gradient:-webkit-autofill:focus {
   padding: 7px;
 } */
 
-.menu-btn { 
+/* .menu-btn { 
   margin: 0;
   cursor: pointer;
   color: var(--txt-color);
 }
 .menu-btn:hover {
-  /* background-color: gainsboro; */
   color:rgba(255, 255, 255, 0.7);
 }
 
@@ -136,7 +135,7 @@ nav .form-select:focus {
   outline: none;
   box-shadow: none;
   border-color: gray;
-}
+} */
 
 /* ############## END NAVBAR STYLES ################## */
 
@@ -213,11 +212,10 @@ nav .form-select:focus {
 /* ############ END CALENDAR STYLES ############## */
 
 /* ############ START TRANSACTION PAGE STYLES ##############   */
-.tx-table-wrap {
+/* .tx-table-wrap {
   border-radius: 16px;
   overflow: hidden;
   border: 0.5px solid rgba(255, 255, 255, 0.08);
-  /* background: #1a1a2e; */
   background-color: rgb(0, 0, 0, .25);
 }
 
@@ -227,7 +225,6 @@ nav .form-select:focus {
 }
 
 .tx-th {
-  /* background-image: var(--bs-gradient) !important; */
   background: linear-gradient( rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));  
   color: #9faacc !important;
   font-weight: 500 !important;
@@ -288,11 +285,11 @@ nav .form-select:focus {
   border-radius: 4px;
   accent-color: #64ffda;
   cursor: pointer;
-}
+} */
 /* ############ END TRANSACTION PAGE STYLES ##############   */
 
 
-@media screen and (max-width: 1200px) {
+/* @media screen and (max-width: 1200px) {
   #loginForm {
     width: 40%;
   }
@@ -315,4 +312,4 @@ nav .form-select:focus {
     width: 100vw;
     height: 100vh;
   }
-}
+} */

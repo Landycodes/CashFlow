@@ -1,19 +1,19 @@
-import Auth from "../../utils/auth";
+import style from "./Login.module.css";
+import Auth from "../../../utils/auth";
 import anime from "animejs";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { userContext } from "../../App";
-import { createUser, loginUser } from "../../utils/API/user";
-import { googleLogin } from "../../utils/API/firebase";
+import { userContext } from "../../../App";
+import { createUser, loginUser } from "../../../utils/API/user";
+import { googleLogin } from "../../../utils/API/firebase";
 import {
   fireAuth,
   provider,
   signInWithRedirect,
   getRedirectResult,
   signInWithPopup,
-} from "../../utils/firebaseConfig";
-import auth from "../../utils/auth";
+} from "../../../utils/firebaseConfig";
 
 export default function Login() {
   //add firebase signin with google
@@ -151,21 +151,23 @@ export default function Login() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 w-100">
       <form
-        className="form d-flex flex-column align-items-stretch p-5 rounded border border-secondary gap-5"
+        className={`${style.loginForm} form d-flex flex-column align-items-stretch p-5 rounded border border-secondary gap-5`}
         style={{ minWidth: "360px" }}
         id="loginForm"
         onSubmit={handleSubmit}
       >
         <header className="text-light d-flex flex-column align-items-start align-self-center mb-2">
-          <h2 className="title m-0">BALNCE</h2>
-          <h6 className="subtitle text-secondary m-0">Track your spending</h6>
+          <h2 className={style.title}>BALNCE</h2>
+          <h6 className={`${style.subtitle} text-secondary`}>
+            Track your spending
+          </h6>
         </header>
 
         <div className="col-12 col-lg-6 m-auto d-flex flex-column gap-5 align-self-center">
           <div className="d-flex flex-column gap-3">
             {!login && (
               <input
-                className="form-control bg-gradient p-2"
+                className={`${style.formControl} bg-gradient p-2`}
                 type="text"
                 placeholder="Username"
                 onChange={handleInputChange}
@@ -174,7 +176,7 @@ export default function Login() {
               />
             )}
             <input
-              className="form-control bg-gradient p-2"
+              className={`${style.formControl} rounded bg-gradient p-2`}
               type="text"
               placeholder="Email"
               name="email"
@@ -182,7 +184,7 @@ export default function Login() {
               defaultValue={form.email}
             />
             <input
-              className="form-control bg-gradient p-2"
+              className={`${style.formControl} rounded bg-gradient p-2`}
               type="password"
               placeholder="Password"
               onChange={handleInputChange}

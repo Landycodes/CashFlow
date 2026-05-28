@@ -1,0 +1,69 @@
+.loginForm {
+  transform: translateY(-25%);
+  background-image: var(--box-color);
+  width: 50vw;
+  height: 80vh;
+}
+
+.title {
+  font-family: "VT323", monospace;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 4.5rem;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle {
+  font-family: "VT323", monospace;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.formControl {
+  background-color: transparent;               
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  box-shadow: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.formControl:focus {
+  border-color: #fff;
+  box-shadow: none;                            
+}
+
+input.formControl:-webkit-autofill,
+input.formControl:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(78, 78, 78, 0.281) inset;
+  -webkit-text-fill-color: #fff;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@media screen and (max-width: 1400px) {
+  .loginForm {
+    width: 60%;
+  }
+}
+
+@media screen and (min-width: 520px) and (max-width: 780px) {
+  .text-nowrap {
+      font-size: 2.5vw;
+  }
+  .loginForm {
+    width: 70%;
+  }
+}
+
+@media screen and (max-width: 520px) {
+  .text-nowrap {
+    font-size: 11px;
+  }
+  .loginForm {
+    width: 100vw;
+    height: 100vh;
+  }
+}
