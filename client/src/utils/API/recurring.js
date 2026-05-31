@@ -18,10 +18,12 @@ export const getRecurringCalEvents = async (token) => {
   }).then((response) => response.json());
 };
 export const getAllRecurring = async (token, options = {}) => {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   return fetch("/api/recurring/getAllRecurring", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "x-timezone": timezone,
       authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(options),

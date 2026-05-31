@@ -2,8 +2,8 @@
 const TEST_ACCOUNT_DATA = require("../../../TESTDATA/_Raw_Account.json");
 const TEST_TRANSACTION_DATA = require("../../../TESTDATA/_Raw_Transactions.json");
 const TEST_RECURRING_DATA = require("../../../TESTDATA/_Raw_Recurring.json");
-const TESTING = true;
-const GATHERING_DATA = false;
+const TESTING = false;
+const GATHERING_DATA = true;
 //###################
 
 const { Users, Transactions, Accounts, Recurring } = require("../../models");
@@ -131,7 +131,7 @@ module.exports = {
           ),
         },
         {
-          where: { id },
+          where: { id: id },
           individualHooks: true,
         },
       );

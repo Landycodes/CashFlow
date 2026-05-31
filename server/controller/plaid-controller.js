@@ -1,5 +1,5 @@
 // ##################################
-const PLAID_PRODUCTION = false;
+const PLAID_PRODUCTION = true;
 // ##################################
 const { Transactions, Users } = require("../models");
 const {
@@ -12,6 +12,8 @@ const { getSelectedAccountId } = require("./services/userService");
 require("dotenv").config();
 
 const SIX_HOURS = 1000 * 60 * 60 * 6;
+const FETCH_RETRIES = 10;
+const FETCH_DELAY = 5000;
 
 const client = new PlaidApi({
   basePath: PLAID_PRODUCTION
@@ -27,6 +29,23 @@ const client = new PlaidApi({
     },
   },
 });
+
+const fetchWithRetry = async (fn) => {
+  for (let i = 0; i < FETCH_RETRIES; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const errRes = error?.response?.data?.error_code;
+      const notReady = errRes === "PRODUCT_NOT_READY";
+      if (notReady && i < FETCH_RETRIES - 1) {
+        console.log(`${errRes} Trying again [${i + 1}/${FETCH_RETRIES}]`);
+        await new Promise((res) => setTimeout(res, FETCH_DELAY));
+      } else {
+        throw error;
+      }
+    }
+  }
+};
 
 module.exports = {
   async create_link_token({ user = null, ACCESS_TOKEN = null }, res) {
@@ -113,20 +132,20 @@ module.exports = {
         !foundUser.last_updated ||
         Date.now() - foundUser.last_updated.getTime() >= SIX_HOURS;
 
-      // if (!readyToUpdate) {
-      //   console.log("Not ready to update");
-      //   return res.status(200).json(foundUser);
-      // }
+      if (!readyToUpdate) {
+        console.log("Not ready to update");
+        return res.status(200).json(foundUser);
+      }
 
       console.log("Updating now");
 
-      const accountInfo = await setAccountInfo(client, id, plaidAccessToken);
-      const transactions = await setTransactionInfo(
-        client,
-        id,
-        plaidAccessToken,
+      const accountInfo = await fetchWithRetry(() =>
+        setAccountInfo(client, id, plaidAccessToken),
       );
-      const recurring = await setRecurringInfo(client, id, plaidAccessToken);
+      const [transactions, recurring] = await Promise.all([
+        fetchWithRetry(() => setTransactionInfo(client, id, plaidAccessToken)),
+        fetchWithRetry(() => setRecurringInfo(client, id, plaidAccessToken)),
+      ]);
 
       if (!accountInfo || !transactions || !recurring) {
         return res.status(400).json({

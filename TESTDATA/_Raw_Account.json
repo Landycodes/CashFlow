@@ -1,10 +1,10 @@
 {
   "accounts": [
     {
-      "account_id": "80mBrX7zpzCVg6koVpn0HanYaJb9eoFyzEbnA",
+      "account_id": "eeVP3YNn7wTj5N7eB8mACnQBBybgaBf9QMBRyV",
       "balances": {
-        "available": 1441.09,
-        "current": 1480.74,
+        "available": 934.47,
+        "current": 1016.16,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
@@ -16,7 +16,7 @@
       "type": "depository"
     },
     {
-      "account_id": "JEqYQjAZzZFJnd87JbQRIpYVp65wJbCb54JRv",
+      "account_id": "NVgmMONAkzcXvpaPgYzoFodnnx74Qnszv5j4NX",
       "balances": {
         "available": 0.01,
         "current": 5.01,
@@ -52,12 +52,13 @@
       "assets",
       "auth",
       "income_verification",
+      "signal",
       "transactions"
     ],
     "error": null,
     "institution_id": "ins_116784",
     "institution_name": "Vantage West Credit Union",
-    "item_id": "E76nVKAQzQt47pg14EXRHMQmE489rDc6vK7JN",
+    "item_id": "QVEgxYNj0zc508NJq6zXIO9g74n358SybAkDq",
     "products": [
       "auth",
       "transactions"
@@ -65,5 +66,5 @@
     "update_type": "background",
     "webhook": ""
   },
-  "request_id": "7f27f6d443954d5"
+  "request_id": "0838318eb09fa7d"
 }

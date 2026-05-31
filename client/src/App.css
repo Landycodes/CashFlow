@@ -41,6 +41,54 @@
   }
 /* ############ END GENERAL STYLING ############### */
   
+/* ############ TABLE STYLING ################## */
+.tableWrap {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  background-color: rgb(0, 0, 0, .25);
+}
+
+.bl-table {
+  font-size: 13.5px;
+  border-collapse: collapse;
+}
+
+.bl-th {
+  background: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2));
+  color: #9faacc !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.06) !important;
+  padding: 12px 16px !important;
+}
+
+.bl-row {
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.04) !important;
+  transition: background 0.15s;
+}
+
+.bl-row:last-child {
+  border-bottom: none !important;
+}
+
+.bl-row:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.bl-td {
+  padding: 11px 16px !important;
+  color: #ccd6f6 !important;
+  border: none !important;
+}
+
+.bl-name {
+  color: #e6f1ff !important;
+  font-weight: 500;
+}
+/* ############ END TABLE STYLING ################## */
 
 /* ############ LOGIN PAGE ################## */
 /* #loginForm {

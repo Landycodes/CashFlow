@@ -3,9 +3,11 @@ const { getSelectedAccountId } = require("../controller/services/userService");
 const { Op } = require("sequelize");
 
 module.exports = {
-  async getAllRecurring({ user = null, body }, res) {
+  async getAllRecurring({ user = null, body, headers }, res) {
     if (!user)
       return res.status(404).json({ getAllRecurring: "Token user not found" });
+
+    const timezone = headers["x-timezone"] || "UTC";
 
     const selected_account_id = await getSelectedAccountId(user.id);
     const { type = null, limit = null } = body;
@@ -16,9 +18,16 @@ module.exports = {
           user_id: user.id,
           account_id: selected_account_id,
           ...(type && { type }),
-          predicted_next_date: {
-            [Op.ne]: null,
-          },
+          [Op.and]: [
+            { predicted_next_date: { [Op.ne]: null } },
+            {
+              predicted_next_date: {
+                [Op.gte]: sequelize.literal(
+                  `(NOW() AT TIME ZONE '${timezone}')::date`,
+                ),
+              },
+            },
+          ],
         },
         attributes: [
           "name",
@@ -40,7 +49,7 @@ module.exports = {
           ],
           [
             sequelize.literal(
-              `ROUND(EXTRACT(EPOCH FROM (predicted_next_date - NOW())) / 86400)`,
+              `predicted_next_date::date - (NOW() AT TIME ZONE '${timezone}')::date`,
             ),
             "days_away",
           ],

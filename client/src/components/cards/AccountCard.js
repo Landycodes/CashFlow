@@ -15,6 +15,7 @@ export default function CurrentAccountInfo() {
     balance: 0,
     next_pay: null,
     due_before_payday: null,
+    leftover: 0,
     id: null,
   });
 
@@ -27,10 +28,14 @@ export default function CurrentAccountInfo() {
     const account = await getSingleAccount(token);
     const upcoming = await getNextRecurring(token);
 
+    const balance = account.available_balance;
+    const next_pay_amount = upcoming?.nextPayment?.amount;
+
     setAccountDetails({
       name: account.name,
-      balance: account.available_balance,
-      next_pay_amount: upcoming?.nextPayment?.amount,
+      balance,
+      next_pay_amount,
+      leftover: balance - next_pay_amount,
       next_pay_date: upcoming?.nextPayment?.date,
       due_before_payday: upcoming?.nextBillsDue?.total,
       id: account.account_id,
@@ -78,12 +83,10 @@ export default function CurrentAccountInfo() {
         <div className="col">
           <div className="window-style-dark rounded p-3">
             <p className="style-subtext small mb-1">Leftover</p>
-            <p className="fs-4 fw-medium mb-0 text-success">
-              {formatCurrency(
-                (
-                  accountDetails.balance - accountDetails.due_before_payday
-                ).toFixed(2),
-              ) || "No Data"}
+            <p
+              className={`fs-4 fw-medium mb-0 ${accountDetails.leftover > 0 ? "text-success" : "text-danger"}`}
+            >
+              {formatCurrency(accountDetails.leftover.toFixed(2)) || "No Data"}
             </p>
           </div>
         </div>

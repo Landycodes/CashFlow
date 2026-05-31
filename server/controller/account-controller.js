@@ -65,17 +65,20 @@ module.exports = {
     try {
       const updatedUser = Users.update(
         {
-          lastUpdate: "",
-          selected_account_id: "",
-          plaidAccessToken: "",
+          lastUpdate: null,
+          selected_account_id: null,
+          plaidAccessToken: null,
         },
         { where: { id: user.id } },
       );
       if (!updatedUser) throw new Error("removeAccount: Failed to update user");
 
       const deletedAccounts = Accounts.destroy({ where: { user_id: user.id } });
-      if (!deletedAccounts)
+      if (!deletedAccounts) {
         throw new Error("removeAccount: Failed to remove accounts");
+      }
+
+      res.status(200).end();
     } catch (error) {
       res.status(500).json({ removeAccount: "Failed to update user" });
     }

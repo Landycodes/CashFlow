@@ -32,25 +32,11 @@ export default function Settings() {
 
   const handleRemovePlaidLink = async () => {
     try {
-      // const [updatedAccount, updatedTransactions] = await Promise.all([
-      // updateUser(token, {
-      //   last_updated: "",
-      //   selected_account_id: "",
-      //   plaidAccessToken: "",
-      //   accounts: [],
-      // }),
-      // deleteUserTransactions(token),
-      // ]);
-      const clearUserObj = {
-        last_updated: "",
-        selected_account_id: "",
-        plaidAccessToken: "",
-      };
-
       const updatedAccount = await removeAllAccounts(token);
-
+      console.log(updatedAccount);
       if (updatedAccount) {
         setUser(updatedAccount);
+        window.location.reload();
       }
     } catch (error) {
       console.log("Failed to unlink plaid account: ", error);

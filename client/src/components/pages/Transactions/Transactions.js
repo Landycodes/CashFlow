@@ -144,38 +144,36 @@ export default function Transactions() {
           </button>
         </div>
       </div>
-      <div className={style.tableWrap} style={{ width: "60vw" }}>
-        <table
-          className={`${style.table} table table-dark table-striped table-sm align-middle mb-0 `}
-        >
+      <div className="tableWrap" style={{ width: "60vw" }}>
+        <table className="bl-table w-100 table-dark table-striped table-sm align-middle mb-0">
           <thead>
             <tr>
-              <th className={style.th}>Name</th>
-              <th className={style.th}>Amount</th>
-              <th className={style.th}>Date</th>
-              <th className={style.th}>Category</th>
-              <th className={`${style.th} text-center`}>Bill</th>
+              <th className="bl-th">Name</th>
+              <th className="bl-th">Amount</th>
+              <th className="bl-th">Date</th>
+              <th className="bl-th">Category</th>
+              <th className="bl-th text-center">Bill</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map((row) => (
-              <tr className={style.row} key={row.transaction_id}>
-                <td className={`${style.td} ${style.name}`}>
+              <tr className="bl-row" key={row.transaction_id}>
+                <td className="bl-td bl-name">
                   <EditableCell
                     value={row["xref.given_name"] ?? row.name}
                     onSave={(newName) => handleSaveCell(row, newName)}
                   />
                 </td>
                 <td
-                  className={`${style.td} ${row.type === "INCOME" ? style.income : style.expense}`}
+                  className={`bl-td ${row.type === "INCOME" ? style.income : style.expense}`}
                 >
                   {row.type === "INCOME" ? "+" : "−"} ${row.amount}
                 </td>
-                <td className={`${style.td} fw-medium`}>{row.date}</td>
+                <td className="bl-td fw-medium">{row.date}</td>
                 <td className={style.td}>
                   <span className={style.badge}>{row.category}</span>
                 </td>
-                <td className={`${style.td} text-center`}>
+                <td className="bl-td text-center">
                   {row.type === "expense" && (
                     <input type="checkbox" className={style.check} />
                   )}

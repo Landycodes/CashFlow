@@ -45,10 +45,9 @@ export const getAccounts = async (token) => {
 
 export const removeAllAccounts = async (token) => {
   return fetch("/api/account/removeAllAccounts", {
-    method: "GET",
+    method: "DELETE",
     headers: {
-      "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-  }).then((response) => response.json());
+  }).then((response) => response.ok);
 }; // Make it delete specific accounts later

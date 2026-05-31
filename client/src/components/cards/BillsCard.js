@@ -12,7 +12,7 @@ export default function BillsCard() {
 
   useEffect(() => {
     getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) => {
-      // console.log(data);
+      console.log(data);
       setBills(data);
     });
   }, [user]);
@@ -22,27 +22,27 @@ export default function BillsCard() {
       className="window-style d-flex flex-column align-items-center mx-5 mt-2"
       style={{
         width: "500px",
-        height: "450px",
+        minHeight: "450px",
       }}
     >
       <h3 className="style-text">Upcoming Bills</h3>
 
       <div>
         {bills?.length > 0 ? (
-          <div className="tx-table-wrap">
-            <table className="tx-table window-style-dark table-hover align-middle mb-0">
+          <div className="tableWrap">
+            <table className="bl-table window-style-dark table-hover align-middle mb-0">
               <thead>
                 <tr>
-                  <th className="tx-th">Name</th>
-                  <th className="tx-th">Amount</th>
-                  <th className="tx-th">Due</th>
-                  <th className="tx-th">Days Away</th>
+                  <th className="bl-th">Name</th>
+                  <th className="bl-th">Amount</th>
+                  <th className="bl-th">Due</th>
+                  <th className="bl-th">Days Away</th>
                 </tr>
               </thead>
               <tbody>
                 {bills.map((bill) => (
-                  <tr className="tx-row" key={bill.id}>
-                    <td className="tx-td tx-name py-2 px-3">{bill.name}</td>
+                  <tr className="bl-row" key={bill.id}>
+                    <td className="bl-td bl-name py-2 px-3">{bill.name}</td>
                     <td className="border border-0 py-2 px-3">
                       ${Number(bill.amount).toLocaleString()}
                     </td>
@@ -58,7 +58,7 @@ export default function BillsCard() {
                             : "text-secondary"
                       }`}
                     >
-                      {bill.days_away}d
+                      {bill.days_away === 0 ? "Today" : `${bill.days_away}d`}
                     </td>
                   </tr>
                 ))}

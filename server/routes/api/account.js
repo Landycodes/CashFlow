@@ -10,7 +10,7 @@ const {
 const { authMiddleware } = require("../../utils/auth");
 
 router.route("/getAccount").get(authMiddleware, getSingleAccount);
-router.route("/removeAllAccounts").get(authMiddleware, removeAllAccounts);
+router.route("/removeAllAccounts").delete(authMiddleware, removeAllAccounts);
 router.route("/getAllAccounts").get(authMiddleware, getAllAccounts);
 // router.route("/addBill/:user_id/:account_id").post(addBill);
 // router.route("/deleteBill/:user_id/:account_id").post(deleteBill);
