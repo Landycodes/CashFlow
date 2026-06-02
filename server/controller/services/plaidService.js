@@ -279,6 +279,7 @@ module.exports = {
             fs.predicted_next_date = pd;
           }
           const type = fs.average_amount.amount > 0 ? "BILL" : "PAYMENT";
+
           return {
             account_id: selected_account_id,
             user_id: id,

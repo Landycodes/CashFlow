@@ -4,6 +4,7 @@ import { getTransactionList } from "../../../utils/API/transaction";
 import { userContext } from "../../../App";
 import Loading from "../../Loading";
 import { setReferenceName } from "../../../utils/API/xRef";
+import { formatCurrency } from "../../../utils/numberFormatter";
 
 const PAGE_SIZE = 50;
 
@@ -167,7 +168,8 @@ export default function Transactions() {
                 <td
                   className={`bl-td ${row.type === "INCOME" ? style.income : style.expense}`}
                 >
-                  {row.type === "INCOME" ? "+" : "−"} ${row.amount}
+                  {row.type === "INCOME" ? "+" : "−"}
+                  {formatCurrency(row.amount)}
                 </td>
                 <td className="bl-td fw-medium">{row.date}</td>
                 <td className={style.td}>

@@ -5,7 +5,7 @@ import WelcomeCard from "../cards/WelcomeCard";
 import CashFlowCard from "../cards/CashFlowCard";
 import OverviewCard from "../cards/OverviewCard";
 import BillsCard from "../cards/BillsCard";
-import CalendarCard from "../cards/CalenderCard";
+import CalendarCard from "../cards/CalenderCard/CalenderCard";
 import anime from "animejs";
 import Loading from "../Loading";
 import { PlaidPopUp } from "../../utils/Plaid";

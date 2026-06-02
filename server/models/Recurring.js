@@ -70,7 +70,7 @@ const Recurring = sequelize.define(
     },
   },
   {
-    timestamps: true,
+    timestamps: false,
     tableName: "recurring",
   },
 );

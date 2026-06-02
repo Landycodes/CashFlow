@@ -99,6 +99,7 @@ module.exports = {
           "plaid_entity_id",
           "user_id",
         ],
+        order: [["date", "DESC"]],
         limit,
         offset,
         raw: true,

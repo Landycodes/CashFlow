@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { userContext } from "../../App";
 import { getAllRecurring } from "../../utils/API/recurring";
 import formatDate from "../../utils/dateFormatter";
+import { formatCurrency } from "../../utils/numberFormatter";
 
 export default function BillsCard() {
   const { user, token } = useContext(userContext);
@@ -12,7 +13,7 @@ export default function BillsCard() {
 
   useEffect(() => {
     getAllRecurring(token, { type: "BILL", limit: 10 }).then((data) => {
-      console.log(data);
+      // console.log(data);
       setBills(data);
     });
   }, [user]);
@@ -44,7 +45,7 @@ export default function BillsCard() {
                   <tr className="bl-row" key={bill.id}>
                     <td className="bl-td bl-name py-2 px-3">{bill.name}</td>
                     <td className="border border-0 py-2 px-3">
-                      ${Number(bill.amount).toLocaleString()}
+                      {formatCurrency(bill.amount)}
                     </td>
                     <td className="border border-0 fw-medium py-2 px-3 text-nowrap">
                       {formatDate(bill.next_due)}

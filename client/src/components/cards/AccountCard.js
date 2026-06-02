@@ -27,6 +27,7 @@ export default function CurrentAccountInfo() {
   const setAccount = async (token) => {
     const account = await getSingleAccount(token);
     const upcoming = await getNextRecurring(token);
+    console.log(upcoming);
 
     const balance = account.available_balance;
     const next_pay_amount = upcoming?.nextPayment?.amount;
@@ -37,7 +38,7 @@ export default function CurrentAccountInfo() {
       next_pay_amount,
       leftover: balance - next_pay_amount,
       next_pay_date: upcoming?.nextPayment?.date,
-      due_before_payday: upcoming?.nextBillsDue?.total,
+      due_before_payday: upcoming?.billTotal,
       id: account.account_id,
     });
   };
@@ -86,7 +87,7 @@ export default function CurrentAccountInfo() {
             <p
               className={`fs-4 fw-medium mb-0 ${accountDetails.leftover > 0 ? "text-success" : "text-danger"}`}
             >
-              {formatCurrency(accountDetails.leftover.toFixed(2)) || "No Data"}
+              {formatCurrency(accountDetails.leftover) || "No Data"}
             </p>
           </div>
         </div>
