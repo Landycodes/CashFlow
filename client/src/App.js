@@ -29,6 +29,7 @@ function AppRouter({
   setToken,
   loggedIn,
   setLoggedIn,
+  refresh,
   checkProfileState,
   plaidAuthExpired,
 }) {
@@ -109,6 +110,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [plaidAuthExpired, setPlaidAuthExpire] = useState(false);
 
   const checkProfileState = async () => {
@@ -135,6 +137,7 @@ function App() {
           const accountData = await fetchAccountData(authToken);
           if (accountData === 200) {
             setPlaidAuthExpire(false);
+            setRefresh(true);
           }
           if (accountData === 401) {
             setPlaidAuthExpire(true);
@@ -161,7 +164,7 @@ function App() {
   return (
     <Router>
       <userContext.Provider
-        value={{ user, setUser, token, setToken, plaidAuthExpired }}
+        value={{ user, setUser, token, setToken, refresh, plaidAuthExpired }}
       >
         <AppRouter
           user={user}
@@ -170,6 +173,7 @@ function App() {
           setLoggedIn={setLoggedIn}
           token={token}
           setToken={setToken}
+          refresh={refresh}
           checkProfileState={checkProfileState}
           plaidAuthExpired={plaidAuthExpired}
         />

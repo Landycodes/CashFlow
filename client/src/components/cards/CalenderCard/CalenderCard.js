@@ -14,6 +14,9 @@ export default function CalendarCard() {
 
   // TODO fix how calendar get recurring, should get all dates and predict future dates. Bonus: adhock predict dates on next button click on calander
 
+  // PULL FROM TRANSACTIONS INSTEAD! ADD A BOOLEAN COLUMN FOR IF ITS RECURRING OR NOT. AND IF IT IS SHUV THAT BITCH INTO THE CALENDAR
+  //  HAVE THE ARROW KEY ON THE CALENDAR HAVE A FUNCTION THAT PREDICTS THE PAYMENTS FOR MONTH GOING TO AND SHUV IT IN
+
   const getCalEvents = async (token) => {
     return await getRecurringCalEvents(token);
     // return await getAllRecurring(token);

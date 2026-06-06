@@ -6,16 +6,16 @@
   "uid": null,
   "plaidAccessToken": "d9f095dece0cb17774a55070dae1bc97:e2af5e38025cdae48b581cd68c162a1245bba4dc8b1d968e41d7b5f504be4bbc64b16790a970b78f353a6dab8b35f44c0ab667307a635053f6481e7f9ad050b3",
   "selected_account_id": "eeVP3YNn7wTj5N7eB8mACnQBBybgaBf9QMBRyV",
-  "last_updated": "2026-05-31T05:31:33.600Z",
+  "last_updated": "2026-06-06T00:28:52.040Z",
   "accounts": [
     {
       "id": "7427d4f4-6c3d-431c-a22b-8fe04a03d10e",
       "user_id": "fc2879d7-3270-4adb-a7d5-8c00ef556f39",
       "account_id": "eeVP3YNn7wTj5N7eB8mACnQBBybgaBf9QMBRyV",
       "name": "CHECKING",
-      "available_balance": "1487.80",
+      "available_balance": "551.85",
       "createdAt": "2026-05-29T02:22:33.377Z",
-      "updatedAt": "2026-06-02T03:01:49.006Z"
+      "updatedAt": "2026-06-06T00:32:05.379Z"
     },
     {
       "id": "f9b16ab7-fe8b-427b-a72a-e99ff029c64e",
@@ -24,7 +24,7 @@
       "name": "SAVINGS",
       "available_balance": "0.01",
       "createdAt": "2026-05-29T02:22:33.377Z",
-      "updatedAt": "2026-06-02T03:01:49.006Z"
+      "updatedAt": "2026-06-06T00:32:05.379Z"
     }
   ]
 }

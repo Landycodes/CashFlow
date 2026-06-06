@@ -3,8 +3,8 @@
     {
       "account_id": "eeVP3YNn7wTj5N7eB8mACnQBBybgaBf9QMBRyV",
       "balances": {
-        "available": 1487.8,
-        "current": 1502.25,
+        "available": 551.85,
+        "current": 1408.88,
         "iso_currency_code": "USD",
         "limit": null,
         "unofficial_currency_code": null
@@ -66,5 +66,5 @@
     "update_type": "background",
     "webhook": ""
   },
-  "request_id": "647194d10c3b621"
+  "request_id": "686e8d74e987179"
 }

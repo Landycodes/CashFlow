@@ -72,9 +72,7 @@ const Users = sequelize.define(
   },
 );
 
-// -------------------------------------------
-// Replaces mongoose-field-encryption for plaidAccessToken
-// -------------------------------------------
+//  plaidAccessToken encryption
 const crypto = require("crypto");
 
 const ALGORITHM = "aes-256-cbc";

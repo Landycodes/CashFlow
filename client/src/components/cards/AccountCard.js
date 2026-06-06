@@ -9,7 +9,7 @@ import { formatCurrency } from "../../utils/numberFormatter";
 export default function CurrentAccountInfo() {
   // TODO: CHANGE BACK AFTER TESTING
   const now = Date.parse("2026-01-01T00:00:00.000Z"); /* Date.now(); */
-  const { user, setUser, token } = useContext(userContext);
+  const { user, setUser, refresh, token } = useContext(userContext);
   const [accountDetails, setAccountDetails] = useState({
     name: null,
     balance: 0,
@@ -22,7 +22,7 @@ export default function CurrentAccountInfo() {
   useEffect(() => {
     if (!user?.selected_account_id) return;
     setAccount(token);
-  }, [user]);
+  }, [user, refresh]);
 
   const setAccount = async (token) => {
     const account = await getSingleAccount(token);

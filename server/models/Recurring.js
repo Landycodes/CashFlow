@@ -63,6 +63,7 @@ const Recurring = sequelize.define(
       type: DataTypes.ARRAY(DataTypes.STRING),
       allowNull: false,
     },
+    // CHANGE TO PLAID ENTITY ID
     plaid_stream_id: {
       type: DataTypes.STRING,
       allowNull: true,
