@@ -23,18 +23,11 @@ module.exports = {
           account_id: accountId,
           date: { [Op.between]: [cutoff, new Date()] },
         },
-        include: [
-          {
-            model: Xref,
-            as: "xref",
-            required: false,
-          },
-        ],
         attributes: [
           [sequelize.fn("SUM", sequelize.col("amount")), "total"],
           "type",
         ],
-        group: ["type", "xref.id"],
+        group: ["type"],
         raw: true,
       });
 

@@ -84,6 +84,7 @@ export default function CalendarCard() {
           // }}
           eventDidMount={(arg) => {
             const type = arg.event.extendedProps.type;
+            console.log(arg.event.extendedProps);
 
             if (type === "payment") {
               arg.el.style.setProperty(

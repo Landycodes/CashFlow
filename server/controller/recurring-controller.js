@@ -114,7 +114,7 @@ ${limit ? "LIMIT :limit" : ""}
         (tx) => tx.type === "PAYMENT",
       )[0];
       const nextBills = nextRecurring.filter((tx) => tx.type === "BILL");
-      const billTotal = nextBills.reduce(
+      const due_before = nextBills.reduce(
         (acc, cur) => acc + parseFloat(cur.amount),
         0,
       );
@@ -124,7 +124,7 @@ ${limit ? "LIMIT :limit" : ""}
           amount: nextPayment?.amount,
           date: nextPaymentDate ? formatDate(nextPaymentDate) : null,
         },
-        billTotal,
+        due_before,
       });
     } catch (error) {
       console.error(error);
@@ -140,16 +140,32 @@ ${limit ? "LIMIT :limit" : ""}
 
       const upcomingCalEvents = await sequelize.query(
         `
-SELECT DISTINCT
-  COALESCE(x.given_name, r.name) AS name,
-  r.amount,
-  LOWER(r.type::TEXT) AS type,
-  r.predicted_next_date AS date
-FROM recurring r
-LEFT JOIN transactions t ON t.transaction_id = ANY(r.transactions)
-LEFT JOIN xref x ON x.plaid_entity_id = t.plaid_entity_id
-WHERE r.user_id = :userId
-AND r.account_id = :accountId
+          SELECT 
+            COALESCE(X.GIVEN_NAME, R.NAME) AS NAME, 
+            R.AMOUNT, 
+            LOWER(R.TYPE::text) AS TYPE, 
+            T.DATE AS DATE
+          FROM TRANSACTIONS T
+          JOIN RECURRING R 
+            ON T.PLAID_ENTITY_ID = R.PLAID_ENTITY_ID
+          LEFT JOIN XREF X 
+            ON X.PLAID_ENTITY_ID = T.PLAID_ENTITY_ID
+          WHERE r.user_id = :userId
+          AND r.account_id = :accountId
+          
+          UNION
+
+          SELECT 
+            COALESCE(X.GIVEN_NAME, R.NAME), 
+            R.AMOUNT, 
+            LOWER(R.TYPE::text), 
+            R.PREDICTED_NEXT_DATE
+          FROM RECURRING R
+          LEFT JOIN XREF X ON X.PLAID_ENTITY_ID = R.PLAID_ENTITY_ID
+          WHERE r.user_id = :userId
+          AND r.account_id = :accountId
+
+          ORDER BY DATE ASC
         `,
         {
           replacements: {
@@ -165,7 +181,7 @@ AND r.account_id = :accountId
           e.type === "payment"
             ? `$${Number(e.amount).toLocaleString()}`
             : `-$${Number(e.amount).toLocaleString()}`,
-        date: e.date,
+        date: new Date(e.date).toISOString().split("T")[0],
         extendedProps: {
           type: e.type,
           name: e.name,

@@ -1,5 +1,6 @@
 import { TESTING } from "../../config/featureFlags.js";
 import { createRequire } from "module";
+import { sequelize } from "../../models/index.js";
 const require = createRequire(import.meta.url);
 const { TEST_TRANSACTION_DATA } = require("../../../TESTDATA/_config.js");
 
@@ -57,4 +58,29 @@ export async function getPaginatedTransactions(client, plaidAccessToken) {
   }
 
   return transactions;
+}
+
+export async function getPlaidEntityKeys(userId, accountId) {
+  const keys = await sequelize.query(
+    `
+    SELECT DISTINCT 
+    R.PLAID_STREAM_ID,
+    T.PLAID_ENTITY_ID 
+    FROM RECURRING R
+    LEFT JOIN TRANSACTIONS T 
+    ON T.TRANSACTION_ID = ANY(R.TRANSACTIONS)
+    WHERE T.USER_ID = :userId
+    AND T.ACCOUNT_ID = :accountId
+   `,
+    {
+      replacements: { userId, accountId },
+      type: sequelize.QueryTypes.SELECT,
+    },
+  );
+
+  const keyMap = {};
+  for (const key of keys) {
+    keyMap[key.plaid_stream_id] = key.plaid_entity_id;
+  }
+  return keyMap;
 }

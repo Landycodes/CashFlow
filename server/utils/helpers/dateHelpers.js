@@ -1,42 +1,41 @@
 import { sequelize } from "../../models/index.js";
 
-// MATH IS VERY WRONG HERE*********************************
-export async function predictNextDate(tx_ids) {
-  // calculate interval from at least 2 dates
-  if (tx_ids.length < 2) {
-    return null;
-  }
+export async function predictNextDates(userId, accountId, streamIds) {
+  if (streamIds.length <= 0) return {};
 
   const transactions = await sequelize.query(
-    ` SELECT T.DATE 
-      FROM TRANSACTIONS T 
-      WHERE T.PLAID_ENTITY_ID IN (
-        SELECT DISTINCT T2.PLAID_ENTITY_ID
-        FROM TRANSACTIONS T2
-        WHERE T2.TRANSACTION_ID IN ( :txIds )
-      )
-      ORDER BY T.DATE ASC`,
+    `
+      SELECT
+      	R.PLAID_STREAM_ID,
+      	ARRAY_AGG(T.DATE::date ORDER BY T.DATE ASC) AS DATES
+      FROM TRANSACTIONS T
+      JOIN RECURRING R
+      	ON T.PLAID_ENTITY_ID = R.PLAID_ENTITY_ID
+      WHERE R.PLAID_STREAM_ID = ANY(ARRAY[:streamIds])
+      AND T.USER_ID = :userId
+      AND T.ACCOUNT_ID = :accountId
+      GROUP BY R.PLAID_STREAM_ID  
+      `,
     {
-      replacements: { txIds: tx_ids },
+      replacements: { userId, accountId, streamIds },
       type: sequelize.QueryTypes.SELECT,
     },
   );
-  const dates = transactions.map((t) => t.date);
 
-  // average days between each payment
-  let totalInterval = 0;
-  for (let i = 1; i < dates.length; i++) {
-    totalInterval += dates[i] - dates[i - 1];
+  const streamDateMap = {};
+  for (const row of transactions) {
+    const dates = row.dates.map((d) => new Date(d));
+    if (dates.length < 2) continue;
+    let totalInterval = 0;
+    for (let i = 1; i < dates.length; i++) {
+      totalInterval += dates[i] - dates[i - 1];
+    }
+    const avg = totalInterval / (dates.length - 1);
+    const lastDate = dates[dates.length - 1];
+    streamDateMap[row.plaid_stream_id] = new Date(lastDate.getTime() + avg)
+      .toISOString()
+      .split("T")[0];
   }
-  const avg = totalInterval / (dates.length - 1);
 
-  // most recent date
-  const lastDate = dates[dates.length - 1];
-
-  console.log("last date: ", lastDate.toISOString().split("T")[0]);
-  console.log(
-    "predicted date: ",
-    new Date(lastDate.getTime() + avg).toISOString().split("T")[0],
-  );
-  return new Date(lastDate.getTime() + avg).toISOString().split("T")[0];
+  return streamDateMap;
 }

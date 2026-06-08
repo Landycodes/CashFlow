@@ -10,8 +10,9 @@ const { writeToJSONFile } = require("../../utils/helpers/testHelpers");
 const {
   getPaginatedTransactions,
   parsePlaidName,
+  getPlaidEntityKeys,
 } = require("../../utils/helpers/plaidHelpers");
-const { predictNextDate } = require("../../utils/helpers/dateHelpers");
+const { predictNextDates } = require("../../utils/helpers/dateHelpers");
 const { getSelectedAccountId } = require("../services/userService");
 const { Op, Sequelize } = require("sequelize");
 
@@ -111,11 +112,11 @@ module.exports = {
       }
     }
   },
-  async setRecurringInfo(client, id, plaidAccessToken) {
+  async setRecurringInfo(client, user_id, plaidAccessToken) {
     console.log("Setting Recurring Info...");
 
     // Get refreshed selected account id for initial setup
-    const selected_account_id = await getSelectedAccountId(id);
+    const selected_account_id = await getSelectedAccountId(user_id);
     if (!selected_account_id) throw new Error("No selected_account_id found");
 
     try {
@@ -139,21 +140,37 @@ module.exports = {
         ...resData.outflow_streams,
       ];
 
+      const entityIdMap = await getPlaidEntityKeys(
+        user_id,
+        selected_account_id,
+      );
+
+      const dirtyDateIds = flowStreams
+        .filter(
+          (fs) =>
+            !fs.predicted_next_date ||
+            new Date(fs.predicted_next_date) < new Date(),
+        )
+        .flatMap((fs) => fs.stream_id);
+
+      const predicted_dates = await predictNextDates(
+        user_id,
+        selected_account_id,
+        dirtyDateIds,
+      );
+
       const recurringTx = await Promise.all(
         flowStreams.map(async (fs) => {
-          // console.log(typeof fs.predicted_next_date);
-          const staleDate = new Date(fs.predicted_next_date) < new Date();
-          if (!fs.predicted_next_date || staleDate) {
-            fs.predicted_next_date = await predictNextDate(fs.transaction_ids);
+          if (entityIdMap[fs.stream_id]) {
+            fs.plaid_entity_id = entityIdMap[fs.stream_id];
           }
-          console.log(
-            fs.average_amount.amount > 0 ? "BILL" : "PAYMENT",
-            // " : ",
-            // fs.predicted_next_date,
-          );
+          if (predicted_dates[fs.stream_id]) {
+            fs.predicted_next_date = predicted_dates[fs.stream_id];
+          }
+
           return {
             account_id: selected_account_id,
-            user_id: id,
+            user_id: user_id,
             name: fs.merchant_name || fs.description,
             amount: Math.abs(fs.average_amount.amount),
             last_paid: fs.last_date,
@@ -162,6 +179,7 @@ module.exports = {
             frequency: fs.frequency,
             transactions: fs.transaction_ids,
             plaid_stream_id: fs.stream_id,
+            plaid_entity_id: fs.plaid_entity_id,
           };
         }),
       );
@@ -172,10 +190,11 @@ module.exports = {
           "last_paid",
           "predicted_next_date",
           "transactions",
+          "plaid_entity_id",
         ],
       });
 
-      if (!updated) {
+      if (!updated.length) {
         throw new Error("Failed to update recurring table");
       }
 

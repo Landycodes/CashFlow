@@ -22,12 +22,13 @@ export default function CurrentAccountInfo() {
   useEffect(() => {
     if (!user?.selected_account_id) return;
     setAccount(token);
-  }, [user, refresh]);
+  }, [user]);
 
   const setAccount = async (token) => {
     const account = await getSingleAccount(token);
     const upcoming = await getNextRecurring(token);
-    console.log(upcoming);
+    // console.log(upcoming);
+    // console.log(account);
 
     const balance = account.available_balance;
     const next_pay_amount = upcoming?.nextPayment?.amount;
@@ -36,9 +37,9 @@ export default function CurrentAccountInfo() {
       name: account.name,
       balance,
       next_pay_amount,
-      leftover: balance - next_pay_amount,
+      leftover: balance - upcoming?.due_before,
       next_pay_date: upcoming?.nextPayment?.date,
-      due_before_payday: upcoming?.billTotal,
+      due_before_payday: upcoming?.due_before,
       id: account.account_id,
     });
   };
