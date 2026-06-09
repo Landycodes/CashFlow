@@ -1,3 +1,12 @@
+.mobileNav {
+  display: none;
+}
+
+.desktopNav {
+  display: flex;
+  flex-direction: row;
+}
+
 .menuBtn { 
   margin: 0;
   cursor: pointer;
@@ -25,4 +34,56 @@
   outline: none;
   box-shadow: none;
   border-color: gray;
+}
+
+/* Mobile Nav */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  margin-right: 0.75rem;
+}
+
+.bar {
+  display: block;
+  width: 25px;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+/* X animation when open */
+.barTop {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.barMid {
+  opacity: 0;
+}
+
+.barBot {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.dropdownMenu {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 1030px) {
+    .desktopNav {
+      display: none;
+    }
+
+    .mobileNav {
+    display: flex; 
+    flex-direction: column;    
+  }
 }

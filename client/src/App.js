@@ -17,7 +17,7 @@ import Loading from "./components/Loading";
 import Expenses from "./components/pages/Expenses";
 import Transactions from "./components/pages/Transactions/Transactions";
 import Footer from "./components/Footer";
-import Dashboard from "./components/pages/Dashboard";
+import Dashboard from "./components/pages/Dashboard/Dashboard";
 import { PlaidPopUp } from "./utils/Plaid";
 
 export const userContext = createContext();

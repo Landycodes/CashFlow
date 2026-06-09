@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1875px) {
+    .container { 
+        flex-direction: column;
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 1210px) {
+    .container {
+        gap: 4rem;
+    }
+  .topRow {
+    flex-direction: column-reverse;
+  }
+}

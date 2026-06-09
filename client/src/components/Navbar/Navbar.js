@@ -5,6 +5,8 @@ import { userContext } from "../../App";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateUser } from "../../utils/API/user";
 import { getAccounts } from "../../utils/API/account";
+import DesktopNav from "./DesktopNav";
+import MobileNav from "./MobileNav";
 
 export default function Navbar() {
   const { user, setUser, token } = useContext(userContext);
@@ -51,7 +53,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-100 d-flex bg-gradient justify-content-between">
+    <nav className="w-100 d-flex justify-content-between bg-gradient">
       <span className="mx-2 d-flex flex-row align-items-center justify-content-start w-auto">
         <h6 className="style-text p-2 pt-3 mx-1 fs-4 text-nowrap">
           Welcome, {name}!
@@ -82,43 +84,18 @@ export default function Navbar() {
           ""
         )}
       </span>
-      <span className="d-flex flex-row mx-2">
-        <h6
-          className={`${style.menuBtn} rounded p-3 pt-3`}
-          onClick={() => navigate("/expenses")}
-        >
-          Expenses
-        </h6>
-        <h6
-          className={`${style.menuBtn} rounded p-3 pt-3`}
-          onClick={() => navigate("/Transactions")}
-        >
-          Transactions
-        </h6>
-        <h6
-          className={`${style.menuBtn} rounded p-3 pt-3`}
-          onClick={() => navigate("/")}
-        >
-          Dashboard
-        </h6>
-        <h6
-          className={`${style.menuBtn} rounded p-3 pt-3`}
-          onClick={() => {
-            navigate("/settings");
-          }}
-        >
-          Settings
-        </h6>
-        <h6
-          className={`${style.menuBtn} ${style.logOut} log-out rounded p-3 pt-3`}
-          onClick={() => {
-            Auth.logout();
-            setUser(null);
-          }}
-        >
-          Logout
-        </h6>
-      </span>
+      <DesktopNav
+        setUser={setUser}
+        style={style}
+        navigate={navigate}
+        Auth={Auth}
+      />
+      <MobileNav
+        setUser={setUser}
+        style={style}
+        navigate={navigate}
+        Auth={Auth}
+      />
     </nav>
   );
 }

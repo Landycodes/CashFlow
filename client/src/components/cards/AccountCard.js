@@ -45,7 +45,7 @@ export default function CurrentAccountInfo() {
   };
 
   return (
-    <div className="window-style" style={{ minWidth: "500px" }}>
+    <div className="window-style card-size">
       <h3 className="style-text text-center">Account</h3>
       <div className="row g-2 mb-2">
         <div className="col">

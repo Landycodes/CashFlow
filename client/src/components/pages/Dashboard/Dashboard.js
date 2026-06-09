@@ -1,14 +1,15 @@
 import { useEffect, useState, useContext } from "react";
-import { userContext } from "../../App";
-import AccountCard from "../cards/AccountCard";
-import WelcomeCard from "../cards/WelcomeCard";
-import CashFlowCard from "../cards/CashFlowCard";
-import OverviewCard from "../cards/OverviewCard";
-import BillsCard from "../cards/BillsCard";
-import CalendarCard from "../cards/CalenderCard/CalenderCard";
+import { userContext } from "../../../App";
+import style from "./Dashboard.module.css";
+import AccountCard from "../../cards/AccountCard";
+import WelcomeCard from "../../cards/WelcomeCard";
+import CashFlowCard from "../../cards/CashFlowCard";
+import OverviewCard from "../../cards/OverviewCard";
+import BillsCard from "../../cards/BillsCard";
+import CalendarCard from "../../cards/CalenderCard/CalenderCard";
 import anime from "animejs";
-import Loading from "../Loading";
-import { PlaidPopUp } from "../../utils/Plaid";
+import Loading from "../../Loading";
+import { PlaidPopUp } from "../../../utils/Plaid";
 
 export default function Dashboard() {
   const { user, token, plaidAuthExpired } = useContext(userContext);
@@ -67,27 +68,31 @@ export default function Dashboard() {
       <>
         {accountInfoReady ? (
           <>
-            <div className="d-flex flex-row justify-content-center align-items-center m-4 gap-3">
-              <div className="d-flex flex-column justify-content-center align-items-end gap-3">
-                <div className="d-flex align-self-start mx-5 gap-2 bg-gradient rounded border border-secondary">
-                  {rangeBtn(rangeSelection.ONE_WEEK, "1W")}
-                  {rangeBtn(rangeSelection.TWO_WEEKS, "2W")}
-                  {rangeBtn(rangeSelection.ONE_MONTH, "1M")}
-                  {rangeBtn(rangeSelection.THREE_MONTH, "3M")}
-                  {rangeBtn(rangeSelection.SIX_MONTH, "6M")}
-                  {rangeBtn(rangeSelection.ONE_YEAR, "YTD")}
+            <div className={`${style.container} m-4 mx-5`}>
+              <div className={`${style.topRow} d-flex gap-3`}>
+                <div className="d-flex flex-column justify-content-center align-items-end gap-3">
+                  <div className="d-flex align-self-start mx-5 gap-2 bg-gradient rounded border border-secondary">
+                    {rangeBtn(rangeSelection.ONE_WEEK, "1W")}
+                    {rangeBtn(rangeSelection.TWO_WEEKS, "2W")}
+                    {rangeBtn(rangeSelection.ONE_MONTH, "1M")}
+                    {rangeBtn(rangeSelection.THREE_MONTH, "3M")}
+                    {rangeBtn(rangeSelection.SIX_MONTH, "6M")}
+                    {rangeBtn(rangeSelection.ONE_YEAR, "YTD")}
+                  </div>
+                  <CashFlowCard
+                    range={range}
+                    setRange={setRange}
+                    rangeSelection={rangeSelection}
+                  />
+                  <OverviewCard range={range} />
                 </div>
-                <CashFlowCard
-                  range={range}
-                  setRange={setRange}
-                  rangeSelection={rangeSelection}
-                />
-                <OverviewCard range={range} />
+
+                <div className="d-flex flex-column align-self-start justify-content-center align-items-center gap-3">
+                  <AccountCard />
+                  <BillsCard />
+                </div>
               </div>
-              <div className="d-flex flex-column align-self-start justify-content-center align-items-center gap-3">
-                <AccountCard />
-                <BillsCard />
-              </div>
+
               <div className="d-flex flex-column justify-content-center align-items-center gap-5">
                 <CalendarCard />
               </div>

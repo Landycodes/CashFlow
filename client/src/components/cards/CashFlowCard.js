@@ -33,10 +33,7 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
   };
 
   return (
-    <div
-      className="window-style d-flex flex-column align-items-center p-3 mx-3"
-      style={{ minWidth: "535px", maxHeight: "100%" }}
-    >
+    <div className="window-style card-size d-flex flex-column align-items-center p-3 mx-3">
       <h3 className="style-text">CashFlow</h3>
 
       <div className="d-flex flex-row justify-content-between align-items-between w-100">

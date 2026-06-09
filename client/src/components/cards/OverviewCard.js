@@ -31,10 +31,7 @@ export default function OverviewCard({ range }) {
   }, [token, range]);
 
   return (
-    <div
-      className="window-style d-flex flex-column align-items-center m-3 h-auto"
-      // style={{ width: "400px", height: "auto" }}
-    >
+    <div className="window-style card-size d-flex flex-column align-items-center m-3 h-auto">
       <h3 className="style-text">Spending Overview</h3>
 
       {chartData.expense.labels.length > 0 ? (

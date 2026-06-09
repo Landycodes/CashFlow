@@ -32,7 +32,7 @@ export default function CalendarCard() {
 
   // console.log(user.bills);
   return (
-    <div className="window-style">
+    <div className="window-style card-size-lg">
       <h3 className="style-text text-center text-opacity-75">
         Finance Calendar
       </h3>
@@ -55,36 +55,8 @@ export default function CalendarCard() {
             right: "title",
           }}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
-          // dayCellDidMount={(arg) => {
-          //   if (!events || Object.keys(events).length === 0) return;
-
-          //   // console.log(arg.date);
-          //   // console.log(events);
-          //   const dayEvents = events.filter(
-          //     (e) => e?.date === arg.date.toLocaleDateString("en-CA"),
-          //   );
-          //   // console.log(dayEvents);
-
-          //   const hasPayday = dayEvents.some(
-          //     (e) => e.extendedProps.type === "payment",
-          //   );
-          //   const hasBill = dayEvents.some(
-          //     (e) => e.extendedProps.type === "bill",
-          //   );
-
-          //   if (hasPayday && hasBill) {
-          //     arg.el.classList.add("day-mixed");
-          //   } else if (hasPayday) {
-          //     arg.el.classList.add("day-payday");
-          //   } else if (hasBill) {
-          //     console.log("im special");
-
-          //     arg.el.classList.add("day-bill");
-          //   }
-          // }}
           eventDidMount={(arg) => {
             const type = arg.event.extendedProps.type;
-            console.log(arg.event.extendedProps);
 
             if (type === "payment") {
               arg.el.style.setProperty(
