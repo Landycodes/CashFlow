@@ -48,18 +48,18 @@ export default function CurrentAccountInfo() {
     <div className="window-style card-size">
       <h3 className="style-text text-center">Account</h3>
       <div className="row g-2 mb-2">
-        <div className="col">
-          <div className="window-style-dark rounded p-3">
+        <div className="col-12 col-sm-6">
+          <div className="window-style-dark h-100 rounded p-3">
             <p className="style-subtext small mb-1">Current balance</p>
             <p className="fs-4 fw-medium mb-0">
               {formatCurrency(accountDetails.balance)}
             </p>
           </div>
         </div>
-        <div className="col">
+        <div className="col-12 col-sm-6">
           <div className="window-style-dark rounded p-3">
-            <p className="style-subtext small mb-1 text-nowrap">
-              Next paycheck on{" "}
+            <p className="style-subtext small mb-1">
+              Getting paid on{" "}
               <span className="text-end mb-0">
                 {accountDetails.next_pay_date}
               </span>
@@ -74,7 +74,7 @@ export default function CurrentAccountInfo() {
       <div className="row g-2">
         <div className="col">
           <div className="window-style-dark rounded p-3">
-            <p className="style-subtext small mb-1">
+            <p className="style-subtext small mb-1 text-nowrap">
               Due before {accountDetails.next_pay_date}
             </p>
             <p className="fs-4 fw-medium mb-0 text-danger">
@@ -83,7 +83,7 @@ export default function CurrentAccountInfo() {
           </div>
         </div>
         <div className="col">
-          <div className="window-style-dark rounded p-3">
+          <div className="window-style-dark h-100 rounded p-3">
             <p className="style-subtext small mb-1">Leftover</p>
             <p
               className={`fs-4 fw-medium mb-0 ${accountDetails.leftover > 0 ? "text-success" : "text-danger"}`}

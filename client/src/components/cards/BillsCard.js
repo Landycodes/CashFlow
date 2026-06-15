@@ -19,7 +19,7 @@ export default function BillsCard() {
   }, [user]);
 
   return (
-    <div className="window-style card-size d-flex flex-column align-items-center mx-5 mt-2">
+    <div className="window-style card-size d-flex flex-column align-items-center mt-2">
       <h3 className="style-text">Upcoming Bills</h3>
 
       <div>

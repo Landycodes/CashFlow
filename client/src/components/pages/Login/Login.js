@@ -151,79 +151,83 @@ export default function Login() {
   return (
     <div className="d-flex justify-content-center align-items-center vh-100 w-100">
       <form
-        className={`${style.loginForm} form d-flex flex-column align-items-stretch p-5 rounded border border-secondary gap-5`}
+        className={`${style.loginForm} form d-flex flex-column align-items-stretch p-5 rounded gap-5`}
         style={{ minWidth: "360px" }}
         id="loginForm"
         onSubmit={handleSubmit}
       >
-        <header className="text-light d-flex flex-column align-items-start align-self-center mb-2">
-          <h2 className={style.title}>BALNCE</h2>
-          <h6 className={`${style.subtitle} text-secondary`}>
-            Track your spending
-          </h6>
-        </header>
+        <div
+          className={`${style.loginContent} d-flex flex-column justify-content-around`}
+        >
+          <header className="text-light d-flex flex-column align-items-start align-self-center mb-2">
+            <h2 className={style.title}>BALNCE</h2>
+            <h6 className={`${style.subtitle} text-secondary`}>
+              Track your spending
+            </h6>
+          </header>
 
-        <div className="col-12 col-lg-6 m-auto d-flex flex-column gap-5 align-self-center">
-          <div className="d-flex flex-column gap-3">
-            {!login && (
+          <div className="col-12 col-lg-6 m-auto d-flex flex-column gap-5 align-self-center">
+            <div className="d-flex flex-column gap-3">
+              {!login && (
+                <input
+                  className={`${style.formControl} bg-gradient p-2`}
+                  type="text"
+                  placeholder="Username"
+                  onChange={handleInputChange}
+                  name="username"
+                  defaultValue={form.username}
+                />
+              )}
               <input
-                className={`${style.formControl} bg-gradient p-2`}
+                className={`${style.formControl} rounded bg-gradient p-2`}
                 type="text"
-                placeholder="Username"
+                placeholder="Email"
+                name="email"
                 onChange={handleInputChange}
-                name="username"
-                defaultValue={form.username}
+                defaultValue={form.email}
               />
-            )}
-            <input
-              className={`${style.formControl} rounded bg-gradient p-2`}
-              type="text"
-              placeholder="Email"
-              name="email"
-              onChange={handleInputChange}
-              defaultValue={form.email}
-            />
-            <input
-              className={`${style.formControl} rounded bg-gradient p-2`}
-              type="password"
-              placeholder="Password"
-              onChange={handleInputChange}
-              name="password"
-              defaultValue={form.password}
-            />
-          </div>
-
-          {throwError(error)}
-
-          <div className="d-flex flex-column gap-2">
-            <button
-              className="btn btn-outline-success w-100 fs-5"
-              type="submit"
-            >
-              Submit
-            </button>
-            <button
-              className="btn btn-outline-primary w-100 fs-5"
-              type="button"
-              onClick={() => setlogin(!login)}
-            >
-              {login ? "Create Account" : "Log in instead"}
-            </button>
-
-            <div className="d-flex align-items-center gap-2 my-1">
-              <hr className="flex-grow-1 border-secondary m-0" />
-              <span className="text-secondary small">or</span>
-              <hr className="flex-grow-1 border-secondary m-0" />
+              <input
+                className={`${style.formControl} rounded bg-gradient p-2`}
+                type="password"
+                placeholder="Password"
+                onChange={handleInputChange}
+                name="password"
+                defaultValue={form.password}
+              />
             </div>
 
-            <button
-              className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 fs-5"
-              type="button"
-              onClick={handleGoogle}
-            >
-              <img src="/google-logo.png" alt="" height={22} width={22} />
-              Sign in with Google
-            </button>
+            {throwError(error)}
+
+            <div className="d-flex flex-column gap-2">
+              <button
+                className="btn btn-outline-success w-100 fs-5"
+                type="submit"
+              >
+                Submit
+              </button>
+              <button
+                className="btn btn-outline-primary w-100 fs-5"
+                type="button"
+                onClick={() => setlogin(!login)}
+              >
+                {login ? "Create Account" : "Log in instead"}
+              </button>
+
+              <div className="d-flex align-items-center gap-2 my-1">
+                <hr className="flex-grow-1 border-secondary m-0" />
+                <span className="text-secondary small">or</span>
+                <hr className="flex-grow-1 border-secondary m-0" />
+              </div>
+
+              <button
+                className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2 fs-5"
+                type="button"
+                onClick={handleGoogle}
+              >
+                <img src="/google-logo.png" alt="" height={22} width={22} />
+                Sign in with Google
+              </button>
+            </div>
           </div>
         </div>
       </form>

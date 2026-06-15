@@ -3,6 +3,7 @@
   --box-color: linear-gradient(160deg, #222222, #263327);
   --txt-color: white;
   --data-bg: rgba(97, 97, 97, 0.575);
+
 }
 
 * {
@@ -15,12 +16,16 @@
 
 html {
   min-height: 100%;
+  height: -webkit-fill-available;
 }
 
 body {
   margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  padding-top: env(safe-area-inset-top);
   background-image: var(--bg-color);
   background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

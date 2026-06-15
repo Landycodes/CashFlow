@@ -52,7 +52,7 @@ export default function BarChart({ data }) {
   const options = {
     indexAxis: "y", // horizontal bars
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -88,7 +88,12 @@ export default function BarChart({ data }) {
           maxTicksLimit: 10,
           callback: function (val) {
             const label = this.getLabelForValue(val);
-            return label.split(" ").join("\n");
+            const maxLength = 15;
+            const truncated =
+              label.length > maxLength
+                ? label.slice(0, maxLength) + "..."
+                : label;
+            return truncated.split(" ").join("\n");
           },
         },
       },
@@ -97,7 +102,7 @@ export default function BarChart({ data }) {
 
   if (render) {
     return (
-      <div style={{ minWidth: "500px", maxHeight: "100%" }}>
+      <div className="bar-chart-wrap">
         <Bar data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     );

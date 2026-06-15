@@ -17,7 +17,21 @@
     .container {
         gap: 4rem;
     }
-  .topRow {
-    flex-direction: column-reverse;
+
+    .topRow {
+        flex-direction: column-reverse;
+    }
+}
+
+@media (max-width: 900px) {
+  .chartCol {
+    align-items: center !important;
+    width: 100%;
+  }
+
+  .rangeButtons {
+    align-self: center !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }

@@ -5,6 +5,12 @@
   height: 80vh;
 }
 
+.loginContent {
+    position: relative;
+    padding-top: env(safe-area-inset-top);
+    height: calc(100% - env(safe-area-inset-top));
+  }
+
 .title {
   font-family: "VT323", monospace;
   font-weight: 600;
@@ -63,7 +69,17 @@ input.formControl:-webkit-autofill:focus {
     font-size: 11px;
   }
   .loginForm {
-    width: 100vw;
-    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow-x: hidden;
+    height: 125%;
+  }
+
+  .login-content {
+    top: env(safe-area-inset-top);
+    height: calc(100% - env(safe-area-inset-top));
+
   }
 }

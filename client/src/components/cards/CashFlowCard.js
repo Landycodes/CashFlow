@@ -36,28 +36,23 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
     <div className="window-style card-size d-flex flex-column align-items-center p-3 mx-3">
       <h3 className="style-text">CashFlow</h3>
 
-      <div className="d-flex flex-row justify-content-between align-items-between w-100">
-        <div>
-          {transactions.income > 0 && transactions.expense > 0 ? (
-            <>
-              <div
-                style={{ width: "225px", height: "225px" }}
-                className="d-flex justify-content-center align-items-center mt-2 mb-3"
-              >
-                <PieChart
-                  data={{
-                    labels: ["Earned", "Spent"],
-                    values: [transactions.income, transactions.expense],
-                  }}
-                />
-              </div>
-            </>
-          ) : (
-            ""
-          )}
-        </div>
-        <div className="d-flex flex-column justify-content-evenly align-items-start">
-          <div className="d-flex">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-center w-100">
+        {transactions.income > 0 && transactions.expense > 0 && (
+          <div
+            style={{ width: "225px", height: "225px" }}
+            className="d-flex justify-content-center align-items-center mt-2 mb-3 flex-shrink-0"
+          >
+            <PieChart
+              data={{
+                labels: ["Earned", "Spent"],
+                values: [transactions.income, transactions.expense],
+              }}
+            />
+          </div>
+        )}
+
+        <div className="d-flex flex-column justify-content-evenly align-items-center w-100">
+          <div className="d-flex w-100 justify-content-center">
             <div className="window-style-dark rounded p-3 m-1">
               <p className="style-subtext small mb-1">Deposited</p>
               <h4 className="text-success ms-2">
@@ -71,8 +66,12 @@ export default function CashflowCard({ range, setRange, rangeSelection }) {
               </h4>
             </div>
           </div>
-          <div className="d-flex align-items-center justify-content-center w-100">
-            <div className="d-flex flex-column align-items-center window-style-dark p-3 rounded w-50">
+
+          <div className="d-flex align-items-center justify-content-center w-100 mt-2">
+            <div
+              className="d-flex flex-column align-items-center window-style-dark p-3 rounded"
+              style={{ width: "160px" }}
+            >
               <p className="style-subtext small mb-1">CashFlow</p>
               <h4
                 className={

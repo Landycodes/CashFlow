@@ -69,9 +69,13 @@ export default function Dashboard() {
         {accountInfoReady ? (
           <>
             <div className={`${style.container} m-4 mx-5`}>
-              <div className={`${style.topRow} d-flex gap-3`}>
-                <div className="d-flex flex-column justify-content-center align-items-end gap-3">
-                  <div className="d-flex align-self-start mx-5 gap-2 bg-gradient rounded border border-secondary">
+              <div className={`${style.topRow} d-flex w-100 gap-3`}>
+                <div
+                  className={`${style.chartCol} d-flex flex-column justify-content-center align-items-end gap-3`}
+                >
+                  <div
+                    className={`${style.rangeButtons} d-flex align-self-start mx-5 gap-2 bg-gradient rounded border border-secondary`}
+                  >
                     {rangeBtn(rangeSelection.ONE_WEEK, "1W")}
                     {rangeBtn(rangeSelection.TWO_WEEKS, "2W")}
                     {rangeBtn(rangeSelection.ONE_MONTH, "1M")}
@@ -87,7 +91,7 @@ export default function Dashboard() {
                   <OverviewCard range={range} />
                 </div>
 
-                <div className="d-flex flex-column align-self-start justify-content-center align-items-center gap-3">
+                <div className="w-100 d-flex flex-column justify-content-center align-items-center gap-3">
                   <AccountCard />
                   <BillsCard />
                 </div>

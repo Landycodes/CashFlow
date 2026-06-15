@@ -21,31 +21,42 @@ export default function MobileNav({ setUser, style, navigate, Auth }) {
       </button>
 
       {menuOpen && (
-        <div className={`${style.dropdownMenu} bg-gradient`}>
-          <h6
-            className={`${style.menuBtn} rounded p-3`}
-            onClick={() => handleNav("/expenses")}
-          >
-            Expenses
-          </h6>
-          <h6
-            className={`${style.menuBtn} rounded p-3`}
-            onClick={() => handleNav("/Transactions")}
-          >
-            Transactions
-          </h6>
+        <div
+          className={`${style.dropdownMenu} window-style-dark position-absolute`}
+        >
+          <h6 className="py-5"> </h6>
+          <hr className={style.divider}></hr>
           <h6
             className={`${style.menuBtn} rounded p-3`}
             onClick={() => handleNav("/")}
           >
             Dashboard
           </h6>
+          <hr className={style.divider}></hr>
+
+          <h6
+            className={`${style.menuBtn} rounded p-3`}
+            onClick={() => handleNav("/Transactions")}
+          >
+            Transactions
+          </h6>
+          <hr className={style.divider}></hr>
+          <h6
+            className={`${style.menuBtn} rounded p-3`}
+            onClick={() => handleNav("/expenses")}
+          >
+            Expenses
+          </h6>
+          <hr className={style.divider}></hr>
+
           <h6
             className={`${style.menuBtn} rounded p-3`}
             onClick={() => handleNav("/settings")}
           >
             Settings
           </h6>
+          <hr className={style.divider}></hr>
+
           <h6
             className={`${style.menuBtn} ${style.logOut} rounded p-3`}
             onClick={() => {

@@ -54,6 +54,7 @@ export default function CalendarCard() {
             center: "",
             right: "title",
           }}
+          dayMaxEvents={2}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
           eventDidMount={(arg) => {
             const type = arg.event.extendedProps.type;
