@@ -102,7 +102,10 @@ export default function BarChart({ data }) {
 
   if (render) {
     return (
-      <div className="bar-chart-wrap">
+      <div
+        className="bar-chart-wrap"
+        // style={{ height: `${data.labels.length * 45}px` }}
+      >
         <Bar data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
     );

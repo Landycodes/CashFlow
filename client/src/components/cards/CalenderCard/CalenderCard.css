@@ -38,70 +38,17 @@ a:hover {
   backdrop-filter: blur(8px);
 }
 
-/* .calendar {
-  width: 550px;
-  margin: 0 auto;
-}
-
-.calendar *{
-  font-size: 1rem;
-  margin: 0 auto;
-  color: white;
-}
-
-.calendar .fc-toolbar-title {
-  padding: 1rem;
-  font-size: 1.4rem;
-  font-weight: 600;
-} */
-
-/* Previous/ Next button drilled */
-/* .fc-prev-button.fc-button.fc-button-primary, 
-.fc-next-button.fc-button.fc-button-primary,
-.fc-today-button.fc-button.fc-button-primary {
-  background-color: rgba(0, 0, 0, 0.4) !important;
-  border: none;
-}
-
-.fc-col-header {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-}
-
-.fc-today-custom {
-  background-color: rgba(0, 123, 255, 0.2) !important;
-}
-
-.fc-event {
-  font-size: 0.75rem;
+.fc-popover {
+  background: rgba(0, 0, 0, 0.4) !important;
   border-radius: 6px;
-  background-color: transparent;
-  border: none;
+  backdrop-filter: blur(8px);
 }
 
-.fc-daygrid-event-dot {
-  display: none;
-}
-
-.calendar .fc-scrollgrid,
-.calendar .fc-scrollgrid td,
-.calendar .fc-scrollgrid th {
-  border-color: rgba(255, 255, 255, 0.1);
-} */
-
-.day-payday {
-  background-color: rgba(0, 190, 9, 0.5);
-  z-index: 1;
-}
-
-.day-bill {
-  background-color: rgba(200, 0, 0, 0.25);
-  z-index: 1;
-}
-
-.day-mixed {
-  background: linear-gradient(
-    135deg,
-    rgba(200, 0, 0, 0.3) 50%,
-    rgba(15, 233, 15, 0.3) 50%
-  );
+@media (max-width: 600px) {
+  .fc-more-link {
+    background-color: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    width: 100%;
+    height: 20px;
+  }
 }

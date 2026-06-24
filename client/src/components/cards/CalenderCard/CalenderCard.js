@@ -54,11 +54,14 @@ export default function CalendarCard() {
             center: "",
             right: "title",
           }}
-          dayMaxEvents={2}
+          dayMaxEvents={window.innerWidth < 600 ? 0 : 2}
           dayCellClassNames={(arg) => (arg.isToday ? ["fc-today-custom"] : [])}
+          moreLinkContent={(arg) =>
+            window.innerWidth < 600 ? `+${arg.num}` : `+${arg.num} more`
+          }
           eventDidMount={(arg) => {
+            // console.log(arg.el.closest(".fc-popover"));
             const type = arg.event.extendedProps.type;
-
             if (type === "payment") {
               arg.el.style.setProperty(
                 "--fc-event-bg-color",
@@ -77,6 +80,14 @@ export default function CalendarCard() {
                 "--fc-event-border-color",
                 "transparent",
               );
+            }
+
+            if (arg.el.closest(".fc-popover")) {
+              const amount = arg.event.title;
+              const name = arg.event.extendedProps.name;
+              const truncatedName =
+                name.length > 20 ? name.slice(0, 18) + "..." : name;
+              arg.el.innerText = `${amount} \u00A0 ${truncatedName}`;
             }
           }}
           eventMouseEnter={(arg) => {

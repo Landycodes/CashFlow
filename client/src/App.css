@@ -99,6 +99,7 @@
 .bar-chart-wrap {
     min-width: 31.25rem;
     min-height: 300px;
+    max-width: 100vw;
 }
 
 /* ############ MEDIA QUERIES ################## */
@@ -108,9 +109,6 @@
     min-width: unset;
     width: 100%;
   }
-}
-
-@media (max-width: 900px) {
 
   .card-size {
     max-width: 100%;
@@ -118,8 +116,9 @@
 
   .card-size-lg {
     min-width: unset;
-    max-width: unset;
+    /* max-width: unset; */
     width: 100%;
+    overflow: hidden;
   }
 }
 

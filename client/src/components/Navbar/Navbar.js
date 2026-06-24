@@ -53,7 +53,6 @@ export default function Navbar() {
         <h6 className="style-text p-2 pt-3 mx-1 fs-4 text-nowrap">
           Welcome, {name}!
         </h6>
-        {console.log(accounts)}
         <div className="d-flex flex-row align-items-center">
           {/* TODO: replace with real last updated value */}
           <i className="style-text pe-0 ps-3 pt-3 m-0 fs-5 text-nowrap">
