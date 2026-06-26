@@ -108,7 +108,9 @@ export default function Transactions() {
   if (loadState) return <Loading />;
 
   return (
-    <div className="w-75 mb-5 d-flex flex-column align-items-center">
+    <div
+      className={`${style.txContainer} mb-5 d-flex flex-column align-items-center`}
+    >
       <h3 className="style-text mb-4">Transaction Overview</h3>
       <div
         className="d-flex align-items-center justify-content-end w-75 mb-3"
@@ -145,7 +147,7 @@ export default function Transactions() {
           </button>
         </div>
       </div>
-      <div className="tableWrap" style={{ width: "60vw" }}>
+      <div className="tableWrap table-lg" /* style={{ width: "60vw" }} */>
         <table className="bl-table w-100 table-dark table-striped table-sm align-middle mb-0">
           <thead>
             <tr>
@@ -166,7 +168,7 @@ export default function Transactions() {
                   />
                 </td>
                 <td
-                  className={`bl-td ${row.type === "INCOME" ? style.income : style.expense}`}
+                  className={`bl-td text-nowrap ${row.type === "INCOME" ? style.income : style.expense}`}
                 >
                   {row.type === "INCOME" ? "+" : "−"}
                   {formatCurrency(row.amount)}

@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MobileNav({ setUser, style, navigate, Auth }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const handleNav = (path) => {
+    document.body.style.overflow = "";
     setMenuOpen(false);
     navigate(path);
   };
@@ -12,7 +19,10 @@ export default function MobileNav({ setUser, style, navigate, Auth }) {
     <span className={`${style.mobileNav}`}>
       <button
         className={style.hamburger}
-        onClick={() => setMenuOpen((prev) => !prev)}
+        onClick={() => {
+          document.body.style.overflow = menuOpen ? "" : "hidden";
+          setMenuOpen((prev) => !prev);
+        }}
         aria-label="Toggle menu"
       >
         <span className={`${style.bar} ${menuOpen ? style.barTop : ""}`} />
@@ -60,6 +70,7 @@ export default function MobileNav({ setUser, style, navigate, Auth }) {
           <h6
             className={`${style.menuBtn} ${style.logOut} rounded p-3`}
             onClick={() => {
+              document.body.style.overflow = "";
               Auth.logout();
               setUser(null);
             }}

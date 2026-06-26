@@ -54,6 +54,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.table-lg {
+  width: 55vw;
+}
+
 .bl-table {
   font-size: 13.5px;
   border-collapse: collapse;
@@ -119,6 +123,19 @@
     /* max-width: unset; */
     width: 100%;
     overflow: hidden;
+  }
+
+  .tableWrap {
+    max-width: 100%;
+  }
+
+  .bl-td {
+    font-size: 18px;
+    line-height: 2rem;
+  }
+
+  .table-lg {
+    width: unset;
   }
 }
 

@@ -43,3 +43,9 @@
   accent-color: #64ffda;
   cursor: pointer;
 }
+
+@media (max-width: 780px) {
+  .txContainer {
+    width: 100%;
+  }
+}
