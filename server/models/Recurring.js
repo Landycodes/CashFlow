@@ -12,18 +12,6 @@ const Recurring = sequelize.define(
     account_id: {
       type: DataTypes.STRING,
       allowNull: false,
-      references: {
-        model: "accounts",
-        key: "account_id",
-      },
-    },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "users",
-        key: "id",
-      },
     },
     name: {
       type: DataTypes.STRING,
@@ -59,18 +47,9 @@ const Recurring = sequelize.define(
       defaultValue: "MONTHLY",
       allowNull: false,
     },
-    transactions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+    entity_id: {
+      type: DataTypes.STRING,
       allowNull: false,
-    },
-    plaid_entity_id: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    plaid_stream_id: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      unique: true,
     },
   },
   {

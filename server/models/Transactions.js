@@ -9,21 +9,35 @@ const Transactions = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    // userId foreign key — association defined in models/index.js
-    user_id: {
+    account_id: {
       type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: "users",
+        model: "accounts",
         key: "id",
       },
     },
-    // account_id references Plaid's account ID string, not an internal UUID
-    account_id: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    recurring_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "recurring",
+        key: "id",
+      },
     },
-    transaction_id: {
+    xref_id: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "xref",
+        key: "id",
+      },
+    },
+    plaid_account_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    plaid_transaction_id: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,

@@ -5,7 +5,7 @@ const Transactions = require("./Transactions");
 const Recurring = require("./Recurring");
 const Xref = require("./XRef");
 
-// Users <-> Accounts
+// Users - has many -> Accounts
 Users.hasMany(Accounts, {
   foreignKey: "user_id",
   as: "accounts",
@@ -13,30 +13,26 @@ Users.hasMany(Accounts, {
 });
 Accounts.belongsTo(Users, { foreignKey: "user_id" });
 
-// Accounts <-> Transactions
-Accounts.hasMany(Transactions, { foreignKey: "user_id", onDelete: "CASCADE" });
-Transactions.belongsTo(Accounts, { foreignKey: "user_id" });
-
-// Transactions <-> Recurring
-Transactions.hasMany(Recurring, {
+// Accounts - has many -> Transactions
+Accounts.hasMany(Transactions, {
   foreignKey: "account_id",
   onDelete: "CASCADE",
 });
-Recurring.belongsTo(Transactions, { foreignKey: "account_id" });
+Transactions.belongsTo(Accounts, { foreignKey: "account_id" });
 
-// Transactions <-> Xref
-Transactions.belongsTo(Xref, {
-  foreignKey: "plaid_entity_id",
-  targetKey: "plaid_entity_id",
-  as: "xref",
-  constraints: false,
+// Recurring - has many -> Transactions
+Recurring.hasMany(Transactions, {
+  foreignKey: "recurring_id",
+  onDelete: "SET NULL",
 });
+Transactions.belongsTo(Recurring, { foreignKey: "recurring_id" });
+
+// Xref - has many -> Transactions
 Xref.hasMany(Transactions, {
-  foreignKey: "plaid_entity_id",
-  targetKey: "plaid_entity_id",
-  as: "transactions",
-  constraints: false,
+  foreignKey: "xref_id",
+  onDelete: "CASCADE",
 });
+Transactions.belongsTo(Xref, { foreignKey: "xref_id" });
 
 module.exports = {
   sequelize,

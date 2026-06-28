@@ -32,7 +32,7 @@ const Users = sequelize.define(
       allowNull: true,
       unique: true,
     },
-    plaidAccessToken: {
+    plaid_Token: {
       type: DataTypes.STRING,
       allowNull: true,
       // Encryption handled manually below via hooks instead of mongoose-field-encryption
@@ -48,10 +48,9 @@ const Users = sequelize.define(
     },
   },
   {
-    timestamps: false, // gives you createdAt and updatedAt
+    timestamps: false,
     tableName: "users",
     hooks: {
-      // replaces userSchema.pre("save", ...)
       beforeCreate: async (user) => {
         if (user.password) {
           user.password = await bcrypt.hash(user.password, 10);

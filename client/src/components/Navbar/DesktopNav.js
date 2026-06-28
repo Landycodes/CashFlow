@@ -25,8 +25,8 @@ export default function DesktopNav({ style, accounts, navigate, Auth }) {
             return (
               <option
                 className="fs-6 text-nowrap"
-                key={acct.account_id}
-                value={acct.account_id}
+                key={acct.id}
+                value={acct.id}
               >
                 {acct.name}
               </option>

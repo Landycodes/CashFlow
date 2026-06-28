@@ -147,7 +147,7 @@ export default function Transactions() {
           </button>
         </div>
       </div>
-      <div className="tableWrap table-lg" /* style={{ width: "60vw" }} */>
+      <div className="tableWrap table-lg">
         <table className="bl-table w-100 table-dark table-striped table-sm align-middle mb-0">
           <thead>
             <tr>

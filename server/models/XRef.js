@@ -9,14 +9,6 @@ const XRef = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    user_id: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: "users",
-        key: "id",
-      },
-    },
     plaid_entity_id: {
       type: DataTypes.STRING,
       allowNull: false,

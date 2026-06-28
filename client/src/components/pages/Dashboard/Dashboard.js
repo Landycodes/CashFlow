@@ -38,7 +38,7 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    if (!user?.plaidAccessToken || plaidAuthExpired) {
+    if (plaidAuthExpired) {
       openPlaidPopUp();
     }
   }, [user]);
@@ -63,14 +63,14 @@ export default function Dashboard() {
     );
   };
 
-  if (user?.plaidAccessToken) {
+  if (user?.selected_account_id) {
     return (
       <>
         {accountInfoReady ? (
           <>
             <div className={`${style.container} m-4 mx-5`}>
               <div className={`${style.topRow} d-flex w-100 gap-3`}>
-                <div
+                {/* <div
                   className={`${style.chartCol} d-flex flex-column justify-content-center align-items-end gap-3`}
                 >
                   <div
@@ -89,17 +89,17 @@ export default function Dashboard() {
                     rangeSelection={rangeSelection}
                   />
                   <OverviewCard range={range} />
-                </div>
+                </div> */}
 
                 <div className="w-100 d-flex flex-column justify-content-center align-items-center gap-3">
                   <AccountCard />
-                  <BillsCard />
+                  {/* <BillsCard /> */}
                 </div>
               </div>
 
-              <div className="d-flex flex-column justify-content-center align-items-center gap-5">
+              {/* <div className="d-flex flex-column justify-content-center align-items-center gap-5">
                 <CalendarCard />
-              </div>
+              </div>*/}
             </div>
           </>
         ) : (

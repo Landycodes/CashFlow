@@ -17,14 +17,20 @@ const Accounts = sequelize.define(
         key: "id",
       },
     },
-    account_id: {
+    plaid_account_id: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
+    },
+    plaid_entity_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
     available_balance: {
       type: DataTypes.DECIMAL(10, 2),

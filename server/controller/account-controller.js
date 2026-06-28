@@ -1,9 +1,43 @@
-const { Types } = require("mongoose");
-const { Users, Transactions, Accounts } = require("../models");
-
+const { Users, Transactions, Accounts, sequelize } = require("../models");
+const { Op } = require("sequelize");
 const { getSelectedAccountId } = require("../controller/services/userService");
 
 module.exports = {
+  async createAccount({ user = null, body }, res) {
+    if (!user)
+      return res.status(404).json({ removeAccount: "Token user not found" });
+
+    const { name, balance } = body;
+    try {
+      const newAccount = await Accounts.create({
+        user_id: user.id,
+        name: name,
+        available_balance: balance,
+      });
+
+      // set new account as selected account to user
+      const setSelectedAccountId = await Users.update(
+        {
+          selected_account_id: newAccount.id,
+        },
+        {
+          where: { id: user.id },
+        },
+      );
+
+      console.log(newAccount);
+
+      res.status(200).json({ createAccount: "Account Created!" });
+    } catch (error) {
+      if (error?.errors[0]?.message) {
+        return res.status(400).json({ error: error?.errors[0]?.message });
+      }
+      res.status(500).json({
+        createAccount: "Failed to create account",
+        errors: error?.errors,
+      });
+    }
+  },
   async getSingleAccount({ user = null }, res) {
     if (!user)
       return res.status(404).json({ getAccountData: "Token user not found" });
@@ -19,9 +53,20 @@ module.exports = {
       const account = await Accounts.findOne({
         where: {
           user_id: user.id,
-          account_id: accountId,
+          [Op.or]: [
+            sequelize.where(
+              sequelize.cast(sequelize.col("Accounts.id"), "text"),
+              accountId,
+            ),
+            { plaid_account_id: accountId },
+          ],
         },
-        attributes: ["name", "available_balance", "account_id"],
+        attributes: [
+          "name",
+          "available_balance",
+          [sequelize.literal("COALESCE(plaid_account_id, id::text)"), "id"],
+        ],
+        raw: true,
       });
 
       if (!account)
@@ -31,7 +76,8 @@ module.exports = {
 
       res.status(200).json(account);
     } catch (error) {
-      res.status(500).json({ getAccountData: "Failed to get account Id" });
+      console.log(error);
+      return res.status(500).json({ getAccountData: error });
     }
   },
   async getAllAccounts({ user = null }, res) {
@@ -43,18 +89,21 @@ module.exports = {
         where: {
           user_id: user.id,
         },
-        attributes: ["name", "account_id"],
+        attributes: [
+          "name",
+          "available_balance",
+          [sequelize.literal("COALESCE(plaid_account_id, id::text)"), "id"],
+        ],
         raw: true,
       });
 
-      if (!accounts)
+      if (!accounts.length)
         return res
           .status(404)
           .json({ getAllAccounts: "No accounts found for this user" });
 
       return res.json(accounts);
     } catch (error) {
-      1;
       res.status(500).json({ getAllAccounts: "Failed to retrieve accounts" });
     }
   },
@@ -63,7 +112,7 @@ module.exports = {
       return res.status(404).json({ removeAccount: "Token user not found" });
 
     try {
-      const updatedUser = Users.update(
+      const updatedUser = await Users.update(
         {
           lastUpdate: null,
           selected_account_id: null,
@@ -73,7 +122,9 @@ module.exports = {
       );
       if (!updatedUser) throw new Error("removeAccount: Failed to update user");
 
-      const deletedAccounts = Accounts.destroy({ where: { user_id: user.id } });
+      const deletedAccounts = await Accounts.destroy({
+        where: { user_id: user.id },
+      });
       if (!deletedAccounts) {
         throw new Error("removeAccount: Failed to remove accounts");
       }

@@ -1,3 +1,14 @@
+export const createAccount = async (token, body) => {
+  return fetch("/api/account/createAccount", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  }).then((response) => response.json());
+};
+
 export const getSingleAccount = async (token) => {
   return fetch("/api/account/getAccount", {
     method: "GET",

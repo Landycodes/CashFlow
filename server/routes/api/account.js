@@ -3,12 +3,14 @@ const {
   getSingleAccount,
   removeAllAccounts,
   getAllAccounts,
+  createAccount,
   // addBill,
   // deleteBill,
   // getBills,
 } = require("../../controller/account-controller");
 const { authMiddleware } = require("../../utils/auth");
 
+router.route("/createAccount").post(authMiddleware, createAccount);
 router.route("/getAccount").get(authMiddleware, getSingleAccount);
 router.route("/removeAllAccounts").delete(authMiddleware, removeAllAccounts);
 router.route("/getAllAccounts").get(authMiddleware, getAllAccounts);
