@@ -12,7 +12,7 @@ import {
 import auth from "./utils/auth";
 import Login from "./components/pages/Login/Login";
 import Navbar from "./components/Navbar/Navbar";
-import Settings from "./components/pages/Settings";
+import Settings from "./components/pages/Settings/Settings";
 import Loading from "./components/Loading";
 import Expenses from "./components/pages/Expenses";
 import Transactions from "./components/pages/Transactions/Transactions";

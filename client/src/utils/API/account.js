@@ -19,6 +19,17 @@ export const getSingleAccount = async (token) => {
   }).then((response) => response.json());
 };
 
+export const deleteAccount = async (token, body) => {
+  return fetch("/api/account/deleteAccount", {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  }).then((response) => response.status);
+};
+
 export const getAccounts = async (token) => {
   return fetch("/api/account/getAllAccounts", {
     method: "GET",

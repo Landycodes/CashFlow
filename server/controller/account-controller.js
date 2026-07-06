@@ -7,34 +7,34 @@ module.exports = {
     if (!user)
       return res.status(404).json({ removeAccount: "Token user not found" });
 
-    const { name, balance } = body;
+    const { accountName, accountBalance } = body;
     try {
       const newAccount = await Accounts.create({
         user_id: user.id,
-        name: name,
-        available_balance: balance,
+        name: accountName,
+        available_balance: accountBalance,
       });
+
+      const { id, name, available_balance } = newAccount.toJSON();
 
       // set new account as selected account to user
       const setSelectedAccountId = await Users.update(
         {
-          selected_account_id: newAccount.id,
+          selected_account_id: id,
         },
         {
           where: { id: user.id },
         },
       );
 
-      console.log(newAccount);
-
-      res.status(200).json({ createAccount: "Account Created!" });
+      res.status(200).json({ id, name, available_balance });
     } catch (error) {
-      if (error?.errors[0]?.message) {
+      if (error?.errors?.[0]?.message) {
         return res.status(400).json({ error: error?.errors[0]?.message });
       }
       res.status(500).json({
         createAccount: "Failed to create account",
-        errors: error?.errors,
+        errors: error?.errors || error,
       });
     }
   },
@@ -69,15 +69,53 @@ module.exports = {
         raw: true,
       });
 
+      if (!account && accountId)
+        await Users.update(
+          {
+            selected_account_id: null,
+          },
+          { where: { id: user.id } },
+        );
+
       if (!account)
-        return res
-          .status(404)
-          .json({ getAccountData: "Failed to get account" });
+        return res.status(404).json({ getAccountData: "No accounts returned" });
 
       res.status(200).json(account);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ getAccountData: error });
+    }
+  },
+  async deleteAccount({ user = null, body }, res) {
+    if (!user)
+      return res.status(404).json({ removeAccount: "Token user not found" });
+
+    const { id } = body;
+
+    try {
+      const deleteCount = await Accounts.destroy({
+        where: {
+          user_id: user.id,
+          id: id,
+        },
+      });
+
+      if (!deleteCount) return res.status(400).json("Account was not deleted");
+
+      if (deleteCount > 1) {
+        console.error(
+          `Unexpected: deleted ${deleteCount} rows for account id ${id}`,
+        );
+        return res
+          .status(500)
+          .json({ deleteAccount: "Unexpected error deleting account" });
+      }
+
+      res.status(200).end();
+    } catch (error) {
+      res
+        .status(500)
+        .json({ deleteAccount: "Failed to delete account", error: error });
     }
   },
   async getAllAccounts({ user = null }, res) {

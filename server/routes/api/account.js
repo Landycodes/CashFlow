@@ -4,6 +4,7 @@ const {
   removeAllAccounts,
   getAllAccounts,
   createAccount,
+  deleteAccount,
   // addBill,
   // deleteBill,
   // getBills,
@@ -14,6 +15,7 @@ router.route("/createAccount").post(authMiddleware, createAccount);
 router.route("/getAccount").get(authMiddleware, getSingleAccount);
 router.route("/removeAllAccounts").delete(authMiddleware, removeAllAccounts);
 router.route("/getAllAccounts").get(authMiddleware, getAllAccounts);
+router.route("/deleteAccount").delete(authMiddleware, deleteAccount);
 // router.route("/addBill/:user_id/:account_id").post(addBill);
 // router.route("/deleteBill/:user_id/:account_id").post(deleteBill);
 // router.route("/getBills").get(authMiddleware, getBills);

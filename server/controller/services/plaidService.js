@@ -1,4 +1,7 @@
-console.log(require.resolve("../../config/featureFlags"));
+console.log(
+  "Reading Plaid feature flags from: ",
+  require.resolve("../../config/featureFlags"),
+);
 
 // prettier-ignore
 const { TEST_ACCOUNT_DATA, TEST_TRANSACTION_DATA, TEST_RECURRING_DATA } = require("../../../TESTDATA/_config");
