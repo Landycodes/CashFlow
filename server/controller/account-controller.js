@@ -77,8 +77,7 @@ module.exports = {
           { where: { id: user.id } },
         );
 
-      if (!account)
-        return res.status(404).json({ getAccountData: "No accounts returned" });
+      if (!account) return res.status(204).end();
 
       res.status(200).json(account);
     } catch (error) {
@@ -135,10 +134,7 @@ module.exports = {
         raw: true,
       });
 
-      if (!accounts.length)
-        return res
-          .status(404)
-          .json({ getAllAccounts: "No accounts found for this user" });
+      if (!accounts.length) return res.status(204).end();
 
       return res.json(accounts);
     } catch (error) {

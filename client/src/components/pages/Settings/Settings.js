@@ -90,7 +90,7 @@ export default function Settings() {
                 Link With Plaid
               </li>
               <li
-                className="window-style-dark style-text opacity-100 fs-4 btn border"
+                className="window-style-dark style-text opacity-100 fs-4 my-4 btn border"
                 onClick={() => setModalType("manageAccount")}
               >
                 Manage Accounts

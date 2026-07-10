@@ -37,7 +37,7 @@ export const getAccounts = async (token) => {
       "Content-Type": "application/json",
       authorization: `Bearer ${token}`,
     },
-  }).then((response) => response.json());
+  }).then((response) => (response.status === 200 ? response.json() : response));
 };
 // export const getBills = async (token) => {
 //   return fetch("/api/recurring/getRecurringBills", {
