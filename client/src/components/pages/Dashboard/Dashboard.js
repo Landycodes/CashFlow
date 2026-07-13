@@ -65,6 +65,7 @@ export default function Dashboard() {
 
   if (user?.selected_account_id) {
     return (
+      // TODO: ADD ACCOUNT NAME SOMEWHERE ON DASHBOARD
       <>
         {accountInfoReady ? (
           <>

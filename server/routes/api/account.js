@@ -12,7 +12,7 @@ const {
 const { authMiddleware } = require("../../utils/auth");
 
 router.route("/createAccount").post(authMiddleware, createAccount);
-router.route("/getAccount").get(authMiddleware, getSingleAccount);
+router.route("/getSingleAccount").get(authMiddleware, getSingleAccount);
 router.route("/removeAllAccounts").delete(authMiddleware, removeAllAccounts);
 router.route("/getAllAccounts").get(authMiddleware, getAllAccounts);
 router.route("/deleteAccount").delete(authMiddleware, deleteAccount);

@@ -160,7 +160,7 @@ export default function Login() {
           className={`${style.loginContent} d-flex flex-column justify-content-around`}
         >
           <header className="text-light d-flex flex-column align-items-start align-self-center mb-2">
-            <h2 className={style.title}>BALNCE</h2>
+            <h2 className={style.title}>CASHFLOW</h2>
             <h6 className={`${style.subtitle} text-secondary`}>
               Track your spending
             </h6>

@@ -30,7 +30,7 @@ export default function Modal({ title, body, confirmAction, onClose }) {
             </button>
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn px-3 btn-primary"
               onClick={confirmAction}
             >
               Confirm

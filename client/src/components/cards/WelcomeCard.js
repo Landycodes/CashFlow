@@ -4,15 +4,27 @@ export default function WelcomeCard() {
       <h3 className="text-center fst-italic">
         <b>Welcome to CashFlow</b>
       </h3>
-      <p>
-        To get started, head over to the{" "}
-        <strong>
-          <a className="text-decoration-none text-light" href="/settings">
-            Settings
-          </a>
-        </strong>{" "}
-        tab and securely link your bank account using Plaid.
-      </p>
+      <section>
+        <p>
+          To get started, head over to the{" "}
+          <strong>
+            <a className="text-decoration-none text-light" href="/settings">
+              Settings
+            </a>
+          </strong>{" "}
+          tab where you can:
+        </p>
+
+        <ul>
+          <li>
+            <strong>Link your bank</strong> securely using Plaid.
+          </li>
+          <li>
+            <strong>Add</strong> or <strong>select</strong> an account manually
+            by clicking the Manage Accounts button.
+          </li>
+        </ul>
+      </section>
     </div>
   );
 }

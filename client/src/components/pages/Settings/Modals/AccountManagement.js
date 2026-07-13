@@ -5,19 +5,20 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import { userContext } from "../../../../App";
-import { updateUser } from "../../../../utils/API/user";
 import {
   createAccount,
-  getAccounts,
+  getAllAccounts,
   deleteAccount,
 } from "../../../../utils/API/account";
+import { userContext } from "../../../../App";
+import { updateUser } from "../../../../utils/API/user";
 import Loading from "../../../Loading";
 
 // ---- MAIN COMPONENT ----
 export default forwardRef(function AccountManagement(_props, ref) {
   const { user, setUser, token } = useContext(userContext);
   const [loading, setLoading] = useState(true);
+  const [debounceId, setDebounceId] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [accountSelectionMenu, setAccountSelectionMenu] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState(
@@ -38,7 +39,7 @@ export default forwardRef(function AccountManagement(_props, ref) {
   }));
 
   const fetchAccounts = async (token) => {
-    const foundAccounts = await getAccounts(token);
+    const foundAccounts = await getAllAccounts(token);
     if (!foundAccounts?.status) {
       setAccounts(foundAccounts);
       setLoading(false);
@@ -53,19 +54,29 @@ export default forwardRef(function AccountManagement(_props, ref) {
   }, [user]);
 
   const handleAddAccount = async (accountName, accountBalance) => {
+    if (!accountName || !accountBalance) return;
+
     setLoading(true);
     setAccountSelectionMenu(false);
 
-    await createAccount(token, { accountName, accountBalance });
-    fetchAccounts(token);
+    const createdRes = await createAccount(token, {
+      accountName,
+      accountBalance,
+    });
+    if (!createdRes) return;
+
+    setUser(createdRes);
+    setSelectedAccount(createdRes.selected_account_id);
     setNewAccount({ name: "", balance: "" });
   };
 
   const handleDeleteAccount = async (id) => {
     setLoading(true);
 
-    await deleteAccount(token, { id });
-    fetchAccounts(token);
+    const deleteRes = await deleteAccount(token, { id });
+    if (!deleteRes) return;
+    setUser(deleteRes);
+    setSelectedAccount(null);
   };
 
   return (
@@ -92,7 +103,7 @@ export default forwardRef(function AccountManagement(_props, ref) {
         />
       ) : (
         <button
-          className="btn btn-outline-success rounded border border-light mx-auto d-block"
+          className="btn btn-outline-primary rounded border border-light mx-auto d-block"
           onClick={() => setAccountSelectionMenu(true)}
         >
           <span className="text-nowrap">Add An Account</span>
@@ -102,7 +113,7 @@ export default forwardRef(function AccountManagement(_props, ref) {
   );
 });
 
-// ---- SUB COMPONENTS ----
+// ---- COMPONENT ACCOUNT LIST PARENT ----
 const AccountList = ({ accounts, selectedAccount, onSelect, onDelete }) => {
   if (!accounts || accounts.length === 0) {
     return <p>No accounts available.</p>;
@@ -126,6 +137,7 @@ const AccountList = ({ accounts, selectedAccount, onSelect, onDelete }) => {
   );
 };
 
+// ---- COMPONENT ACCOUNT LIST CHILD ----
 const AccountListItem = ({ account, isSelected, onSelect, onDelete }) => {
   return (
     <label
@@ -159,6 +171,7 @@ const AccountListItem = ({ account, isSelected, onSelect, onDelete }) => {
   );
 };
 
+// ---- COMPONENT ADD ACCOUNT ----
 const AddAccountForm = ({ newAccount, setNewAccount, onCancel, onSave }) => {
   return (
     <>
@@ -167,7 +180,7 @@ const AddAccountForm = ({ newAccount, setNewAccount, onCancel, onSave }) => {
           <label className="form-label">Add Account</label>
           <button
             type="button"
-            className="btn-close my-auto"
+            className="btn-close my-auto mb-2"
             onClick={onCancel}
           ></button>
         </div>

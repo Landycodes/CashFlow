@@ -4,7 +4,7 @@ import Auth from "../../utils/auth";
 import { userContext } from "../../App";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateUser } from "../../utils/API/user";
-import { getAccounts } from "../../utils/API/account";
+import { getAllAccounts } from "../../utils/API/account";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 
@@ -13,7 +13,7 @@ export default function Navbar() {
   const name = user?.username;
   const [time, setTime] = useState("Time");
   const [date, setDate] = useState("Date");
-  const [accounts, setAccounts] = useState([]);
+  // const [accounts, setAccounts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -22,9 +22,15 @@ export default function Navbar() {
     getDate();
   }, []);
 
-  useEffect(() => {
-    getAccounts(token).then((data) => setAccounts(data));
-  }, [user]);
+  // const syncAccounts = async (token) => {
+  //   const incomingAccounts = await getAllAccounts(token);
+  //   if (incomingAccounts?.status) return;
+  //   setAccounts(incomingAccounts);
+  // };
+
+  // useEffect(() => {
+  //   syncAccounts(token);
+  // }, [user]);
 
   const clock = () => {
     let time = new Date().toLocaleTimeString([], {
@@ -67,7 +73,7 @@ export default function Navbar() {
       </span>
       <DesktopNav
         style={style}
-        accounts={accounts}
+        // accounts={accounts}
         navigate={navigate}
         Auth={Auth}
       />

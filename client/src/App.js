@@ -22,6 +22,20 @@ import { PlaidPopUp } from "./utils/Plaid";
 
 export const userContext = createContext();
 
+const ProtectedRoutes = ({ loggedIn, children }) => {
+  if (!loggedIn) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+const PlaidProtectedRoute = ({ user, plaidAuthExpired, children }) => {
+  if (!user?.plaidAccessToken || plaidAuthExpired) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
+
 function AppRouter({
   user,
   setUser,
@@ -38,20 +52,6 @@ function AppRouter({
   useEffect(() => {
     setLoggedIn(auth.loggedIn());
   }, [location.pathname]);
-
-  const ProtectedRoutes = ({ loggedIn, children }) => {
-    if (!loggedIn) {
-      return <Navigate to="/login" replace />;
-    }
-    return children;
-  };
-
-  const PlaidProtectedRoute = ({ children }) => {
-    if (!user?.plaidAccessToken || plaidAuthExpired) {
-      return <Navigate to="/" replace />;
-    }
-    return children;
-  };
 
   return (
     <div className="d-flex flex-column min-vh-100">
@@ -133,7 +133,7 @@ function App() {
         setUser(userData);
         setToken(authToken);
 
-        if (userData?.plaidAccessToken) {
+        if (userData?.plaid_token) {
           const accountData = await fetchAccountData(authToken);
           if (accountData === 200) {
             setPlaidAuthExpire(false);
@@ -158,7 +158,11 @@ function App() {
   }, [loggedIn]);
 
   if (loggedIn && (!user || !token)) {
-    return <Loading />;
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Loading />
+      </div>
+    );
   }
 
   return (

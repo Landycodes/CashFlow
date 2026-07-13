@@ -32,7 +32,7 @@ const Users = sequelize.define(
       allowNull: true,
       unique: true,
     },
-    plaid_Token: {
+    plaid_token: {
       type: DataTypes.STRING,
       allowNull: true,
       // Encryption handled manually below via hooks instead of mongoose-field-encryption
@@ -55,16 +55,16 @@ const Users = sequelize.define(
         if (user.password) {
           user.password = await bcrypt.hash(user.password, 10);
         }
-        if (user.plaidAccessToken) {
-          user.plaidAccessToken = encrypt(user.plaidAccessToken);
+        if (user.plaid_token) {
+          user.plaid_token = encrypt(user.plaid_token);
         }
       },
       beforeUpdate: async (user) => {
         if (user.changed("password") && user.password) {
           user.password = await bcrypt.hash(user.password, 10);
         }
-        if (user.changed("plaidAccessToken") && user.plaidAccessToken) {
-          user.plaidAccessToken = encrypt(user.plaidAccessToken);
+        if (user.changed("plaid_token") && user.plaid_token) {
+          user.plaid_token = encrypt(user.plaid_token);
         }
       },
     },
@@ -117,9 +117,9 @@ Users.prototype.getSelectedAccount = async function () {
   });
 };
 
-// Getter that auto-decrypts plaidAccessToken when you access it
+// Getter that auto-decrypts plaid_token when you access it
 Users.prototype.getPlaidAccessToken = function () {
-  return decrypt(this.plaidAccessToken);
+  return decrypt(this.plaid_token);
 };
 
 module.exports = Users;

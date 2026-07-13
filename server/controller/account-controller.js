@@ -8,6 +8,8 @@ module.exports = {
       return res.status(404).json({ removeAccount: "Token user not found" });
 
     const { accountName, accountBalance } = body;
+    if (!accountName || !accountBalance) res.status(400).end();
+
     try {
       const newAccount = await Accounts.create({
         user_id: user.id,
@@ -17,30 +19,37 @@ module.exports = {
 
       const { id, name, available_balance } = newAccount.toJSON();
 
-      // set new account as selected account to user
-      const setSelectedAccountId = await Users.update(
+      // set users selected account id to the created account
+      // formatting solves the return 1 behavior of sequelize
+      const [, [updatedUser]] = await Users.update(
         {
           selected_account_id: id,
         },
         {
           where: { id: user.id },
+          returning: true,
+          raw: true,
         },
       );
 
-      res.status(200).json({ id, name, available_balance });
+      //returns user object to sync context to match DB
+      res.status(200).json(updatedUser);
     } catch (error) {
+      console.error(error);
       if (error?.errors?.[0]?.message) {
         return res.status(400).json({ error: error?.errors[0]?.message });
       }
       res.status(500).json({
         createAccount: "Failed to create account",
-        errors: error?.errors || error,
+        // errors: error?.errors || error,
       });
     }
   },
   async getSingleAccount({ user = null }, res) {
     if (!user)
-      return res.status(404).json({ getAccountData: "Token user not found" });
+      return res
+        .status(404)
+        .json({ getSingleAccountData: "Token user not found" });
 
     try {
       const accountId = await getSelectedAccountId(user.id);
@@ -48,7 +57,7 @@ module.exports = {
       if (!accountId)
         return res
           .status(404)
-          .json({ getAccountData: "Failed to get selected account id" });
+          .json({ getSingleAccountData: "Failed to get selected account id" });
 
       const account = await Accounts.findOne({
         where: {
@@ -82,7 +91,7 @@ module.exports = {
       res.status(200).json(account);
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ getAccountData: error });
+      return res.status(500).json({ getSingleAccountData: error });
     }
   },
   async deleteAccount({ user = null, body }, res) {
@@ -92,29 +101,60 @@ module.exports = {
     const { id } = body;
 
     try {
-      const deleteCount = await Accounts.destroy({
-        where: {
-          user_id: user.id,
-          id: id,
-        },
+      const currentlySelectedId = await getSelectedAccountId(user.id);
+
+      const result = await sequelize.transaction(async (tx) => {
+        const deleteCount = await Accounts.destroy({
+          where: {
+            user_id: user.id,
+            id: id,
+          },
+          transaction: tx,
+        });
+
+        if (!deleteCount)
+          return {
+            status: 400,
+            body: { deleteAccount: "Account was not deleted" },
+          };
+
+        if (deleteCount > 1) {
+          throw new Error(
+            `Unexpected: deleted ${deleteCount} rows for account id ${id}`,
+          );
+        }
+
+        // Removes ghost id from user.selected_account_id
+        if (id === currentlySelectedId) {
+          const [, [updatedUser]] = await Users.update(
+            {
+              lastUpdate: null,
+              selected_account_id: null,
+              plaid_token: null,
+            },
+            {
+              where: { id: user.id },
+              individualHooks: true,
+              returning: true,
+              raw: true,
+              transaction: tx,
+            },
+          );
+
+          //returns user object to sync context to match DB
+          return { status: 200, body: updatedUser };
+        }
+
+        return { status: 204 };
       });
 
-      if (!deleteCount) return res.status(400).json("Account was not deleted");
+      if (result.status !== 204)
+        return res.status(result.status).json(result.body);
 
-      if (deleteCount > 1) {
-        console.error(
-          `Unexpected: deleted ${deleteCount} rows for account id ${id}`,
-        );
-        return res
-          .status(500)
-          .json({ deleteAccount: "Unexpected error deleting account" });
-      }
-
-      res.status(200).end();
+      return res.status(result.status).end();
     } catch (error) {
-      res
-        .status(500)
-        .json({ deleteAccount: "Failed to delete account", error: error });
+      console.error(error);
+      res.status(500).json({ deleteAccount: "Failed to delete account" });
     }
   },
   async getAllAccounts({ user = null }, res) {
@@ -129,7 +169,8 @@ module.exports = {
         attributes: [
           "name",
           "available_balance",
-          [sequelize.literal("COALESCE(plaid_account_id, id::text)"), "id"],
+          "id",
+          // [sequelize.literal("COALESCE(plaid_account_id, id::text)"), "id"],
         ],
         raw: true,
       });
@@ -146,6 +187,13 @@ module.exports = {
       return res.status(404).json({ removeAccount: "Token user not found" });
 
     try {
+      const deletedAccounts = await Accounts.destroy({
+        where: { user_id: user.id },
+      });
+      if (!deletedAccounts) {
+        throw new Error("removeAccount: Failed to remove accounts");
+      }
+
       const updatedUser = await Users.update(
         {
           lastUpdate: null,
@@ -155,13 +203,6 @@ module.exports = {
         { where: { id: user.id } },
       );
       if (!updatedUser) throw new Error("removeAccount: Failed to update user");
-
-      const deletedAccounts = await Accounts.destroy({
-        where: { user_id: user.id },
-      });
-      if (!deletedAccounts) {
-        throw new Error("removeAccount: Failed to remove accounts");
-      }
 
       res.status(200).end();
     } catch (error) {

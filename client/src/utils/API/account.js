@@ -10,7 +10,7 @@ export const createAccount = async (token, body) => {
 };
 
 export const getSingleAccount = async (token) => {
-  return fetch("/api/account/getAccount", {
+  return fetch("/api/account/getSingleAccount", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -27,10 +27,10 @@ export const deleteAccount = async (token, body) => {
       authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(body),
-  }).then((response) => response.status);
+  }).then((response) => (response.status === 200 ? response.json() : response));
 };
 
-export const getAccounts = async (token) => {
+export const getAllAccounts = async (token) => {
   return fetch("/api/account/getAllAccounts", {
     method: "GET",
     headers: {

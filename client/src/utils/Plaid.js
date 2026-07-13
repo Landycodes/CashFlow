@@ -38,6 +38,7 @@ export function PlaidPopUp(
         await exchangeAndSavePlaidToken(token, public_token);
         const userData = await fetchAccountData(token);
         setUser(userData);
+        console.log(userData);
         navigate("/");
         onSuccessCallback();
       } catch (error) {

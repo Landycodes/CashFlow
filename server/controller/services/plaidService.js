@@ -33,30 +33,29 @@ module.exports = {
       const balanceData = balanceRes.data.accounts;
       const accountValues = balanceData.map((bd) => ({
         name: bd.name,
-        account_id: bd.account_id,
+        plaid_account_id: bd.account_id,
         available_balance: bd.balances.available,
         user_id: id,
       }));
 
-      await Promise.all(
+      const upsertResult = await Promise.all(
         accountValues.map((account) => Accounts.upsert(account)),
       );
 
+      const [firstInstance] = upsertResult[0];
+
       const [updated] = await Users.update(
         {
-          selected_account_id: Sequelize.literal(
-            `COALESCE(selected_account_id, '${accountValues[0].account_id}')`,
-          ),
+          selected_account_id: firstInstance.id,
         },
         {
-          where: { id: id },
+          where: {
+            id: id,
+            selected_account_id: null,
+          },
           individualHooks: true,
         },
       );
-
-      if (!updated) {
-        throw new Error("Unable to find user");
-      }
 
       const updatedUser = await Users.findByPk(id, {
         include: [{ model: Accounts, as: "accounts" }],
@@ -66,7 +65,7 @@ module.exports = {
       writeToJSONFile("Account.json", updatedUser); // FOR TESTING
       return updatedUser;
     } catch (error) {
-      // console.error(error);
+      console.error(error);
       if (error?.response?.data) {
         throw error;
       } else {

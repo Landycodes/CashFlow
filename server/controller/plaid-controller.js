@@ -89,7 +89,7 @@ module.exports = {
       const accessToken = response.data.access_token;
 
       const [updated] = await Users.update(
-        { plaidAccessToken: accessToken },
+        { plaid_token: accessToken },
         {
           where: { id },
           individualHooks: true,
@@ -140,19 +140,19 @@ module.exports = {
       const accountInfo = await fetchWithRetry(() =>
         setAccountInfo(client, id, plaidAccessToken),
       );
-      const [transactions, recurring] = await Promise.all([
-        fetchWithRetry(() => setTransactionInfo(client, id, plaidAccessToken)),
-        fetchWithRetry(() => setRecurringInfo(client, id, plaidAccessToken)),
-      ]);
+      // const [transactions, recurring] = await Promise.all([
+      //   fetchWithRetry(() => setTransactionInfo(client, id, plaidAccessToken)),
+      //   fetchWithRetry(() => setRecurringInfo(client, id, plaidAccessToken)),
+      // ]);
 
-      if (!accountInfo || !transactions || !recurring) {
-        return res.status(400).json({
-          fetchAccountData: "One or more services failed",
-          accountInfo: accountInfo,
-          transactions: transactions,
-          recurring: recurring,
-        });
-      }
+      // if (!accountInfo || !transactions || !recurring) {
+      //   return res.status(400).json({
+      //     fetchAccountData: "One or more services failed",
+      //     accountInfo: accountInfo,
+      //     transactions: transactions,
+      //     recurring: recurring,
+      //   });
+      // }
 
       await foundUser.update({
         last_updated: new Date(),

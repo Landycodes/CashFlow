@@ -2,21 +2,21 @@ import { useContext, useEffect, useState } from "react";
 import { userContext } from "../../App";
 import { updateUser } from "../../utils/API/user";
 
-export default function DesktopNav({ style, accounts, navigate, Auth }) {
+export default function DesktopNav({ style, navigate, Auth }) {
   const { user, setUser, token } = useContext(userContext);
 
-  const handleAccountSelect = async (event) => {
-    const updatedUser = await updateUser(token, {
-      selected_account_id: event.target.value,
-    });
-    setUser(updatedUser);
-  };
+  // const handleAccountSelect = async (event) => {
+  //   const updatedUser = await updateUser(token, {
+  //     selected_account_id: event.target.value,
+  //   });
+  //   setUser(updatedUser);
+  // };
 
   return (
     <span className={`${style.desktopNav} mx-2`}>
-      {accounts?.length > 1 ? (
+      {/* {accounts?.length > 1 ? (
         <select
-          value={user.selected_account_id}
+          value={user.selected_account_id || ""}
           onChange={handleAccountSelect}
           style={{ cursor: "pointer" }}
           className={`${style.selectBox} style-text form-select opacity-100 ms-3 ps-3 ps-1 fs-5`}
@@ -35,7 +35,7 @@ export default function DesktopNav({ style, accounts, navigate, Auth }) {
         </select>
       ) : (
         ""
-      )}
+      )} */}
       <h6
         className={`${style.menuBtn} style-text opacity-100 fs-4 rounded p-3 pt-3`}
         onClick={() => navigate("/expenses")}
